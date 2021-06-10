@@ -25,7 +25,9 @@ public class ZkServiceDiscoveryImpl implements ServiceDiscovery {
         if (null == serviceUrls) {
             throw new RuntimeException(String.format("Service %s not found", rpcSerivceName));
         }
-        String targetServiceUrl = serviceUrls.get(0);
+        double randomNum = Math.random() * serviceUrls.size();
+        String targetServiceUrl = serviceUrls.get((int) randomNum);
+        LOGGER.info("Get service: [{}]", targetServiceUrl);
         String[] hostPort = targetServiceUrl.split(":");
         return new InetSocketAddress(hostPort[0], Integer.parseInt(hostPort[1]));
     }
