@@ -18,7 +18,7 @@ import github.pancras.remoting.transport.socket.SocketRpcClient;
  * @create 2021/6/9 14:21
  */
 public class RpcClientProxy implements InvocationHandler {
-    private static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RpcClientProxy.class);
 
     private final RpcRequestTransport rpcRequestTransport;
 
@@ -27,9 +27,16 @@ public class RpcClientProxy implements InvocationHandler {
     }
 
     @Override
+    @SuppressWarnings("all")
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        logger.info("invoke method: [{}]", method.getName());
-        RpcRequest rpcRequest = new RpcRequest(UUID.randomUUID().toString(), method.getDeclaringClass().getName(), method.getName(), args, method.getParameterTypes());
+        LOGGER.info("invoke method: [{}]", method.getName());
+        RpcRequest rpcRequest = new RpcRequest();
+        rpcRequest.setRequestId(UUID.randomUUID().toString());
+        rpcRequest.setInterfaceName(method.getDeclaringClass().getName());
+        rpcRequest.setMethodName(method.getName());
+        rpcRequest.setParameters(args);
+        rpcRequest.setParamTypes(method.getParameterTypes());
+
         RpcResponse<Object> rpcResponse = null;
         if (rpcRequestTransport instanceof SocketRpcClient) {
             rpcResponse = (RpcResponse<Object>) rpcRequestTransport.sendRpcRequest(rpcRequest);
@@ -38,6 +45,7 @@ public class RpcClientProxy implements InvocationHandler {
         return rpcResponse.getData();
     }
 
+    @SuppressWarnings("all")
     public <T> T getProxy(Class<T> clazz) {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, this);
     }

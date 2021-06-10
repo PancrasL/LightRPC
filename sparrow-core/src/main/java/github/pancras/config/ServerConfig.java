@@ -6,4 +6,6 @@ package github.pancras.config;
  */
 public class ServerConfig {
     public static int PORT = 7998;
+
+    public static String ZK_ADDRESS = "127.0.0.1:2181";
 }

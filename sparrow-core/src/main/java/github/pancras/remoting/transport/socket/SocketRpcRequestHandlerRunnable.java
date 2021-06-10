@@ -19,7 +19,7 @@ import github.pancras.remoting.handler.RpcRequestHandler;
  */
 // TODO rename to SocketRpcRequestHandler?
 public class SocketRpcRequestHandlerRunnable implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(SocketRpcRequestHandlerRunnable.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcRequestHandlerRunnable.class);
 
     private final Socket socket;
     private final RpcRequestHandler rpcRequestHandler;
@@ -31,7 +31,7 @@ public class SocketRpcRequestHandlerRunnable implements Runnable {
 
     @Override
     public void run() {
-        logger.info("Thread [{}]: server handle message from client", Thread.currentThread());
+        LOGGER.info("Thread [{}]: server handle message from client", Thread.currentThread());
         try (ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
              ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream())) {
             RpcRequest rpcRequest = (RpcRequest) in.readObject();
@@ -39,7 +39,7 @@ public class SocketRpcRequestHandlerRunnable implements Runnable {
             out.writeObject(RpcResponse.success(result, rpcRequest.getRequestId()));
             out.flush();
         } catch (IOException | ClassNotFoundException e) {
-            logger.error("Occur exception: ", e);
+            LOGGER.error("Occur exception: ", e);
         }
     }
 }

@@ -12,19 +12,19 @@ import github.pancras.HelloService;
  */
 
 public class HelloServiceImpl implements HelloService {
-    private static final Logger logger = LoggerFactory.getLogger(HelloServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HelloServiceImpl.class);
 
     public String hello(Hello hello) {
-        logger.info("HelloServiceImpl receive：{}", hello.toString());
+        LOGGER.info("HelloServiceImpl receive：{}", hello.toString());
         String result = "Hello, " + hello.getMessage();
-        logger.info("HelloServiceImpl return:{}", result);
+        LOGGER.info("HelloServiceImpl return:{}", result);
         return result;
     }
 
     public String hello(String hello) {
-        logger.info("HelloServiceImpl receive：{}", hello);
+        LOGGER.info("HelloServiceImpl receive：{}", hello);
         String result = "Hello World!" + hello;
-        logger.info("HelloServiceImpl return:{}", result);
+        LOGGER.info("HelloServiceImpl return:{}", result);
         return result;
     }
 }

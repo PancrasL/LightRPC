@@ -1,12 +1,12 @@
 package github.pancras.remoting.transport.socket;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import github.pancras.registry.ServiceDiscovery;
+import github.pancras.registry.zk.ZkServiceDiscoveryImpl;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.transport.RpcRequestTransport;
 
@@ -15,11 +15,16 @@ import github.pancras.remoting.transport.RpcRequestTransport;
  * @create 2021/6/9 14:05
  */
 public class SocketRpcClient implements RpcRequestTransport {
+    private final ServiceDiscovery serviceDiscovery;
+
+    public SocketRpcClient() {
+        this.serviceDiscovery = new ZkServiceDiscoveryImpl();
+    }
 
     @Override
     public Object sendRpcRequest(RpcRequest rpcRequest) {
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getRpcServiceName());
         try (Socket socket = new Socket()) {
-            InetSocketAddress inetSocketAddress = new InetSocketAddress(InetAddress.getLocalHost(), 7998);
             socket.connect(inetSocketAddress);
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(rpcRequest);
@@ -28,8 +33,8 @@ public class SocketRpcClient implements RpcRequestTransport {
             in.close();
             out.close();
             return obj;
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("RPC call fail:", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

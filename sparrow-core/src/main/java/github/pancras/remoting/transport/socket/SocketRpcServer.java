@@ -15,40 +15,40 @@ import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.ServerConfig;
 import github.pancras.factory.SingletonFactory;
 import github.pancras.provider.ServiceProvider;
-import github.pancras.provider.impl.ServiceProviderImpl;
+import github.pancras.provider.impl.ZkServiceProviderImpl;
 
 /**
  * @author pancras
  * @create 2021/6/3 20:02
  */
 public class SocketRpcServer {
-    private static final Logger logger = LoggerFactory.getLogger(SocketRpcServer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcServer.class);
 
     private final ExecutorService threadPool;
     private final ServiceProvider serviceProvider;
 
     public SocketRpcServer() {
         threadPool = Executors.newCachedThreadPool();
-        serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
+        serviceProvider = SingletonFactory.getInstance(ZkServiceProviderImpl.class);
     }
 
     public void registerService(RpcServiceConfig rpcServiceConfig) {
-        serviceProvider.addService(rpcServiceConfig);
+        serviceProvider.publishService(rpcServiceConfig);
     }
 
     public void start() {
         try (ServerSocket server = new ServerSocket()) {
             InetAddress localHost = InetAddress.getLocalHost();
             server.bind(new InetSocketAddress(localHost, ServerConfig.PORT));
-            logger.info("RPC Server listen at ip: [{}], port: [{}]", server.getInetAddress(), server.getLocalPort());
+            LOGGER.info("RPC Server listen at ip: [{}], port: [{}]", server.getInetAddress(), server.getLocalPort());
             Socket socket;
             while ((socket = server.accept()) != null) {
-                logger.info("RPC Client connected [{}]", socket.getInetAddress());
+                LOGGER.info("RPC Client connected [{}]", socket.getInetAddress());
                 threadPool.execute(new SocketRpcRequestHandlerRunnable(socket));
             }
             threadPool.shutdown();
         } catch (IOException e) {
-            logger.error("RPC ServerSocket occur IOException:", e);
+            LOGGER.error("RPC ServerSocket occur IOException:", e);
         }
     }
 }

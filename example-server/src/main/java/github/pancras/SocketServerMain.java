@@ -12,13 +12,11 @@ import github.pancras.serviceimpl.HelloServiceImpl;
  */
 public class SocketServerMain {
     public static void main(String[] args) {
-        HelloService helloService = new HelloServiceImpl();
         RpcServiceConfig rpcServiceConfig = new RpcServiceConfig();
-        rpcServiceConfig.setService(helloService);
+        rpcServiceConfig.setService(new HelloServiceImpl());
 
         SocketRpcServer socketRpcServer = new SocketRpcServer();
         socketRpcServer.registerService(rpcServiceConfig);
-
         socketRpcServer.start();
     }
 

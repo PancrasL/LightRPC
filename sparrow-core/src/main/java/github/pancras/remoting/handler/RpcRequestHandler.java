@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 
 import github.pancras.factory.SingletonFactory;
 import github.pancras.provider.ServiceProvider;
-import github.pancras.provider.impl.ServiceProviderImpl;
+import github.pancras.provider.impl.ZkServiceProviderImpl;
 import github.pancras.remoting.dto.RpcRequest;
 
 /**
@@ -16,12 +16,12 @@ import github.pancras.remoting.dto.RpcRequest;
  * @create 2021/6/5 19:13
  */
 public class RpcRequestHandler {
-    private static final Logger logger = LoggerFactory.getLogger(RpcRequestHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RpcRequestHandler.class);
 
     private final ServiceProvider serviceProvider;
 
     public RpcRequestHandler() {
-        serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
+        serviceProvider = SingletonFactory.getInstance(ZkServiceProviderImpl.class);
     }
 
     public Object handle(RpcRequest rpcRequest) {
@@ -34,7 +34,7 @@ public class RpcRequestHandler {
         try {
             Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
             result = method.invoke(service, rpcRequest.getParameters());
-            logger.info("service:[{}] successful invoke method:[{}]", rpcRequest.getRpcServiceName(), rpcRequest.getMethodName());
+            LOGGER.info("service:[{}] successful invoke method:[{}]", rpcRequest.getRpcServiceName(), rpcRequest.getMethodName());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

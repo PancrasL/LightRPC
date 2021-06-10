@@ -7,5 +7,5 @@ import github.pancras.remoting.dto.RpcRequest;
  * @create 2021/6/9 14:06
  */
 public interface RpcRequestTransport {
-    Object sendRpcRequest(RpcRequest rpcRequest);
+    Object sendRpcRequest(RpcRequest rpcRequest) throws Exception;
 }
