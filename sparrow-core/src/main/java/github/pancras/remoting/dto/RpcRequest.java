@@ -1,6 +1,7 @@
 package github.pancras.remoting.dto;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * @author pancras
@@ -56,5 +57,16 @@ public class RpcRequest implements Serializable {
 
     public void setParamTypes(Class<?>[] paramTypes) {
         this.paramTypes = paramTypes;
+    }
+
+    @Override
+    public String toString() {
+        return "RpcRequest{" +
+                "requestId='" + requestId + '\'' +
+                ", interfaceName='" + interfaceName + '\'' +
+                ", methodName='" + methodName + '\'' +
+                ", parameters=" + Arrays.toString(parameters) +
+                ", paramTypes=" + Arrays.toString(paramTypes) +
+                '}';
     }
 }
