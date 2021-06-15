@@ -18,13 +18,13 @@ import github.pancras.remoting.handler.RpcRequestHandler;
  * @create 2021/6/5 18:59
  */
 // TODO rename to SocketRpcRequestHandler?
-public class SocketRpcRequestHandlerRunnable implements Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcRequestHandlerRunnable.class);
+public class SocketRpcRequestHandler implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcRequestHandler.class);
 
     private final Socket socket;
     private final RpcRequestHandler rpcRequestHandler;
 
-    public SocketRpcRequestHandlerRunnable(Socket socket) {
+    public SocketRpcRequestHandler(Socket socket) {
         this.socket = socket;
         this.rpcRequestHandler = SingletonFactory.getInstance(RpcRequestHandler.class);
     }
