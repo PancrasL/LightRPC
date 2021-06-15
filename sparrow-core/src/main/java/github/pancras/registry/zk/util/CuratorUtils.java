@@ -38,11 +38,9 @@ public class CuratorUtils {
         zkClient.start();
         // Wait 5s until connect to zookeeper
         try {
-            if (!zkClient.blockUntilConnected(5, TimeUnit.SECONDS)) {
-                throw new RuntimeException(String.format("Zookeeper [%s] connection timeout", zkAddress));
-            }
+            zkClient.blockUntilConnected(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            LOGGER.error("Error when connect to zookeeper", e);
+            throw new RuntimeException(e.getMessage(), e);
         }
         return zkClient;
     }
@@ -50,23 +48,22 @@ public class CuratorUtils {
     public static void createPersistentNode(CuratorFramework zkClient, String path) {
         try {
             if (REGISTERED_PATH_SET.contains(path) || zkClient.checkExists().forPath(path) != null) {
-                LOGGER.warn("Zookeeper node [{}] already exists", path);
+                LOGGER.warn("ZNode [{}] already exists", path);
             } else {
                 zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path);
-                LOGGER.info("Zookeeper node [{}] was created successfully", path);
+                LOGGER.info("ZNode [{}] was created successfully", path);
             }
             REGISTERED_PATH_SET.add(path);
         } catch (Exception e) {
-            LOGGER.error(String.valueOf(e));
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
     public static List<String> getChildrenNodes(CuratorFramework zkClient, String path) {
         try {
-            LOGGER.info(path);
             return zkClient.getChildren().forPath(path);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -74,7 +71,7 @@ public class CuratorUtils {
         try {
             zkClient.delete().deletingChildrenIfNeeded().forPath(path);
         } catch (Exception e) {
-            LOGGER.error(String.valueOf(e));
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 }
