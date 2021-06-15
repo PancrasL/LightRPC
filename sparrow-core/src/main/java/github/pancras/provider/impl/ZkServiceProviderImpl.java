@@ -3,9 +3,7 @@ package github.pancras.provider.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,13 +33,10 @@ public class ZkServiceProviderImpl implements ServiceProvider {
 
     @Override
     public void publishService(RpcServiceConfig rpcServiceConfig) {
-        try {
-            String host = InetAddress.getLocalHost().getHostAddress();
-            this.addService(rpcServiceConfig);
-            serviceRegistry.registerService(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, ServerConfig.PORT));
-        } catch (UnknownHostException e) {
-            LOGGER.error("Occur exception when getHostAddress", e);
-        }
+        String host = ServerConfig.SERVICE_ADDRESS;
+        int port = ServerConfig.PORT;
+        this.addService(rpcServiceConfig);
+        serviceRegistry.registerService(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, port));
     }
 
     @Override

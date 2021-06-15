@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -38,9 +37,11 @@ public class SocketRpcServer {
 
     public void start() {
         try (ServerSocket server = new ServerSocket()) {
-            InetAddress localHost = InetAddress.getLocalHost();
-            server.bind(new InetSocketAddress(localHost, ServerConfig.PORT));
-            LOGGER.info("RPC Server listen at ip: [{}], port: [{}]", server.getInetAddress(), server.getLocalPort());
+            String host = ServerConfig.SERVER_ADDRESS;
+            int port = ServerConfig.PORT;
+            InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
+            server.bind(inetSocketAddress);
+            LOGGER.info("RPC Server listen at: [{}]", inetSocketAddress);
             Socket socket;
             while ((socket = server.accept()) != null) {
                 LOGGER.info("RPC Client connected [{}]", socket.getInetAddress());
