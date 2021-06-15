@@ -48,10 +48,24 @@ public class CuratorUtils {
     public static void createPersistentNode(CuratorFramework zkClient, String path) {
         try {
             if (REGISTERED_PATH_SET.contains(path) || zkClient.checkExists().forPath(path) != null) {
-                LOGGER.warn("ZNode [{}] already exists", path);
+                LOGGER.warn("Persistent ZNode [{}] already exists", path);
             } else {
                 zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path);
-                LOGGER.info("ZNode [{}] was created successfully", path);
+                LOGGER.info("Persistent ZNode [{}] was created successfully", path);
+            }
+            REGISTERED_PATH_SET.add(path);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public static void createEphemeralNode(CuratorFramework zkClient, String path) {
+        try {
+            if (REGISTERED_PATH_SET.contains(path) || zkClient.checkExists().forPath(path) != null) {
+                LOGGER.warn("Ephemeral ZNode [{}] already exists", path);
+            } else {
+                zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(path);
+                LOGGER.info(" Ephemeral ZNode [{}] was created successfully", path);
             }
             REGISTERED_PATH_SET.add(path);
         } catch (Exception e) {
