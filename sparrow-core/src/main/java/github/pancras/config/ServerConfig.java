@@ -12,10 +12,10 @@ public class ServerConfig {
 
     public static String ZK_ADDRESS = "127.0.0.1:2181";
 
-    // RPC server listen address
+    // RPC服务器监听地址（如果一个主机有多个ip，可以填写0.0.0.0）
     public static String SERVER_ADDRESS;
 
-    // Service registered address
+    // RPC服务注册地址
     public static String SERVICE_ADDRESS;
 
     static {

@@ -6,6 +6,8 @@ import java.util.Arrays;
 /**
  * @author pancras
  * @create 2021/6/5 19:37
+ *
+ * RPC请求对象
  */
 
 public class RpcRequest implements Serializable {

@@ -19,6 +19,8 @@ import github.pancras.config.ServerConfig;
 /**
  * @author pancras
  * @create 2021/6/10 10:54
+ * <p>
+ * Curator工具类，提供ZkClient的连接，ZNode的创建、获取、删除方法
  */
 public class CuratorUtils {
     public static final String ZK_REGISTER_ROOT_PATH = "/sparrow-rpc";
@@ -27,16 +29,15 @@ public class CuratorUtils {
     private static CuratorFramework zkClient;
 
     public static CuratorFramework getZkClient() {
-        // if zkClient has been started, return directly
+        // 如果 zkClient 已经连接，直接返回
         if (zkClient != null && zkClient.getState() == CuratorFrameworkState.STARTED) {
             return zkClient;
         }
-        // Retry strategy, retry 3 times
+        // 重试3次，每次阻塞5s来连接Zookeeper
         RetryPolicy retryPolicy = new RetryNTimes(3, 1);
         String zkAddress = ServerConfig.ZK_ADDRESS;
         zkClient = CuratorFrameworkFactory.newClient(zkAddress, retryPolicy);
         zkClient.start();
-        // Wait 5s until connect to zookeeper
         try {
             zkClient.blockUntilConnected(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {

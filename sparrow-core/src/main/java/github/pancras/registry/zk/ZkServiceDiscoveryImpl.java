@@ -13,6 +13,8 @@ import github.pancras.registry.zk.util.CuratorUtils;
 /**
  * @author pancras
  * @create 2021/6/9 18:07
+ * <p>
+ * 服务发现机制的Zookeeper实现
  */
 public class ZkServiceDiscoveryImpl implements ServiceDiscovery {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZkServiceDiscoveryImpl.class);

@@ -5,6 +5,8 @@ import java.io.Serializable;
 /**
  * @author pancras
  * @create 2021/6/5 19:40
+ *
+ * RPC 响应对象
  */
 public class RpcResponse<T> implements Serializable {
 

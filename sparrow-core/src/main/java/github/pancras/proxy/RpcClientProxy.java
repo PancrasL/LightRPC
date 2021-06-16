@@ -15,6 +15,8 @@ import github.pancras.remoting.transport.RpcRequestTransport;
 /**
  * @author pancras
  * @create 2021/6/9 14:21
+ * <p>
+ * 通过动态代理和反射机制隐藏数据传输细节
  */
 public class RpcClientProxy implements InvocationHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcClientProxy.class);
@@ -36,9 +38,10 @@ public class RpcClientProxy implements InvocationHandler {
         rpcRequest.setParameters(args);
         rpcRequest.setParamTypes(method.getParameterTypes());
 
-        RpcResponse<Object> rpcResponse;
-        rpcResponse = (RpcResponse<Object>) rpcRequestTransport.sendRpcRequest(rpcRequest);
-        assert rpcResponse != null;
+        RpcResponse<Object> rpcResponse = (RpcResponse<Object>) rpcRequestTransport.sendRpcRequest(rpcRequest);
+        if (rpcResponse == null) {
+            throw new IllegalStateException("Rpc Response is null");
+        }
         return rpcResponse.getData();
     }
 

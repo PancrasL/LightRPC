@@ -47,9 +47,9 @@ public class NettyRpcServer {
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                // Enable TCP heartbeat
+                // 开启TCP心跳机制
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
-                // Enable Nagle algorithm, to send big data chunk
+                // 开启Nagle算法，尽量使用大数据块传输
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_BACKLOG, 64)
                 .handler(new LoggingHandler(LogLevel.INFO))
@@ -63,9 +63,8 @@ public class NettyRpcServer {
                     }
                 });
 
-        // Bind port
+        // 绑定端口
         ChannelFuture f = b.bind(host, port).sync();
-        // Wait for the server-side listening port to close
         f.channel().closeFuture().sync();
 
         bossGroup.shutdownGracefully();

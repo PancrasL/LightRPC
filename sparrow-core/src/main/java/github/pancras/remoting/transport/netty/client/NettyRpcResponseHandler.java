@@ -23,9 +23,6 @@ public class NettyRpcResponseHandler extends ChannelInboundHandlerAdapter {
         this.nettyRpcClient = SingletonFactory.getInstance(NettyRpcClient.class);
     }
 
-    /**
-     * Read the message transmitted by the server
-     */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {

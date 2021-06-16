@@ -12,6 +12,8 @@ import github.pancras.registry.zk.util.CuratorUtils;
 /**
  * @author pancras
  * @create 2021/6/9 18:07
+ * <p>
+ * 服务注册机制的Zookeeper实现
  */
 public class ZkServiceRegistryImpl implements ServiceRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZkServiceRegistryImpl.class);

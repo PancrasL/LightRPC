@@ -8,18 +8,18 @@ import github.pancras.config.RpcServiceConfig;
  */
 public interface ServiceProvider {
     /**
-     * @param rpcServiceConfig RPC service related attributes
+     * @param rpcServiceConfig RPC 服务的相关属性
      */
     void publishService(RpcServiceConfig rpcServiceConfig);
 
     /**
-     * @param rpcServiceConfig RPC service related attributes
+     * @param rpcServiceConfig RPC 服务的相关属性
      */
     void addService(RpcServiceConfig rpcServiceConfig);
 
     /**
-     * @param rpcServiceName RPC service name
-     * @return service Object
+     * @param rpcServiceName RPC服务名称
+     * @return RPC服务对象
      */
     Object getService(String rpcServiceName);
 }

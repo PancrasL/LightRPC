@@ -14,6 +14,8 @@ import github.pancras.remoting.dto.RpcRequest;
 /**
  * @author pancras
  * @create 2021/6/5 19:13
+ *
+ * 利用反射机制在服务器端执行RPC方法
  */
 public class RpcInvoker {
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcInvoker.class);
