@@ -11,7 +11,6 @@ import java.util.UUID;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.remoting.transport.RpcRequestTransport;
-import github.pancras.remoting.transport.socket.SocketRpcClient;
 
 /**
  * @author pancras
@@ -37,10 +36,8 @@ public class RpcClientProxy implements InvocationHandler {
         rpcRequest.setParameters(args);
         rpcRequest.setParamTypes(method.getParameterTypes());
 
-        RpcResponse<Object> rpcResponse = null;
-        if (rpcRequestTransport instanceof SocketRpcClient) {
-            rpcResponse = (RpcResponse<Object>) rpcRequestTransport.sendRpcRequest(rpcRequest);
-        }
+        RpcResponse<Object> rpcResponse;
+        rpcResponse = (RpcResponse<Object>) rpcRequestTransport.sendRpcRequest(rpcRequest);
         assert rpcResponse != null;
         return rpcResponse.getData();
     }
