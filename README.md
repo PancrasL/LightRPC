@@ -8,7 +8,7 @@ sparrow 是一款以学习RPC原理为目的的轻量 RPC 框架。
 
 ## 2.1 sparrow-common
 
-包含一些工具类
+一些工具类
 
 ### 2.1.1 factory
 
@@ -20,7 +20,7 @@ rpc框架的核心组件
 
 ### 2.2.1 config
 
-配置类
+配置类，例如使用到的一些常量（ServerConfig）和RPC服务的包装类（RpcServiceConfig）
 
 ### 2.2.2 provider
 
@@ -28,7 +28,7 @@ rpc框架的核心组件
 
 ### 2.2.3 proxy
 
-代理模块：利用动态代理机制实现RPC调用
+代理模块：基于动态代理机制隐藏数据传输细节
 
 ### 2.2.4 registry
 
@@ -36,7 +36,7 @@ rpc框架的核心组件
 
 ### 2.2.5 remoting
 
-server和client的实现
+server和client的核心组件实现
 
 ### 2.2.6 serialize
 
