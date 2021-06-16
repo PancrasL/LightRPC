@@ -1,4 +1,4 @@
-package github.pancras.remoting.handler;
+package github.pancras.remoting.invoker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +15,12 @@ import github.pancras.remoting.dto.RpcRequest;
  * @author pancras
  * @create 2021/6/5 19:13
  */
-public class RpcRequestHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RpcRequestHandler.class);
+public class RpcInvoker {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RpcInvoker.class);
 
     private final ServiceProvider serviceProvider;
 
-    public RpcRequestHandler() {
+    public RpcInvoker() {
         serviceProvider = SingletonFactory.getInstance(ZkServiceProviderImpl.class);
     }
 

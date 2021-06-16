@@ -10,9 +10,37 @@ sparrow 是一款以学习RPC原理为目的的轻量 RPC 框架。
 
 包含一些工具类
 
+### 2.1.1 factory
+
+单例工厂模式工具类
+
 ## 2.2 sparrow-core
 
 rpc框架的核心组件
+
+### 2.2.1 config
+
+配置类
+
+### 2.2.2 provider
+
+服务提供者模块：服务注册、服务获取
+
+### 2.2.3 proxy
+
+代理模块：利用动态代理机制实现RPC调用
+
+### 2.2.4 registry
+
+注册中心
+
+### 2.2.5 remoting
+
+server和client的实现
+
+### 2.2.6 serialize
+
+序列化机制的实现
 
 ## 2.3 example-server
 
@@ -47,7 +75,8 @@ some info
 
 - 启动 `Zookeeper`
 
-- 修改 `sparrow-core/src/main/java/github/pancras/config/ServerConfig.java`中的Zookeeper地址为自己的
+- 修改 `sparrow-core/src/main/java/github/pancras/config/ServerConfig.java`
+  中的Zookeeper地址为自己的（不修改也行，默认会自动获取本机ip）
 
 - 启动 `example-server/src/main/java/github/pancras/SocketServerMain.java`
 

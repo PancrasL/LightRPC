@@ -27,7 +27,7 @@ public class RpcClientProxy implements InvocationHandler {
     }
 
     @Override
-    @SuppressWarnings("all")
+    @SuppressWarnings("unchecked")
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         LOGGER.info("invoke method: [{}]", method.getName());
         RpcRequest rpcRequest = new RpcRequest();
@@ -45,7 +45,7 @@ public class RpcClientProxy implements InvocationHandler {
         return rpcResponse.getData();
     }
 
-    @SuppressWarnings("all")
+    @SuppressWarnings("unchecked")
     public <T> T getProxy(Class<T> clazz) {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, this);
     }
