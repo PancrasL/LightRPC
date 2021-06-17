@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
-import github.pancras.remoting.transport.RpcRequestTransport;
+import github.pancras.remoting.transport.RpcClient;
 
 /**
  * @author pancras
@@ -21,10 +21,10 @@ import github.pancras.remoting.transport.RpcRequestTransport;
 public class RpcClientProxy implements InvocationHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcClientProxy.class);
 
-    private final RpcRequestTransport rpcRequestTransport;
+    private final RpcClient rpcClient;
 
-    public RpcClientProxy(RpcRequestTransport rpcRequestTransport) {
-        this.rpcRequestTransport = rpcRequestTransport;
+    public RpcClientProxy(RpcClient rpcClient) {
+        this.rpcClient = rpcClient;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class RpcClientProxy implements InvocationHandler {
         rpcRequest.setParameters(args);
         rpcRequest.setParamTypes(method.getParameterTypes());
 
-        RpcResponse<Object> rpcResponse = (RpcResponse<Object>) rpcRequestTransport.sendRpcRequest(rpcRequest);
+        RpcResponse<Object> rpcResponse = (RpcResponse<Object>) rpcClient.sendRpcRequest(rpcRequest);
         if (rpcResponse == null) {
             throw new IllegalStateException("Rpc Response is null");
         }

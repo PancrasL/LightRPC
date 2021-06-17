@@ -6,6 +6,7 @@ import github.pancras.factory.SingletonFactory;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.provider.impl.ZkServiceProviderImpl;
 import github.pancras.remoting.dto.RpcRequest;
+import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
 import io.netty.bootstrap.ServerBootstrap;
@@ -25,7 +26,7 @@ import io.netty.handler.logging.LoggingHandler;
  * @author pancras
  * @create 2021/6/15 16:28
  */
-public class NettyRpcServer {
+public class NettyRpcServer implements RpcServer {
 
     private final ServiceProvider serviceProvider;
     private final String host = ServerConfig.SERVER_ADDRESS;

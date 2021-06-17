@@ -10,7 +10,7 @@ import github.pancras.registry.ServiceDiscovery;
 import github.pancras.registry.zk.ZkServiceDiscoveryImpl;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
-import github.pancras.remoting.transport.RpcRequestTransport;
+import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
 import io.netty.bootstrap.Bootstrap;
@@ -31,7 +31,7 @@ import io.netty.util.AttributeKey;
  * @author pancras
  * @create 2021/6/16 10:22
  */
-public class NettyRpcClient implements RpcRequestTransport {
+public class NettyRpcClient implements RpcClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcClient.class);
 
     private final ServiceDiscovery serviceDiscovery;
@@ -63,7 +63,6 @@ public class NettyRpcClient implements RpcRequestTransport {
         InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getRpcServiceName());
 
         ChannelFuture f = bootstrap.connect(inetSocketAddress).sync();
-        System.out.println(f.isSuccess());
         LOGGER.info("Connect to server: [{}]", inetSocketAddress);
         Channel channel = f.channel();
         if (channel != null) {

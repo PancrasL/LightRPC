@@ -1,7 +1,7 @@
 package github.pancras;
 
 import github.pancras.proxy.RpcClientProxy;
-import github.pancras.remoting.transport.RpcRequestTransport;
+import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.socket.SocketRpcClient;
 
 /**
@@ -12,10 +12,15 @@ import github.pancras.remoting.transport.socket.SocketRpcClient;
  */
 public class SocketClientMain {
     public static void main(String[] args) {
-        RpcRequestTransport rpcRequestTransport = new SocketRpcClient();
-        RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcRequestTransport);
+        RpcClient rpcClient = new SocketRpcClient();
+        RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
-        String s = helloService.hello("good");
-        System.out.println(s);
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            String s = helloService.hello("good");
+            // System.out.println(s);
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime));
     }
 }
