@@ -30,7 +30,7 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof RpcMessage) {
             RpcMessage rpcMessage = (RpcMessage) msg;
-            LOGGER.info("Server receive msg: [{}]", rpcMessage);
+            LOGGER.info("Channel [{}] handle RpcMessage: [{}]", ctx.channel().id().toString(), msg);
             if (rpcMessage.getMessageType() == RpcConstants.REQUEST_TYPE) {
                 RpcRequest rpcRequest = (RpcRequest) rpcMessage.getData();
                 Object result = rpcInvoker.handle(rpcRequest);

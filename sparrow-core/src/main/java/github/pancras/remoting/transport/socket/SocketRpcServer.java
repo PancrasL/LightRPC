@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 
 import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.config.RpcServiceConfig;
-import github.pancras.config.ServerConfig;
+import github.pancras.config.SparrowConfig;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.provider.impl.ZkServiceProviderImpl;
 import github.pancras.remoting.transport.RpcServer;
@@ -36,8 +36,8 @@ public class SocketRpcServer implements RpcServer {
 
     public void start() throws Exception {
         ServerSocket server = new ServerSocket();
-        String host = ServerConfig.SERVER_ADDRESS;
-        int port = ServerConfig.PORT;
+        String host = SparrowConfig.SERVER_ADDRESS;
+        int port = SparrowConfig.PORT;
         InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
         server.bind(inetSocketAddress);
         LOGGER.info("RPC Server listen at: [{}]", inetSocketAddress);

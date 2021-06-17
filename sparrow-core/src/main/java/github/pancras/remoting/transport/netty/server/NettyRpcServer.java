@@ -1,8 +1,9 @@
 package github.pancras.remoting.transport.netty.server;
 
 import github.pancras.commons.factory.SingletonFactory;
+import github.pancras.commons.utils.SystemUtil;
 import github.pancras.config.RpcServiceConfig;
-import github.pancras.config.ServerConfig;
+import github.pancras.config.SparrowConfig;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.provider.impl.ZkServiceProviderImpl;
 import github.pancras.remoting.transport.RpcServer;
@@ -10,6 +11,7 @@ import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
@@ -28,8 +30,8 @@ import io.netty.handler.logging.LoggingHandler;
 public class NettyRpcServer implements RpcServer {
 
     private final ServiceProvider serviceProvider;
-    private final String host = ServerConfig.SERVER_ADDRESS;
-    private final int port = ServerConfig.PORT;
+    private final String host = SparrowConfig.SERVER_ADDRESS;
+    private final int port = SparrowConfig.PORT;
 
     public NettyRpcServer() {
         this.serviceProvider = SingletonFactory.getInstance(ZkServiceProviderImpl.class);
@@ -40,9 +42,12 @@ public class NettyRpcServer implements RpcServer {
     }
 
     public void start() throws Exception {
+        // 监听线程组，监听客户端请求
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        // 工作线程组，处理与客户端的数据通讯
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        DefaultEventLoopGroup serviceHandlerGroup = new DefaultEventLoopGroup(4);
+        // 业务线程，处理业务逻辑
+        DefaultEventLoopGroup serviceHandlerGroup = new DefaultEventLoopGroup(SystemUtil.getAvailableProcessors() * 2);
 
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
@@ -63,12 +68,17 @@ public class NettyRpcServer implements RpcServer {
                     }
                 });
 
-        // 绑定端口
+        // 绑定端口 同步等待
         ChannelFuture f = b.bind(host, port).sync();
-        f.channel().closeFuture().sync();
 
-        bossGroup.shutdownGracefully();
-        workerGroup.shutdownGracefully();
-        serviceHandlerGroup.shutdownGracefully();
+        // 采用异步的方式退出并释放资源
+        f.channel().closeFuture().addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                bossGroup.shutdownGracefully();
+                workerGroup.shutdownGracefully();
+                serviceHandlerGroup.shutdownGracefully();
+            }
+        });
     }
 }

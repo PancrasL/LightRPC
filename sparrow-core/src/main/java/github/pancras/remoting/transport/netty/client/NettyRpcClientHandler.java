@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import github.pancras.remoting.constants.RpcConstants;
 import github.pancras.remoting.dto.RpcMessage;
+import github.pancras.remoting.dto.RpcResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -17,18 +17,24 @@ import io.netty.util.ReferenceCountUtil;
 public class NettyRpcClientHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcClientHandler.class);
+    private final UnprocessedRequests unprocessedRequests;
+
+    public NettyRpcClientHandler(UnprocessedRequests unprocessedRequests) {
+        this.unprocessedRequests = unprocessedRequests;
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        if (msg instanceof RpcMessage) {
-            RpcMessage rpcMessage = (RpcMessage) msg;
-            LOGGER.info("Client receive msg: [{}]", rpcMessage);
-            if (rpcMessage.getMessageType() == RpcConstants.RESPONSE_TYPE) {
-                AttributeKey<Object> key = AttributeKey.valueOf("rpcResponse");
-                ctx.channel().attr(key).set(rpcMessage.getData());
-                ctx.channel().close();
+        try {
+            if (msg instanceof RpcMessage) {
+                RpcMessage rpcMessage = (RpcMessage) msg;
+                LOGGER.info("Client channel [{}] receive msg: [{}]", ctx.channel().id().toString(), rpcMessage);
+                if (rpcMessage.getMessageType() == RpcConstants.RESPONSE_TYPE) {
+                    unprocessedRequests.complete((RpcResponse<Object>) rpcMessage.getData());
+                }
             }
+        } finally {
+            ReferenceCountUtil.release(msg);
         }
-        ReferenceCountUtil.release(msg);
     }
 }

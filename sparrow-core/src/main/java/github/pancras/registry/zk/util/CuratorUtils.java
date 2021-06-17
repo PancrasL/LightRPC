@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import github.pancras.config.ServerConfig;
+import github.pancras.config.SparrowConfig;
 
 /**
  * @author pancras
@@ -35,7 +35,7 @@ public class CuratorUtils {
         }
         // 重试3次，每次阻塞5s来连接Zookeeper
         RetryPolicy retryPolicy = new RetryNTimes(3, 1);
-        String zkAddress = ServerConfig.ZK_ADDRESS;
+        String zkAddress = SparrowConfig.ZK_ADDRESS;
         zkClient = CuratorFrameworkFactory.newClient(zkAddress, retryPolicy);
         zkClient.start();
         try {
