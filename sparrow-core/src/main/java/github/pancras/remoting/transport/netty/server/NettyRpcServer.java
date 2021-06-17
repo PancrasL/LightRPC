@@ -5,7 +5,6 @@ import github.pancras.config.ServerConfig;
 import github.pancras.factory.SingletonFactory;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.provider.impl.ZkServiceProviderImpl;
-import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
@@ -58,9 +57,9 @@ public class NettyRpcServer implements RpcServer {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline p = ch.pipeline();
-                        p.addLast(new Decoder(RpcRequest.class));
+                        p.addLast(new Decoder());
                         p.addLast(new Encoder());
-                        p.addLast(serviceHandlerGroup, new NettyRpcRequestHandler());
+                        p.addLast(serviceHandlerGroup, new NettyRpcServerHandler());
                     }
                 });
 

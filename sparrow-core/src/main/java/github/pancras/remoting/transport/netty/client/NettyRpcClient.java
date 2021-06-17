@@ -8,6 +8,8 @@ import java.util.concurrent.CompletableFuture;
 
 import github.pancras.registry.ServiceDiscovery;
 import github.pancras.registry.zk.ZkServiceDiscoveryImpl;
+import github.pancras.remoting.constants.RpcConstants;
+import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.remoting.transport.RpcClient;
@@ -50,9 +52,9 @@ public class NettyRpcClient implements RpcClient {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline p = ch.pipeline();
-                        p.addLast(new Decoder(RpcResponse.class));
+                        p.addLast(new Decoder());
                         p.addLast(new Encoder());
-                        p.addLast(new NettyRpcResponseHandler());
+                        p.addLast(new NettyRpcClientHandler());
                     }
                 });
     }
@@ -66,7 +68,10 @@ public class NettyRpcClient implements RpcClient {
         LOGGER.info("Connect to server: [{}]", inetSocketAddress);
         Channel channel = f.channel();
         if (channel != null) {
-            channel.writeAndFlush(rpcRequest).addListener(future -> {
+            RpcMessage rpcMessage = new RpcMessage();
+            rpcMessage.setMessageType(RpcConstants.REQUEST_TYPE);
+            rpcMessage.setData(rpcRequest);
+            channel.writeAndFlush(rpcMessage).addListener(future -> {
                 if (future.isSuccess()) {
                     LOGGER.info("Client send message: [{}]", rpcRequest);
                 } else {
@@ -76,7 +81,7 @@ public class NettyRpcClient implements RpcClient {
             // 阻塞等待，直到channel关闭
             channel.closeFuture().sync();
 
-            AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse");
+            AttributeKey<RpcResponse<Object>> key = AttributeKey.valueOf("rpcResponse");
             return channel.attr(key).get();
         }
         return resultFuture;

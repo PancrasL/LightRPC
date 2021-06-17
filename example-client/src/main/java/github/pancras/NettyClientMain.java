@@ -14,7 +14,7 @@ public class NettyClientMain {
         RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             String s = helloService.hello("good");
             // System.out.println(s);
         }

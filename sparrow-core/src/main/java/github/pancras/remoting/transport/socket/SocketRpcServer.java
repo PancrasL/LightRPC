@@ -45,7 +45,7 @@ public class SocketRpcServer implements RpcServer {
         Socket socket;
         while ((socket = server.accept()) != null) {
             LOGGER.info("RPC Client connected [{}]", socket.getInetAddress());
-            threadPool.execute(new SocketRpcRequestHandler(socket));
+            threadPool.execute(new SocketRpcServerHandler(socket));
         }
         threadPool.shutdown();
     }
