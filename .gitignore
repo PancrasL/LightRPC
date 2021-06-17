@@ -40,6 +40,3 @@ hs_err_pid*
 # target files
 */target/*
 
-# config files
-example-client/src/main/resources/log4j.properties
-example-server/src/main/resources/log4j.properties

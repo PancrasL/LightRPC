@@ -9,9 +9,9 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.ServerConfig;
-import github.pancras.factory.SingletonFactory;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.provider.impl.ZkServiceProviderImpl;
 import github.pancras.remoting.transport.RpcServer;
@@ -22,7 +22,6 @@ import github.pancras.remoting.transport.RpcServer;
  */
 public class SocketRpcServer implements RpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcServer.class);
-
     private final ExecutorService threadPool;
     private final ServiceProvider serviceProvider;
 

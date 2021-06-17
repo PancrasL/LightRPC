@@ -8,7 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import github.pancras.factory.SingletonFactory;
+import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.remoting.invoker.RpcInvoker;

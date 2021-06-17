@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import github.pancras.factory.SingletonFactory;
+import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.provider.impl.ZkServiceProviderImpl;
 import github.pancras.remoting.dto.RpcRequest;

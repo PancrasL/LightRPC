@@ -12,11 +12,6 @@
     <artifactId>sparrow-core</artifactId>
     <dependencies>
         <dependency>
-            <groupId>github.pancras</groupId>
-            <artifactId>sparrow-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>
             <version>${curator.version}</version>
@@ -33,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
+            <artifactId>netty-handler</artifactId>
             <version>${netty.version}</version>
         </dependency>
     </dependencies>

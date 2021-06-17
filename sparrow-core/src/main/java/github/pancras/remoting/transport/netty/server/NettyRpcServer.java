@@ -1,8 +1,8 @@
 package github.pancras.remoting.transport.netty.server;
 
+import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.ServerConfig;
-import github.pancras.factory.SingletonFactory;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.provider.impl.ZkServiceProviderImpl;
 import github.pancras.remoting.transport.RpcServer;
