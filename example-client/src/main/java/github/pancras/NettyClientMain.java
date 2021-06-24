@@ -1,7 +1,7 @@
 package github.pancras;
 
 import github.pancras.proxy.RpcClientProxy;
-import github.pancras.remoting.transport.RpcRequestTransport;
+import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.client.NettyRpcClient;
 
 /**
@@ -10,10 +10,15 @@ import github.pancras.remoting.transport.netty.client.NettyRpcClient;
  */
 public class NettyClientMain {
     public static void main(String[] args) {
-        RpcRequestTransport rpcRequestTransport = new NettyRpcClient();
-        RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcRequestTransport);
+        RpcClient rpcClient = new NettyRpcClient();
+        RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
-        String s = helloService.hello("good");
-        System.out.println(s);
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 100; i++) {
+            String s = helloService.hello("good");
+            // System.out.println(s);
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime));
     }
 }

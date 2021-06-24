@@ -1,4 +1,4 @@
-package github.pancras.factory;
+package github.pancras.commons.factory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

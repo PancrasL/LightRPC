@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import github.pancras.config.RpcServiceConfig;
-import github.pancras.config.ServerConfig;
+import github.pancras.config.SparrowConfig;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.registry.ServiceRegistry;
 import github.pancras.registry.zk.ZkServiceRegistryImpl;
@@ -33,8 +33,8 @@ public class ZkServiceProviderImpl implements ServiceProvider {
 
     @Override
     public void publishService(RpcServiceConfig rpcServiceConfig) {
-        String host = ServerConfig.SERVICE_ADDRESS;
-        int port = ServerConfig.PORT;
+        String host = SparrowConfig.SERVICE_ADDRESS;
+        int port = SparrowConfig.PORT;
         this.addService(rpcServiceConfig);
         serviceRegistry.registerService(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, port));
     }

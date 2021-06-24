@@ -8,13 +8,13 @@ import java.net.Socket;
 import github.pancras.registry.ServiceDiscovery;
 import github.pancras.registry.zk.ZkServiceDiscoveryImpl;
 import github.pancras.remoting.dto.RpcRequest;
-import github.pancras.remoting.transport.RpcRequestTransport;
+import github.pancras.remoting.transport.RpcClient;
 
 /**
  * @author pancras
  * @create 2021/6/9 14:05
  */
-public class SocketRpcClient implements RpcRequestTransport {
+public class SocketRpcClient implements RpcClient {
     private final ServiceDiscovery serviceDiscovery;
 
     public SocketRpcClient() {

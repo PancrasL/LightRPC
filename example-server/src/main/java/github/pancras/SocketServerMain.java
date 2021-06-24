@@ -17,7 +17,11 @@ public class SocketServerMain {
 
         SocketRpcServer socketRpcServer = new SocketRpcServer();
         socketRpcServer.registerService(rpcServiceConfig);
-        socketRpcServer.start();
+        try {
+            socketRpcServer.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -8,7 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import github.pancras.factory.SingletonFactory;
+import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.remoting.invoker.RpcInvoker;
@@ -18,13 +18,13 @@ import github.pancras.remoting.invoker.RpcInvoker;
  * @create 2021/6/5 18:59
  */
 // TODO rename to SocketRpcRequestHandler?
-public class SocketRpcRequestHandler implements Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcRequestHandler.class);
+public class SocketRpcServerHandler implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcServerHandler.class);
 
     private final Socket socket;
     private final RpcInvoker rpcInvoker;
 
-    public SocketRpcRequestHandler(Socket socket) {
+    public SocketRpcServerHandler(Socket socket) {
         this.socket = socket;
         this.rpcInvoker = SingletonFactory.getInstance(RpcInvoker.class);
     }
