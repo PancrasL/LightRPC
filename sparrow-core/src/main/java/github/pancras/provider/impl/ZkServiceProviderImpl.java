@@ -33,7 +33,7 @@ public class ZkServiceProviderImpl implements ServiceProvider {
 
     @Override
     public void publishService(RpcServiceConfig rpcServiceConfig) {
-        String host = SparrowConfig.SERVICE_ADDRESS;
+        String host = SparrowConfig.SERVICE_REGISTER_ADDRESS;
         int port = SparrowConfig.PORT;
         this.addService(rpcServiceConfig);
         serviceRegistry.registerService(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, port));

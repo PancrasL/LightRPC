@@ -30,7 +30,7 @@ public class ChannelPool {
         return null;
     }
 
-    public void set(InetSocketAddress inetSocketAddress, Channel channel) {
+    public void addChannel(InetSocketAddress inetSocketAddress, Channel channel) {
         String key = inetSocketAddress.toString();
         poolMap.put(key, channel);
     }

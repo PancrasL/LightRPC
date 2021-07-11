@@ -30,13 +30,15 @@ public class SocketRpcServer implements RpcServer {
         serviceProvider = SingletonFactory.getInstance(ZkServiceProviderImpl.class);
     }
 
+    @Override
     public void registerService(RpcServiceConfig rpcServiceConfig) {
         serviceProvider.publishService(rpcServiceConfig);
     }
 
+    @Override
     public void start() throws Exception {
         ServerSocket server = new ServerSocket();
-        String host = SparrowConfig.SERVER_ADDRESS;
+        String host = SparrowConfig.SERVER_LISTEN_ADDRESS;
         int port = SparrowConfig.PORT;
         InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
         server.bind(inetSocketAddress);
