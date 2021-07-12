@@ -19,7 +19,7 @@ public class RegistryFactory {
             case "redis":
                 return new RedisServiceRegistryImpl();
             default:
-                return null;
+                throw new IllegalArgumentException("Unsupported registry type.");
         }
     }
 }
