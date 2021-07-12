@@ -17,11 +17,11 @@ public class SparrowConfig {
     /**
      * 默认的注册中心
      */
-    public static String DEFAULT_REGISRY_TYPE = "redis";
+    public static String DEFAULT_REGISRY_TYPE = Constant.ZOOKEEPER;
     /**
      * Zookeeper服务器的ip
      */
-    public static String DEFAULT_ZK_ADDRESS = "127.0.0.1";
+    public static String DEFAULT_ZK_ADDRESS = Constant.DEFAULT_HOST_ADDRESS;
     /**
      * Zookeeper服务器的port
      */
@@ -29,7 +29,7 @@ public class SparrowConfig {
     /**
      * Redis服务器的ip
      */
-    public static String DEFAULT_REDIS_ADDRESS = "127.0.0.1";
+    public static String DEFAULT_REDIS_ADDRESS = Constant.DEFAULT_HOST_ADDRESS;
     /**
      * Redis服务器的port
      */
@@ -38,12 +38,12 @@ public class SparrowConfig {
     /**
      * RPC服务器监听地址（如果一个主机有多个ip，可以填写0.0.0.0）
      */
-    public static String SERVER_LISTEN_ADDRESS = "127.0.0.1";
+    public static String SERVER_LISTEN_ADDRESS = Constant.DEFAULT_HOST_ADDRESS;
 
     /**
      * RPC服务的注册地址
      */
-    public static String SERVICE_REGISTER_ADDRESS = "127.0.0.1";
+    public static String SERVICE_REGISTER_ADDRESS = Constant.DEFAULT_HOST_ADDRESS;
 
     private SparrowConfig() {
     }
