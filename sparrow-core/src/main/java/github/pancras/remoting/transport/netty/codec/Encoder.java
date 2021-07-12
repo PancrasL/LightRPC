@@ -1,7 +1,8 @@
 package github.pancras.remoting.transport.netty.codec;
 
+import github.pancras.commons.factory.SerializerFactory;
+import github.pancras.config.SparrowConfig;
 import github.pancras.serialize.Serializer;
-import github.pancras.serialize.kryo.KryoSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -11,7 +12,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * @create 2021/6/16 20:48
  */
 public class Encoder extends MessageToByteEncoder<Object> {
-    private final Serializer serializer = new KryoSerializer();
+    private final Serializer serializer = SerializerFactory.getSerializer(SparrowConfig.DEFAULT_SERIALIZER_TYPE);
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {

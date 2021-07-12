@@ -36,6 +36,11 @@ public class SparrowConfig {
     public static int DEFAULT_REDIS_PORT = 6379;
 
     /**
+     * 默认的序列化器
+     */
+    public static String DEFAULT_SERIALIZER_TYPE = Constant.PROTOSTUFF;
+
+    /**
      * RPC服务器监听地址（如果一个主机有多个ip，可以填写0.0.0.0）
      */
     public static String SERVER_LISTEN_ADDRESS = Constant.DEFAULT_HOST_ADDRESS;

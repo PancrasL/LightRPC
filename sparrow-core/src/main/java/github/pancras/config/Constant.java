@@ -11,7 +11,10 @@ public class Constant {
 
     public static final String REDIS = "redis";
 
-    private Constant() {
+    public static final String KRYO = "kryo";
 
+    public static final String PROTOSTUFF = "protostuff";
+
+    private Constant() {
     }
 }
