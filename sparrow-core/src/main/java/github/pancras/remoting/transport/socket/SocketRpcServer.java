@@ -3,13 +3,13 @@ package github.pancras.remoting.transport.socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.SparrowConfig;
 import github.pancras.provider.ServiceProvider;
@@ -25,9 +25,11 @@ public class SocketRpcServer implements RpcServer {
     private final ExecutorService threadPool;
     private final ServiceProvider serviceProvider;
 
+    private ServerSocket server;
+
     public SocketRpcServer() {
         threadPool = Executors.newCachedThreadPool();
-        serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
+        serviceProvider = new ServiceProviderImpl();
     }
 
     @Override
@@ -37,7 +39,7 @@ public class SocketRpcServer implements RpcServer {
 
     @Override
     public void start() throws Exception {
-        ServerSocket server = new ServerSocket();
+        server = new ServerSocket();
         String host = SparrowConfig.SERVER_LISTEN_ADDRESS;
         int port = SparrowConfig.PORT;
         InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
@@ -49,5 +51,15 @@ public class SocketRpcServer implements RpcServer {
             threadPool.execute(new SocketRpcServerHandler(socket));
         }
         threadPool.shutdown();
+    }
+
+    @Override
+    public void close() {
+        try {
+            server.close();
+            serviceProvider.close();
+            threadPool.shutdown();
+        } catch (IOException ignored) {
+        }
     }
 }

@@ -3,7 +3,7 @@ package github.pancras.remoting.transport.netty.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import github.pancras.commons.factory.SingletonFactory;
+import github.pancras.provider.ServiceProvider;
 import github.pancras.remoting.constants.RpcConstants;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;
@@ -23,8 +23,8 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcServerHandler.class);
     private final RpcInvoker rpcInvoker;
 
-    public NettyRpcServerHandler() {
-        rpcInvoker = SingletonFactory.getInstance(RpcInvoker.class);
+    public NettyRpcServerHandler(ServiceProvider serviceProvider) {
+        rpcInvoker = new RpcInvoker(serviceProvider);
     }
 
     @Override

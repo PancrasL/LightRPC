@@ -18,14 +18,24 @@ import github.pancras.registry.zk.util.CuratorUtils;
 public class ZkServiceRegistryImpl implements ServiceRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZkServiceRegistryImpl.class);
 
+    CuratorFramework zkClient;
+
+    public ZkServiceRegistryImpl() {
+        zkClient = CuratorUtils.getZkClient();
+    }
+
     @Override
     public void registerService(String rpcServiceName, InetSocketAddress inetSocketAddress) {
         String servicePath = CuratorUtils.ZK_REGISTER_ROOT_PATH + "/" + rpcServiceName + inetSocketAddress.toString();
-        CuratorFramework zkClient = CuratorUtils.getZkClient();
         try {
             CuratorUtils.createEphemeralNode(zkClient, servicePath);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void close() {
+        zkClient.close();
     }
 }

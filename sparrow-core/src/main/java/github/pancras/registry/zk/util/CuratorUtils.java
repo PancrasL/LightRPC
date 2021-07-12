@@ -3,7 +3,6 @@ package github.pancras.registry.zk.util;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.retry.RetryNTimes;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
@@ -26,13 +25,9 @@ public class CuratorUtils {
     public static final String ZK_REGISTER_ROOT_PATH = "/sparrow-rpc";
     private static final Logger LOGGER = LoggerFactory.getLogger(CuratorUtils.class);
     private static final Set<String> REGISTERED_PATH_SET = ConcurrentHashMap.newKeySet();
-    private static CuratorFramework zkClient;
 
     public static CuratorFramework getZkClient() {
-        // 如果 zkClient 已经连接，直接返回
-        if (zkClient != null && zkClient.getState() == CuratorFrameworkState.STARTED) {
-            return zkClient;
-        }
+        CuratorFramework zkClient;
         // 重试3次，每次阻塞3s来连接Zookeeper
         RetryPolicy retryPolicy = new RetryNTimes(3, 1);
         String zkAddress = SparrowConfig.DEFAULT_ZK_ADDRESS + ":" + SparrowConfig.DEFAULT_ZK_PORT;

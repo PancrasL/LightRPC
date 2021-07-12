@@ -15,13 +15,9 @@ import redis.clients.jedis.Jedis;
 public class JedisUtils {
     public static final String REDIS_REGISTER_ROOT_PATH = "/sparrow-rpc";
     private static final Logger LOGGER = LoggerFactory.getLogger(JedisUtils.class);
-    private static Jedis jedis;
 
     public static Jedis getRedisClient() {
-        // 如果jedis已经连接，直接返回
-        if (jedis != null && jedis.isConnected()) {
-            return jedis;
-        }
+        Jedis jedis;
         // 连接redis，最多等待3s
         jedis = new Jedis(SparrowConfig.DEFAULT_REDIS_ADDRESS, SparrowConfig.DEFAULT_REDIS_PORT, 3000);
         jedis.connect();

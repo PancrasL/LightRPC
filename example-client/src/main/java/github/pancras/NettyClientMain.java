@@ -16,9 +16,9 @@ public class NettyClientMain {
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 1; i++) {
             String s = helloService.hello("good");
-            // System.out.println(s);
         }
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
+        rpcClient.close();
     }
 }

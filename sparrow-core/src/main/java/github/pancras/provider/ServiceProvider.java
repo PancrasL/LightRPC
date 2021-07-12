@@ -1,12 +1,14 @@
 package github.pancras.provider;
 
+import java.io.Closeable;
+
 import github.pancras.config.RpcServiceConfig;
 
 /**
  * @author pancras
  * @create 2021/6/3 20:06
  */
-public interface ServiceProvider {
+public interface ServiceProvider extends Closeable {
     /**
      * 将服务发布到注册中心，并添加到本地缓存
      *

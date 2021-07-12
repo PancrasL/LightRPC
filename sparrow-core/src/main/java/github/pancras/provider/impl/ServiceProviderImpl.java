@@ -3,6 +3,7 @@ package github.pancras.provider.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Set;
@@ -56,5 +57,12 @@ public class ServiceProviderImpl implements ServiceProvider {
             throw new RuntimeException(String.format("RPC service [%s] can not be found", rpcServiceName));
         }
         return service;
+    }
+
+    @Override
+    public void close() throws IOException {
+        serviceMap.clear();
+        registeredService.clear();
+        serviceRegistry.close();
     }
 }

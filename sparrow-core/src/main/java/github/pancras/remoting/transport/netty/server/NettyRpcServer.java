@@ -3,7 +3,8 @@ package github.pancras.remoting.transport.netty.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import github.pancras.commons.factory.SingletonFactory;
+import java.io.IOException;
+
 import github.pancras.commons.utils.SystemUtil;
 import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.SparrowConfig;
@@ -13,7 +14,7 @@ import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -34,11 +35,15 @@ public class NettyRpcServer implements RpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcServer.class);
 
     private final ServiceProvider serviceProvider;
-    private final String host = SparrowConfig.SERVER_LISTEN_ADDRESS;
-    private final int port = SparrowConfig.PORT;
+    private final String host;
+    private final int port;
+
+    private Channel serverChannel;
 
     public NettyRpcServer() {
-        this.serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
+        serviceProvider = new ServiceProviderImpl();
+        host = SparrowConfig.SERVER_LISTEN_ADDRESS;
+        port = SparrowConfig.PORT;
     }
 
     @Override
@@ -70,20 +75,28 @@ public class NettyRpcServer implements RpcServer {
                         ChannelPipeline p = ch.pipeline();
                         p.addLast(new Decoder());
                         p.addLast(new Encoder());
-                        p.addLast(serviceHandlerGroup, new NettyRpcServerHandler());
+                        p.addLast(serviceHandlerGroup, new NettyRpcServerHandler(serviceProvider));
                     }
                 });
 
         // 绑定端口 同步等待
-        ChannelFuture f = b.bind(host, port).sync();
+        serverChannel = b.bind(host, port).sync().channel();
 
         // 采用异步的方式退出并释放资源
-        f.channel().closeFuture().addListener((ChannelFutureListener) channelFuture -> {
+        serverChannel.closeFuture().addListener((ChannelFutureListener) channelFuture -> {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
             serviceHandlerGroup.shutdownGracefully();
         });
-
         LOGGER.info("Server is started, listen at [{}:{}]", host, port);
+    }
+
+    @Override
+    public void close() {
+        serverChannel.close();
+        try {
+            serviceProvider.close();
+        } catch (IOException ignored) {
+        }
     }
 }
