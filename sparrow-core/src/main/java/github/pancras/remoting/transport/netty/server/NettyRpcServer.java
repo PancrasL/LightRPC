@@ -1,5 +1,8 @@
 package github.pancras.remoting.transport.netty.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.commons.utils.SystemUtil;
 import github.pancras.config.RpcServiceConfig;
@@ -28,6 +31,7 @@ import io.netty.handler.logging.LoggingHandler;
  * @create 2021/6/15 16:28
  */
 public class NettyRpcServer implements RpcServer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcServer.class);
 
     private final ServiceProvider serviceProvider;
     private final String host = SparrowConfig.SERVER_LISTEN_ADDRESS;
@@ -79,5 +83,7 @@ public class NettyRpcServer implements RpcServer {
             workerGroup.shutdownGracefully();
             serviceHandlerGroup.shutdownGracefully();
         });
+
+        LOGGER.info("Server is started, listen at [{}:{}]", host, port);
     }
 }

@@ -46,7 +46,7 @@ public class ServiceProviderImpl implements ServiceProvider {
             return;
         }
         serviceMap.put(rpcServiceName, rpcServiceConfig.getService());
-        LOGGER.info("Add service:[{}], interfaces: [{}] ", rpcServiceName, rpcServiceConfig.getService().getClass().getInterfaces());
+        LOGGER.info("Add service:[{}], interfaces: [{}] to local cache", rpcServiceName, rpcServiceConfig.getService().getClass().getInterfaces());
     }
 
     @Override

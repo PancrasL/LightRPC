@@ -57,7 +57,7 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
         //在捕获异常的时候调用，发生异常并且如果通道处于激活状态就关闭
         Channel channel = ctx.channel();
         if (channel.isActive()) {
-            LOGGER.warn("The remote host [{}] has closed the connection.", ctx.channel().remoteAddress());
+            LOGGER.warn("The remote host [{}] has closed the connection, close channel [{}].", channel.remoteAddress(), channel.id());
             ctx.close();
         }
     }

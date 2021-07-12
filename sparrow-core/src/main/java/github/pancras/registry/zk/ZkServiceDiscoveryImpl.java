@@ -29,7 +29,7 @@ public class ZkServiceDiscoveryImpl implements ServiceDiscovery {
         }
         double randomNum = Math.random() * serviceUrls.size();
         String targetServiceUrl = serviceUrls.get((int) randomNum);
-        LOGGER.info("Get service: [{}]", targetServiceUrl);
+        LOGGER.debug("Get service: [{}]", targetServiceUrl);
         String[] hostPort = targetServiceUrl.split(":");
         return new InetSocketAddress(hostPort[0], Integer.parseInt(hostPort[1]));
     }

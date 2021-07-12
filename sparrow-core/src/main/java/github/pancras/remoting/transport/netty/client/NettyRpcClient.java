@@ -80,7 +80,7 @@ public class NettyRpcClient implements RpcClient {
             rpcMessage.setData(rpcRequest);
             channel.writeAndFlush(rpcMessage).addListener(future -> {
                 if (future.isSuccess()) {
-                    LOGGER.info("Client send message: [{}]", rpcMessage);
+                    LOGGER.debug("Client send message: [{}]", rpcMessage);
                 } else {
                     LOGGER.error("Client send failed");
                 }
