@@ -1,5 +1,6 @@
 package github.pancras.commons.factory;
 
+import github.pancras.config.Constant;
 import github.pancras.registry.ServiceRegistry;
 import github.pancras.registry.redis.RedisServiceRegistryImpl;
 import github.pancras.registry.zk.ZkServiceRegistryImpl;
@@ -14,9 +15,9 @@ public class RegistryFactory {
 
     public static ServiceRegistry getRegistry(String type) {
         switch (type) {
-            case "zookeeper":
+            case Constant.ZOOKEEPER:
                 return new ZkServiceRegistryImpl();
-            case "redis":
+            case Constant.REDIS:
                 return new RedisServiceRegistryImpl();
             default:
                 throw new IllegalArgumentException("Unsupported registry type.");

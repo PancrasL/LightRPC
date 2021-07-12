@@ -5,11 +5,11 @@ package github.pancras.config;
  */
 public class Constant {
 
-    public static String DEFAULT_HOST_ADDRESS = "127.0.0.1";
+    public static final String DEFAULT_HOST_ADDRESS = "127.0.0.1";
 
-    public static String ZOOKEEPER = "zookeeper";
+    public static final String ZOOKEEPER = "zookeeper";
 
-    public static String REDIS = "redis";
+    public static final String REDIS = "redis";
 
     private Constant() {
 

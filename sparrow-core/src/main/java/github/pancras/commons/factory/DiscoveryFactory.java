@@ -1,5 +1,6 @@
 package github.pancras.commons.factory;
 
+import github.pancras.config.Constant;
 import github.pancras.registry.ServiceDiscovery;
 import github.pancras.registry.redis.RedisServiceDiscoveryImpl;
 import github.pancras.registry.zk.ZkServiceDiscoveryImpl;
@@ -14,9 +15,9 @@ public class DiscoveryFactory {
 
     public static ServiceDiscovery getDiscovery(String type) {
         switch (type) {
-            case "zookeeper":
+            case Constant.ZOOKEEPER:
                 return new ZkServiceDiscoveryImpl();
-            case "redis":
+            case Constant.REDIS:
                 return new RedisServiceDiscoveryImpl();
             default:
                 throw new IllegalArgumentException("Unsupported registry type.");
