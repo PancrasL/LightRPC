@@ -27,6 +27,8 @@
         <jedis.version>2.9.0</jedis.version>
         <!-- kryo -->
         <kryo.version>4.0.2</kryo.version>
+        <!-- protostuff -->
+        <protostuff.version>1.6.0</protostuff.version>
         <!-- netty -->
         <netty.version>4.1.65.Final</netty.version>
     </properties>
