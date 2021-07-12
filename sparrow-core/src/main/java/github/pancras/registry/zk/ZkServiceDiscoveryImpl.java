@@ -24,7 +24,7 @@ public class ZkServiceDiscoveryImpl implements ServiceDiscovery {
         CuratorFramework zkClient = CuratorUtils.getZkClient();
         String path = CuratorUtils.ZK_REGISTER_ROOT_PATH + "/" + rpcSerivceName;
         List<String> serviceUrls = CuratorUtils.getChildrenNodes(zkClient, path);
-        if (null == serviceUrls) {
+        if (null == serviceUrls || serviceUrls.isEmpty()) {
             throw new RuntimeException(String.format("Service %s not found", rpcSerivceName));
         }
         double randomNum = Math.random() * serviceUrls.size();

@@ -6,10 +6,10 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 
+import github.pancras.commons.factory.DiscoveryFactory;
 import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.config.SparrowConfig;
 import github.pancras.registry.ServiceDiscovery;
-import github.pancras.registry.zk.ZkServiceDiscoveryImpl;
 import github.pancras.remoting.constants.RpcConstants;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;
@@ -60,7 +60,7 @@ public class NettyRpcClient implements RpcClient {
                         p.addLast(new NettyRpcClientHandler(unprocessedRequests));
                     }
                 });
-        serviceDiscovery = SingletonFactory.getInstance(ZkServiceDiscoveryImpl.class);
+        serviceDiscovery = DiscoveryFactory.getDiscovery(SparrowConfig.DEFAULT_REGISRY_TYPE);
         channelPool = SingletonFactory.getInstance(ChannelPool.class);
         unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
     }

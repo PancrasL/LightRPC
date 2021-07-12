@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 
 import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.provider.ServiceProvider;
-import github.pancras.provider.impl.ZkServiceProviderImpl;
+import github.pancras.provider.impl.ServiceProviderImpl;
 import github.pancras.remoting.dto.RpcRequest;
 
 /**
@@ -23,7 +23,7 @@ public class RpcInvoker {
     private final ServiceProvider serviceProvider;
 
     public RpcInvoker() {
-        serviceProvider = SingletonFactory.getInstance(ZkServiceProviderImpl.class);
+        serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
     }
 
     public Object handle(RpcRequest rpcRequest) {

@@ -13,7 +13,7 @@ import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.SparrowConfig;
 import github.pancras.provider.ServiceProvider;
-import github.pancras.provider.impl.ZkServiceProviderImpl;
+import github.pancras.provider.impl.ServiceProviderImpl;
 import github.pancras.remoting.transport.RpcServer;
 
 /**
@@ -27,7 +27,7 @@ public class SocketRpcServer implements RpcServer {
 
     public SocketRpcServer() {
         threadPool = Executors.newCachedThreadPool();
-        serviceProvider = SingletonFactory.getInstance(ZkServiceProviderImpl.class);
+        serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
     }
 
     @Override

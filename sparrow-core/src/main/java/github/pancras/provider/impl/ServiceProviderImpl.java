@@ -8,27 +8,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import github.pancras.commons.factory.RegistryFactory;
 import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.SparrowConfig;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.registry.ServiceRegistry;
-import github.pancras.registry.zk.ZkServiceRegistryImpl;
 
 /**
  * @author pancras
  * @create 2021/6/6 15:40
  */
-public class ZkServiceProviderImpl implements ServiceProvider {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ZkServiceProviderImpl.class);
+public class ServiceProviderImpl implements ServiceProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceProviderImpl.class);
 
     private final Map<String, Object> serviceMap;
     private final Set<String> registeredService;
     private final ServiceRegistry serviceRegistry;
 
-    public ZkServiceProviderImpl() {
+    public ServiceProviderImpl() {
         serviceMap = new ConcurrentHashMap<>();
         registeredService = ConcurrentHashMap.newKeySet();
-        serviceRegistry = new ZkServiceRegistryImpl();
+        serviceRegistry = RegistryFactory.getRegistry(SparrowConfig.DEFAULT_REGISRY_TYPE);
     }
 
     @Override

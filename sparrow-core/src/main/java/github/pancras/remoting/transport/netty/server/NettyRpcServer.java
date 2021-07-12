@@ -5,7 +5,7 @@ import github.pancras.commons.utils.SystemUtil;
 import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.SparrowConfig;
 import github.pancras.provider.ServiceProvider;
-import github.pancras.provider.impl.ZkServiceProviderImpl;
+import github.pancras.provider.impl.ServiceProviderImpl;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
@@ -34,7 +34,7 @@ public class NettyRpcServer implements RpcServer {
     private final int port = SparrowConfig.PORT;
 
     public NettyRpcServer() {
-        this.serviceProvider = SingletonFactory.getInstance(ZkServiceProviderImpl.class);
+        this.serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
     }
 
     @Override

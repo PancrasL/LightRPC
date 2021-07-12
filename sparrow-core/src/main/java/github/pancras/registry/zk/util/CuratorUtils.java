@@ -85,6 +85,7 @@ public class CuratorUtils {
     public static void deleteNode(CuratorFramework zkClient, String path) {
         try {
             zkClient.delete().deletingChildrenIfNeeded().forPath(path);
+            REGISTERED_PATH_SET.remove(path);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }

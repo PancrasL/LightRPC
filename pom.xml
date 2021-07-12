@@ -23,6 +23,8 @@
         <slf4j.version>1.7.6</slf4j.version>
         <!-- zk -->
         <curator.version>4.2.0</curator.version>
+        <!-- redis -->
+        <jedis.version>2.9.0</jedis.version>
         <!-- kryo -->
         <kryo.version>4.0.2</kryo.version>
         <!-- netty -->
