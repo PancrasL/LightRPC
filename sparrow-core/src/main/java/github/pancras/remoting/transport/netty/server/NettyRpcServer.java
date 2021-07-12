@@ -5,7 +5,7 @@ import github.pancras.commons.utils.SystemUtil;
 import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.SparrowConfig;
 import github.pancras.provider.ServiceProvider;
-import github.pancras.provider.impl.ZkServiceProviderImpl;
+import github.pancras.provider.impl.ServiceProviderImpl;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
@@ -30,17 +30,19 @@ import io.netty.handler.logging.LoggingHandler;
 public class NettyRpcServer implements RpcServer {
 
     private final ServiceProvider serviceProvider;
-    private final String host = SparrowConfig.SERVER_ADDRESS;
+    private final String host = SparrowConfig.SERVER_LISTEN_ADDRESS;
     private final int port = SparrowConfig.PORT;
 
     public NettyRpcServer() {
-        this.serviceProvider = SingletonFactory.getInstance(ZkServiceProviderImpl.class);
+        this.serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
     }
 
+    @Override
     public void registerService(RpcServiceConfig rpcServiceConfig) {
         serviceProvider.publishService(rpcServiceConfig);
     }
 
+    @Override
     public void start() throws Exception {
         // 监听线程组，监听客户端请求
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
@@ -72,13 +74,10 @@ public class NettyRpcServer implements RpcServer {
         ChannelFuture f = b.bind(host, port).sync();
 
         // 采用异步的方式退出并释放资源
-        f.channel().closeFuture().addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                bossGroup.shutdownGracefully();
-                workerGroup.shutdownGracefully();
-                serviceHandlerGroup.shutdownGracefully();
-            }
+        f.channel().closeFuture().addListener((ChannelFutureListener) channelFuture -> {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+            serviceHandlerGroup.shutdownGracefully();
         });
     }
 }

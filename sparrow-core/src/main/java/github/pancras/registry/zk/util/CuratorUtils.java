@@ -33,13 +33,13 @@ public class CuratorUtils {
         if (zkClient != null && zkClient.getState() == CuratorFrameworkState.STARTED) {
             return zkClient;
         }
-        // 重试3次，每次阻塞5s来连接Zookeeper
+        // 重试3次，每次阻塞3s来连接Zookeeper
         RetryPolicy retryPolicy = new RetryNTimes(3, 1);
-        String zkAddress = SparrowConfig.ZK_ADDRESS;
+        String zkAddress = SparrowConfig.DEFAULT_ZK_ADDRESS + ":" + SparrowConfig.DEFAULT_ZK_PORT;
         zkClient = CuratorFrameworkFactory.newClient(zkAddress, retryPolicy);
         zkClient.start();
         try {
-            zkClient.blockUntilConnected(5, TimeUnit.SECONDS);
+            zkClient.blockUntilConnected(3, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -85,6 +85,7 @@ public class CuratorUtils {
     public static void deleteNode(CuratorFramework zkClient, String path) {
         try {
             zkClient.delete().deletingChildrenIfNeeded().forPath(path);
+            REGISTERED_PATH_SET.remove(path);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
