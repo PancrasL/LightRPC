@@ -15,7 +15,9 @@ import io.netty.handler.codec.ByteToMessageDecoder;
  * @create 2021/6/16 20:48
  */
 public class Decoder extends ByteToMessageDecoder {
-    // 消息的头4个字节表示消息体长度
+    /**
+     * 消息的头4个字节表示消息体长度
+     */
     private static final int BODY_LENGTH = 4;
     private final Serializer serializer = SerializerFactory.getSerializer(SparrowConfig.DEFAULT_SERIALIZER_TYPE);
 

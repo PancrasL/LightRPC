@@ -21,7 +21,7 @@ public class KryoSerializer implements Serializer {
     /**
      * Kryo不是线程安全的，利用ThreadLocal为每个线程创建自己的Kryo
      */
-    private static final ThreadLocal<Kryo> kryoThreadLocal = new ThreadLocal<Kryo>() {
+    private static final ThreadLocal<Kryo> KRYO_THREAD_LOCAL = new ThreadLocal<Kryo>() {
         @Override
         protected Kryo initialValue() {
             Kryo kryo = new Kryo();
@@ -34,10 +34,10 @@ public class KryoSerializer implements Serializer {
     @Override
     public byte[] serialize(Object obj) throws IOException {
         try (Output output = new Output(new ByteArrayOutputStream())) {
-            Kryo kryo = kryoThreadLocal.get();
+            Kryo kryo = KRYO_THREAD_LOCAL.get();
             // obj --> byte[]
             kryo.writeObject(output, obj);
-            kryoThreadLocal.remove();
+            KRYO_THREAD_LOCAL.remove();
             return output.toBytes();
         } catch (KryoException e) {
             throw new IOException(e);
@@ -47,10 +47,10 @@ public class KryoSerializer implements Serializer {
     @Override
     public <T> T deserialize(byte[] bytes, Class<T> clazz) throws IOException {
         try (Input input = new Input(new ByteArrayInputStream(bytes))) {
-            Kryo kryo = kryoThreadLocal.get();
+            Kryo kryo = KRYO_THREAD_LOCAL.get();
             // byte[] --> obj
             Object obj = kryo.readObject(input, clazz);
-            kryoThreadLocal.remove();
+            KRYO_THREAD_LOCAL.remove();
             return clazz.cast(obj);
         } catch (KryoException e) {
             throw new IOException(e);
