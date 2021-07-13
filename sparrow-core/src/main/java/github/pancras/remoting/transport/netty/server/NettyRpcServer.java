@@ -34,16 +34,19 @@ import io.netty.handler.logging.LoggingHandler;
 public class NettyRpcServer implements RpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcServer.class);
 
-    private final ServiceProvider serviceProvider;
-    private final String host;
-    private final int port;
+    private static final NettyRpcServer INSTANCE = new NettyRpcServer();
+
+    private ServiceProvider serviceProvider;
+    private String host;
+    private int port;
 
     private Channel serverChannel;
 
-    public NettyRpcServer() {
-        serviceProvider = new ServiceProviderImpl();
-        host = SparrowConfig.SERVER_LISTEN_ADDRESS;
-        port = SparrowConfig.PORT;
+    private NettyRpcServer() {
+    }
+
+    public static NettyRpcServer getInstance() {
+        return INSTANCE;
     }
 
     @Override
@@ -53,6 +56,9 @@ public class NettyRpcServer implements RpcServer {
 
     @Override
     public void start() throws Exception {
+        serviceProvider = new ServiceProviderImpl();
+        host = SparrowConfig.SERVER_LISTEN_ADDRESS;
+        port = SparrowConfig.PORT;
         // 监听线程组，监听客户端请求
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         // 工作线程组，处理与客户端的数据通讯
