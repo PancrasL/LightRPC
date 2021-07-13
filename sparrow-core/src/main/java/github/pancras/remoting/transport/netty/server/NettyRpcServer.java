@@ -36,13 +36,14 @@ public class NettyRpcServer implements RpcServer {
 
     private static final NettyRpcServer INSTANCE = new NettyRpcServer();
 
-    private ServiceProvider serviceProvider;
+    private final ServiceProvider serviceProvider;
 
     private Channel serverChannel;
 
     private boolean isStarted = false;
 
     private NettyRpcServer() {
+        serviceProvider = new ServiceProviderImpl();
     }
 
     public static NettyRpcServer getInstance() {
@@ -64,7 +65,6 @@ public class NettyRpcServer implements RpcServer {
         if (isStarted) {
             throw new IllegalStateException("The server is already started, please do not start the service repeatedly.");
         }
-        serviceProvider = new ServiceProviderImpl();
         // 监听线程组，监听客户端请求
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         // 工作线程组，处理与客户端的数据通讯
