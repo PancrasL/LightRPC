@@ -37,10 +37,10 @@ public class NettyRpcServer implements RpcServer {
     private static final NettyRpcServer INSTANCE = new NettyRpcServer();
 
     private ServiceProvider serviceProvider;
-    private String host;
-    private int port;
 
     private Channel serverChannel;
+
+    private boolean isStarted = false;
 
     private NettyRpcServer() {
     }
@@ -56,9 +56,15 @@ public class NettyRpcServer implements RpcServer {
 
     @Override
     public void start() throws Exception {
+        start(SparrowConfig.DEFAULT_SERVER_ADDRESS, SparrowConfig.DEFAULT_SERVER_PORT);
+    }
+
+    @Override
+    public void start(String host, int port) throws Exception {
+        if (isStarted) {
+            throw new IllegalStateException("The server is already started, please do not start the service repeatedly.");
+        }
         serviceProvider = new ServiceProviderImpl();
-        host = SparrowConfig.SERVER_LISTEN_ADDRESS;
-        port = SparrowConfig.PORT;
         // 监听线程组，监听客户端请求
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         // 工作线程组，处理与客户端的数据通讯
@@ -94,6 +100,7 @@ public class NettyRpcServer implements RpcServer {
             workerGroup.shutdownGracefully();
             serviceHandlerGroup.shutdownGracefully();
         });
+        isStarted = true;
         LOGGER.info("Server is started, listen at [{}:{}]", host, port);
     }
 
@@ -104,5 +111,6 @@ public class NettyRpcServer implements RpcServer {
             serviceProvider.close();
         } catch (IOException ignored) {
         }
+        isStarted = false;
     }
 }

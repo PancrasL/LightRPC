@@ -25,6 +25,7 @@ public class SocketRpcServer implements RpcServer {
     private final ExecutorService threadPool;
     private final ServiceProvider serviceProvider;
 
+    private boolean isStarted = false;
     private ServerSocket server;
 
     public SocketRpcServer() {
@@ -39,23 +40,30 @@ public class SocketRpcServer implements RpcServer {
 
     @Override
     public void start() throws Exception {
+        start(SparrowConfig.DEFAULT_SERVER_ADDRESS, SparrowConfig.DEFAULT_SERVER_PORT);
+    }
+
+    @Override
+    public void start(String host, int port) throws Exception {
+        if (isStarted) {
+            throw new IllegalStateException("The server is already started, please do not start the service repeatedly.");
+        }
         server = new ServerSocket();
-        String host = SparrowConfig.SERVER_LISTEN_ADDRESS;
-        int port = SparrowConfig.PORT;
         InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
         server.bind(inetSocketAddress);
+        isStarted = true;
         LOGGER.info("RPC Server listen at: [{}]", inetSocketAddress);
         Socket socket;
         while ((socket = server.accept()) != null) {
             LOGGER.info("RPC Client connected [{}]", socket.getInetAddress());
             threadPool.execute(new SocketRpcServerHandler(socket));
         }
-        threadPool.shutdown();
     }
 
     @Override
     public void close() {
         try {
+            isStarted = false;
             server.close();
             serviceProvider.close();
             threadPool.shutdown();

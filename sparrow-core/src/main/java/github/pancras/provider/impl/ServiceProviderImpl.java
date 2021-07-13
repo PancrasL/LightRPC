@@ -35,7 +35,7 @@ public class ServiceProviderImpl implements ServiceProvider {
     @Override
     public void publishService(RpcServiceConfig rpcServiceConfig) {
         String host = SparrowConfig.SERVICE_REGISTER_ADDRESS;
-        int port = SparrowConfig.PORT;
+        int port = SparrowConfig.DEFAULT_SERVER_PORT;
         this.addService(rpcServiceConfig);
         serviceRegistry.registerService(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, port));
     }

@@ -13,6 +13,8 @@ public interface RpcServer extends Closeable {
 
     void start() throws Exception;
 
+    void start(String host, int port) throws Exception;
+
     @Override
     void close();
 }
