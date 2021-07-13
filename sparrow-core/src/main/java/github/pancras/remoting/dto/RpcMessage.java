@@ -9,9 +9,10 @@ import java.io.Serializable;
  * RpcRequest和RpcResponse的包装类
  */
 public class RpcMessage implements Serializable {
-    // RPC 消息类型，详见RpcConstants
+    /**
+     * RPC 消息类型，详见RpcConstants
+     */
     private byte messageType;
-    // RPC 消息体（RpcRequest 或 RpcResponse）
     private Object data;
 
     public byte getMessageType() {

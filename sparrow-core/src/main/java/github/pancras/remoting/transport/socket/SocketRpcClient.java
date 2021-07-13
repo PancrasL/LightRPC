@@ -1,5 +1,6 @@
 package github.pancras.remoting.transport.socket;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
@@ -35,6 +36,14 @@ public class SocketRpcClient implements RpcClient {
             return obj;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            serviceDiscovery.close();
+        } catch (IOException ignored) {
         }
     }
 }

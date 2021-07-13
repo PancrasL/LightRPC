@@ -2,10 +2,12 @@ package github.pancras.remoting.dto;
 
 import java.io.Serializable;
 
+import github.pancras.remoting.constants.RpcConstants;
+
 /**
  * @author pancras
  * @create 2021/6/5 19:40
- *
+ * <p>
  * RPC 响应对象
  */
 public class RpcResponse<T> implements Serializable {
@@ -16,19 +18,18 @@ public class RpcResponse<T> implements Serializable {
     private T data;
 
     public static <T> RpcResponse<T> success(T data, String requestId) {
-        // TODO trans to constant
         RpcResponse<T> response = new RpcResponse<>();
         response.setRequestId(requestId);
-        response.setCode(1);
-        response.setMessage("success");
+        response.setCode(RpcConstants.SUCCESS_FLAG);
+        response.setMessage(RpcConstants.SUCESS);
         response.setData(data);
         return response;
     }
 
     public static <T> RpcResponse<T> fail() {
         RpcResponse<T> response = new RpcResponse<>();
-        response.setCode(-1);
-        response.setMessage("fail");
+        response.setCode(RpcConstants.FAIL_FLAG);
+        response.setMessage(RpcConstants.FAIL);
         return response;
     }
 

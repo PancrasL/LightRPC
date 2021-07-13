@@ -1,6 +1,5 @@
 package github.pancras.registry.redis.util;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -13,15 +12,6 @@ import redis.clients.jedis.Jedis;
 public class JedisUtilsTest {
     Jedis jedis;
     boolean redisServerStarted = true;
-
-    @Before
-    public void setUp() {
-        if (!redisServerStarted)
-            return;
-        jedis = JedisUtils.getRedisClient();
-
-        System.out.println(jedis);
-    }
 
     @Test
     public void testCreateAndGet() {

@@ -17,7 +17,6 @@ import github.pancras.remoting.invoker.RpcInvoker;
  * @author pancras
  * @create 2021/6/5 18:59
  */
-// TODO rename to SocketRpcRequestHandler?
 public class SocketRpcServerHandler implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcServerHandler.class);
 

@@ -19,9 +19,14 @@ import github.pancras.registry.zk.util.CuratorUtils;
 public class ZkServiceDiscoveryImpl implements ServiceDiscovery {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZkServiceDiscoveryImpl.class);
 
+    CuratorFramework zkClient;
+
+    public ZkServiceDiscoveryImpl() {
+        zkClient = CuratorUtils.getZkClient();
+    }
+
     @Override
     public InetSocketAddress lookupService(String rpcSerivceName) {
-        CuratorFramework zkClient = CuratorUtils.getZkClient();
         String path = CuratorUtils.ZK_REGISTER_ROOT_PATH + "/" + rpcSerivceName;
         List<String> serviceUrls = CuratorUtils.getChildrenNodes(zkClient, path);
         if (null == serviceUrls || serviceUrls.isEmpty()) {
@@ -29,8 +34,13 @@ public class ZkServiceDiscoveryImpl implements ServiceDiscovery {
         }
         double randomNum = Math.random() * serviceUrls.size();
         String targetServiceUrl = serviceUrls.get((int) randomNum);
-        LOGGER.info("Get service: [{}]", targetServiceUrl);
+        LOGGER.debug("Get service: [{}]", targetServiceUrl);
         String[] hostPort = targetServiceUrl.split(":");
         return new InetSocketAddress(hostPort[0], Integer.parseInt(hostPort[1]));
+    }
+
+    @Override
+    public void close() {
+        zkClient.close();
     }
 }

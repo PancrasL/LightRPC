@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import github.pancras.remoting.constants.RpcConstants;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcResponse;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
@@ -35,6 +36,16 @@ public class NettyRpcClientHandler extends ChannelInboundHandlerAdapter {
             }
         } finally {
             ReferenceCountUtil.release(msg);
+        }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        //在捕获异常的时候调用，发生异常并且如果通道处于激活状态就关闭
+        Channel channel = ctx.channel();
+        if (channel.isActive()) {
+            LOGGER.warn("The remote server [{}] has closed the connection.", ctx.channel().remoteAddress());
+            ctx.close();
         }
     }
 }

@@ -6,9 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.provider.ServiceProvider;
-import github.pancras.provider.impl.ServiceProviderImpl;
 import github.pancras.remoting.dto.RpcRequest;
 
 /**
@@ -22,8 +20,8 @@ public class RpcInvoker {
 
     private final ServiceProvider serviceProvider;
 
-    public RpcInvoker() {
-        serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
+    public RpcInvoker(ServiceProvider serviceProvider) {
+        this.serviceProvider = serviceProvider;
     }
 
     public Object handle(RpcRequest rpcRequest) {
@@ -36,7 +34,7 @@ public class RpcInvoker {
         try {
             Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
             result = method.invoke(service, rpcRequest.getParameters());
-            LOGGER.info("service:[{}] successful invoke method:[{}]", rpcRequest.getRpcServiceName(), rpcRequest.getMethodName());
+            LOGGER.debug("service:[{}] successful invoke method:[{}]", rpcRequest.getRpcServiceName(), rpcRequest.getMethodName());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

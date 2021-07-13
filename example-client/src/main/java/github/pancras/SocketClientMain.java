@@ -18,9 +18,9 @@ public class SocketClientMain {
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {
             String s = helloService.hello("good");
-            // System.out.println(s);
         }
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
+        rpcClient.close();
     }
 }

@@ -3,11 +3,11 @@ package github.pancras.remoting.transport.netty.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 
 import github.pancras.commons.factory.DiscoveryFactory;
-import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.config.SparrowConfig;
 import github.pancras.registry.ServiceDiscovery;
 import github.pancras.remoting.constants.RpcConstants;
@@ -61,8 +61,8 @@ public class NettyRpcClient implements RpcClient {
                     }
                 });
         serviceDiscovery = DiscoveryFactory.getDiscovery(SparrowConfig.DEFAULT_REGISRY_TYPE);
-        channelPool = SingletonFactory.getInstance(ChannelPool.class);
-        unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
+        channelPool = new ChannelPool();
+        unprocessedRequests = new UnprocessedRequests();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class NettyRpcClient implements RpcClient {
             rpcMessage.setData(rpcRequest);
             channel.writeAndFlush(rpcMessage).addListener(future -> {
                 if (future.isSuccess()) {
-                    LOGGER.info("Client send message: [{}]", rpcMessage);
+                    LOGGER.debug("Client send message: [{}]", rpcMessage);
                 } else {
                     LOGGER.error("Client send failed");
                 }
@@ -103,5 +103,15 @@ public class NettyRpcClient implements RpcClient {
         ChannelFuture future = bootstrap.connect(inetSocketAddress).sync();
         LOGGER.info("Connect to server [{}] success", inetSocketAddress.toString());
         return future.channel();
+    }
+
+    @Override
+    public void close() {
+        try {
+            serviceDiscovery.close();
+        } catch (IOException ignored) {
+        }
+        channelPool.close();
+        workerGroup.shutdownGracefully();
     }
 }

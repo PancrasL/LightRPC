@@ -1,5 +1,6 @@
 package github.pancras.remoting.transport.netty.client;
 
+import java.io.Closeable;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,7 +11,7 @@ import io.netty.channel.Channel;
  * @author pancras
  * @create 2021/6/24 10:11 重用 Channel 避免重复连接服务端
  */
-public class ChannelPool {
+public class ChannelPool implements Closeable {
     private final Map<String, Channel> poolMap;
 
     public ChannelPool() {
@@ -38,5 +39,13 @@ public class ChannelPool {
     public void remove(InetSocketAddress inetSocketAddress) {
         String key = inetSocketAddress.toString();
         poolMap.remove(key);
+    }
+
+    @Override
+    public void close() {
+        for (Channel channel : poolMap.values()) {
+            channel.close();
+        }
+        poolMap.clear();
     }
 }

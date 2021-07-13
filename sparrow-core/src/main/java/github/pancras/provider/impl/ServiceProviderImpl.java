@@ -3,6 +3,7 @@ package github.pancras.provider.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class ServiceProviderImpl implements ServiceProvider {
     @Override
     public void publishService(RpcServiceConfig rpcServiceConfig) {
         String host = SparrowConfig.SERVICE_REGISTER_ADDRESS;
-        int port = SparrowConfig.PORT;
+        int port = SparrowConfig.DEFAULT_SERVER_PORT;
         this.addService(rpcServiceConfig);
         serviceRegistry.registerService(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, port));
     }
@@ -46,7 +47,7 @@ public class ServiceProviderImpl implements ServiceProvider {
             return;
         }
         serviceMap.put(rpcServiceName, rpcServiceConfig.getService());
-        LOGGER.info("Add service:[{}], interfaces: [{}] ", rpcServiceName, rpcServiceConfig.getService().getClass().getInterfaces());
+        LOGGER.info("Add service:[{}], interfaces: [{}] to local cache", rpcServiceName, rpcServiceConfig.getService().getClass().getInterfaces());
     }
 
     @Override
@@ -56,5 +57,12 @@ public class ServiceProviderImpl implements ServiceProvider {
             throw new RuntimeException(String.format("RPC service [%s] can not be found", rpcServiceName));
         }
         return service;
+    }
+
+    @Override
+    public void close() throws IOException {
+        serviceMap.clear();
+        registeredService.clear();
+        serviceRegistry.close();
     }
 }
