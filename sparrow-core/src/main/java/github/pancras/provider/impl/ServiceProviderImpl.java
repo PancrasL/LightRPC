@@ -44,6 +44,7 @@ public class ServiceProviderImpl implements ServiceProvider {
     public void addService(RpcServiceConfig rpcServiceConfig) {
         String rpcServiceName = rpcServiceConfig.getRpcServiceName();
         if (registeredService.contains((rpcServiceName))) {
+            LOGGER.warn("Service [{}] has been published already", rpcServiceName);
             return;
         }
         serviceMap.put(rpcServiceName, rpcServiceConfig.getService());
