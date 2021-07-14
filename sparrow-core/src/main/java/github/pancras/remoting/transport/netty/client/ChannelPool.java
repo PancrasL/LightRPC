@@ -36,8 +36,12 @@ public class ChannelPool implements Closeable {
         poolMap.put(key, channel);
     }
 
-    public void remove(InetSocketAddress inetSocketAddress) {
+    public void removeChannel(InetSocketAddress inetSocketAddress) {
         String key = inetSocketAddress.toString();
+        Channel channel = poolMap.get(key);
+        if (channel != null) {
+            channel.close();
+        }
         poolMap.remove(key);
     }
 
