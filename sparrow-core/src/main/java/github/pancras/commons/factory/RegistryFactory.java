@@ -1,6 +1,6 @@
 package github.pancras.commons.factory;
 
-import github.pancras.config.Constant;
+import github.pancras.config.constant.Constant;
 import github.pancras.registry.ServiceRegistry;
 import github.pancras.registry.redis.RedisServiceRegistryImpl;
 import github.pancras.registry.zk.ZkServiceRegistryImpl;

@@ -1,6 +1,6 @@
 package github.pancras.commons.factory;
 
-import github.pancras.config.Constant;
+import github.pancras.config.constant.Constant;
 import github.pancras.serialize.Serializer;
 import github.pancras.serialize.kryo.KryoSerializer;
 import github.pancras.serialize.protostuff.ProtostuffSerializer;

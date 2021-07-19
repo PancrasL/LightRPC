@@ -1,4 +1,4 @@
-package github.pancras.config;
+package github.pancras.config.constant;
 
 /**
  * @author PancrasL

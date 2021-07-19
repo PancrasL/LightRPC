@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 import github.pancras.commons.utils.SystemUtil;
-import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.SparrowConfig;
+import github.pancras.config.wrapper.RpcServiceConfig;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.provider.impl.ServiceProviderImpl;
 import github.pancras.remoting.transport.RpcServer;

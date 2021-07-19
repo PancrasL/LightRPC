@@ -1,5 +1,7 @@
 package github.pancras.config;
 
+import github.pancras.config.constant.Constant;
+
 /**
  * @author pancras
  * @create 2021/6/9 13:52

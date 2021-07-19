@@ -10,8 +10,8 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.SparrowConfig;
+import github.pancras.config.wrapper.RpcServiceConfig;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.provider.impl.ServiceProviderImpl;
 import github.pancras.remoting.transport.RpcServer;

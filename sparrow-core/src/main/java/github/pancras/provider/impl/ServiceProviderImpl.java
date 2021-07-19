@@ -10,8 +10,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import github.pancras.commons.factory.RegistryFactory;
-import github.pancras.config.RpcServiceConfig;
 import github.pancras.config.SparrowConfig;
+import github.pancras.config.wrapper.RpcServiceConfig;
 import github.pancras.provider.ServiceProvider;
 import github.pancras.registry.ServiceRegistry;
 

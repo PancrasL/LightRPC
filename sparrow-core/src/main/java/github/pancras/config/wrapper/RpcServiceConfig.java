@@ -1,8 +1,9 @@
-package github.pancras.config;
+package github.pancras.config.wrapper;
 
 /**
  * @author pancras
- * @create 2021/6/3 20:03
+ *
+ * RPC服务的包装类
  */
 public class RpcServiceConfig {
 

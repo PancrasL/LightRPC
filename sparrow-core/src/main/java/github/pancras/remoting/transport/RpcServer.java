@@ -2,7 +2,7 @@ package github.pancras.remoting.transport;
 
 import java.io.Closeable;
 
-import github.pancras.config.RpcServiceConfig;
+import github.pancras.config.wrapper.RpcServiceConfig;
 
 /**
  * @author pancras
