@@ -1,14 +1,18 @@
 package github.pancras.commons.utils;
 
 /**
- * @author pancras
- * @create 2021/6/24 9:36
+ * @author PancrasL
  */
 public class SystemUtil {
     private SystemUtil() {
     }
 
-    public static int getAvailableProcessors() {
+    /**
+     * 获取处理器的个数
+     *
+     * @return 处理器个数
+     */
+    public static int getAvailableProcessorNum() {
         return Runtime.getRuntime().availableProcessors();
     }
 }

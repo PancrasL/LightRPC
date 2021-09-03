@@ -4,8 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author pancras
- * @create 2021/6/5 19:15
+ * @author PancrasL
  */
 public class SingletonFactory {
     private static final Map<String, Object> OBJECT_MAP = new ConcurrentHashMap<>();

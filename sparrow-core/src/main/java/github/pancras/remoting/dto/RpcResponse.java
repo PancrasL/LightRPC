@@ -5,8 +5,7 @@ import java.io.Serializable;
 import github.pancras.remoting.constants.RpcConstants;
 
 /**
- * @author pancras
- * @create 2021/6/5 19:40
+ * @author PancrasL
  * <p>
  * RPC 响应对象
  */

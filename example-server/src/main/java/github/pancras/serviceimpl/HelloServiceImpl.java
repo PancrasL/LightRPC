@@ -14,6 +14,7 @@ import github.pancras.HelloService;
 public class HelloServiceImpl implements HelloService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HelloServiceImpl.class);
 
+    @Override
     public String hello(Hello hello) {
         LOGGER.info("HelloServiceImpl receive：{}", hello.toString());
         String result = "Hello, " + hello.getMessage();
@@ -21,6 +22,7 @@ public class HelloServiceImpl implements HelloService {
         return result;
     }
 
+    @Override
     public String hello(String hello) {
         LOGGER.info("HelloServiceImpl receive：{}", hello);
         String result = "Hello World!" + hello;

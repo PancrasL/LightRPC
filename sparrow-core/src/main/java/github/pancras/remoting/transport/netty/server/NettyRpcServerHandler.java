@@ -3,28 +3,26 @@ package github.pancras.remoting.transport.netty.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import github.pancras.provider.ServiceProvider;
 import github.pancras.remoting.constants.RpcConstants;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
-import github.pancras.remoting.invoker.RpcInvoker;
+import github.pancras.remoting.handler.RpcRequestHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 
 /**
- * @author pancras
- * @create 2021/6/15 19:23
+ * @author PancrasL
  */
 public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcServerHandler.class);
-    private final RpcInvoker rpcInvoker;
+    private final RpcRequestHandler rpcRequestHandler;
 
-    public NettyRpcServerHandler(ServiceProvider serviceProvider) {
-        rpcInvoker = new RpcInvoker(serviceProvider);
+    public NettyRpcServerHandler() {
+        rpcRequestHandler = new RpcRequestHandler();
     }
 
     @Override
@@ -34,7 +32,7 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
             LOGGER.info("Channel [{}] handle RpcMessage: [{}]", ctx.channel().id().toString(), msg);
             if (rpcMessage.getMessageType() == RpcConstants.REQUEST_TYPE) {
                 RpcRequest rpcRequest = (RpcRequest) rpcMessage.getData();
-                Object result = rpcInvoker.handle(rpcRequest);
+                Object result = rpcRequestHandler.handle(rpcRequest);
 
                 RpcResponse<Object> rpcResponse;
                 if (ctx.channel().isActive() && ctx.channel().isWritable()) {

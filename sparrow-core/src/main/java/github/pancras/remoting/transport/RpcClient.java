@@ -1,14 +1,12 @@
 package github.pancras.remoting.transport;
 
-import java.io.Closeable;
-
+import github.pancras.commons.Disposable;
 import github.pancras.remoting.dto.RpcRequest;
 
 /**
- * @author pancras
- * @create 2021/6/17 10:00
+ * @author PancrasL
  */
-public interface RpcClient extends Closeable {
+public interface RpcClient extends Disposable {
     /**
      * 向服务器发送RPC请求
      *
@@ -17,10 +15,4 @@ public interface RpcClient extends Closeable {
      * @throws Exception 异常
      */
     Object sendRpcRequest(RpcRequest rpcRequest) throws Exception;
-
-    /**
-     * 屏蔽掉异常
-     */
-    @Override
-    void close();
 }

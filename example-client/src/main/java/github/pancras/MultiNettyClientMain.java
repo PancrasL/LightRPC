@@ -38,6 +38,6 @@ class Client implements Runnable {
             String s = helloService.hello(Thread.currentThread().getName());
             System.out.println(s);
         }
-        rpcClient.close();
+        rpcClient.destroy();
     }
 }

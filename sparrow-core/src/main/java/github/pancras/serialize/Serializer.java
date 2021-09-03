@@ -3,8 +3,7 @@ package github.pancras.serialize;
 import java.io.IOException;
 
 /**
- * @author pancras
- * @create 2021/6/10 17:21
+ * @author PancrasL
  */
 public interface Serializer {
     /**

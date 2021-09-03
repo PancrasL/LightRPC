@@ -12,30 +12,33 @@ import java.util.concurrent.Executors;
 
 import github.pancras.config.SparrowConfig;
 import github.pancras.config.wrapper.RpcServiceConfig;
-import github.pancras.provider.ServiceProvider;
-import github.pancras.provider.impl.ServiceProviderImpl;
+import github.pancras.provider.ProviderService;
+import github.pancras.provider.impl.DefaultProviderServiceImpl;
 import github.pancras.remoting.transport.RpcServer;
 
 /**
- * @author pancras
- * @create 2021/6/3 20:02
+ * @author PancrasL
  */
 public class SocketRpcServer implements RpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcServer.class);
     private final ExecutorService threadPool;
-    private final ServiceProvider serviceProvider;
+    private final ProviderService providerService;
 
     private boolean isStarted = false;
     private ServerSocket server;
 
     public SocketRpcServer() {
         threadPool = Executors.newCachedThreadPool();
-        serviceProvider = new ServiceProviderImpl();
+        providerService = new DefaultProviderServiceImpl();
     }
 
     @Override
     public void registerService(RpcServiceConfig rpcServiceConfig) {
-        serviceProvider.publishService(rpcServiceConfig);
+        try {
+            providerService.publishService(rpcServiceConfig);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -60,14 +63,17 @@ public class SocketRpcServer implements RpcServer {
         }
     }
 
-    @Override
-    public void close() {
+    public void shutdown() {
         try {
             isStarted = false;
             server.close();
-            serviceProvider.close();
             threadPool.shutdown();
         } catch (IOException ignored) {
         }
+    }
+
+    @Override
+    public void destroy() {
+        this.shutdown();
     }
 }

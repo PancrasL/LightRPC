@@ -6,24 +6,32 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.List;
 
-import github.pancras.registry.ServiceDiscovery;
+import github.pancras.registry.RegistryService;
 import github.pancras.registry.redis.util.JedisUtils;
 import redis.clients.jedis.Jedis;
 
 /**
  * @author PancrasL
  */
-public class RedisServiceDiscoveryImpl implements ServiceDiscovery {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RedisServiceDiscoveryImpl.class);
+public class RedisRegistryServiceImpl implements RegistryService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisRegistryServiceImpl.class);
 
-    private final Jedis jedis;
+    Jedis jedis = JedisUtils.getRedisClient();
 
-    public RedisServiceDiscoveryImpl() {
-        jedis = JedisUtils.getRedisClient();
+    @Override
+    public void register(String rpcServiceName, InetSocketAddress address) throws Exception {
+        String key = JedisUtils.REDIS_REGISTER_ROOT_PATH + "/" + rpcServiceName;
+        String value = address.toString();
+        JedisUtils.createNode(jedis, key, value);
     }
 
     @Override
-    public InetSocketAddress lookupService(String rpcServiceName) {
+    public void unregister(String rpcServiceName, InetSocketAddress address) throws Exception {
+
+    }
+
+    @Override
+    public InetSocketAddress lookup(String rpcServiceName) throws Exception {
         String key = JedisUtils.REDIS_REGISTER_ROOT_PATH + "/" + rpcServiceName;
         List<String> serviceUrls = JedisUtils.getNodes(jedis, key);
         if (serviceUrls.isEmpty()) {
@@ -37,7 +45,7 @@ public class RedisServiceDiscoveryImpl implements ServiceDiscovery {
     }
 
     @Override
-    public void close() {
-        jedis.close();
+    public void close() throws Exception {
+
     }
 }

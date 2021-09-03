@@ -1,8 +1,7 @@
 package github.pancras;
 
 /**
- * @author pancras
- * @create 2021/6/3 18:50
+ * @author PancrasL
  */
 public class Hello {
     private String message;

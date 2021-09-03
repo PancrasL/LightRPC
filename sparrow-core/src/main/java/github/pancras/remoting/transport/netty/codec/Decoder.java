@@ -11,8 +11,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 /**
- * @author pancras
- * @create 2021/6/16 20:48
+ * @author PancrasL
  */
 public class Decoder extends ByteToMessageDecoder {
     /**

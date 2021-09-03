@@ -14,8 +14,7 @@ import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.serialize.Serializer;
 
 /**
- * @author pancras
- * @create 2021/6/10 17:23
+ * @author PancrasL
  */
 public class KryoSerializer implements Serializer {
     /**

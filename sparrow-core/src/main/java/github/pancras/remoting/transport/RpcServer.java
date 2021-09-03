@@ -1,14 +1,12 @@
 package github.pancras.remoting.transport;
 
-import java.io.Closeable;
-
+import github.pancras.commons.Disposable;
 import github.pancras.config.wrapper.RpcServiceConfig;
 
 /**
- * @author pancras
- * @create 2021/6/17 10:00
+ * @author PancrasL
  */
-public interface RpcServer extends Closeable {
+public interface RpcServer extends Disposable {
     /**
      * 向注册中心注册服务
      *
@@ -31,10 +29,4 @@ public interface RpcServer extends Closeable {
      * @throws Exception 服务器启动异常
      */
     void start(String host, int port) throws Exception;
-
-    /**
-     * 屏蔽掉异常
-     */
-    @Override
-    void close();
 }

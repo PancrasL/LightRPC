@@ -13,8 +13,7 @@ import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.remoting.transport.RpcClient;
 
 /**
- * @author pancras
- * @create 2021/6/9 14:21
+ * @author PancrasL
  * <p>
  * 通过动态代理和反射机制隐藏数据传输细节
  */

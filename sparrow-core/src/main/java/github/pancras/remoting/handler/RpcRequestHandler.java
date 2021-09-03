@@ -1,4 +1,4 @@
-package github.pancras.remoting.invoker;
+package github.pancras.remoting.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,26 +6,30 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import github.pancras.provider.ServiceProvider;
+import github.pancras.provider.ProviderFactory;
+import github.pancras.provider.ProviderService;
 import github.pancras.remoting.dto.RpcRequest;
 
 /**
- * @author pancras
- * @create 2021/6/5 19:13
- *
- * 利用反射机制在服务器端执行RPC方法
+ * @author PancrasL
+ * <p>
+ * 获取到服务对象，并利用反射机制在服务器端执行RPC方法
  */
-public class RpcInvoker {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RpcInvoker.class);
+public class RpcRequestHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RpcRequestHandler.class);
 
-    private final ServiceProvider serviceProvider;
+    private final ProviderService providerService;
 
-    public RpcInvoker(ServiceProvider serviceProvider) {
-        this.serviceProvider = serviceProvider;
+    public RpcRequestHandler() {
+        this.providerService = ProviderFactory.getInstance();
     }
 
     public Object handle(RpcRequest rpcRequest) {
-        Object service = serviceProvider.getService(rpcRequest.getRpcServiceName());
+        Object service = providerService.getServiceOrNull(rpcRequest.getRpcServiceName());
+        if (service == null) {
+            LOGGER.error("The instance of [{}] could not be found", rpcRequest.getRpcServiceName());
+            throw new RuntimeException("Service instance could not be found");
+        }
         return invokeTargetMethod(rpcRequest, service);
     }
 

@@ -3,19 +3,20 @@ package github.pancras.remoting.transport.netty.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import github.pancras.commons.ShutdownHook;
 import github.pancras.commons.utils.SystemUtil;
 import github.pancras.config.SparrowConfig;
 import github.pancras.config.wrapper.RpcServiceConfig;
-import github.pancras.provider.ServiceProvider;
-import github.pancras.provider.impl.ServiceProviderImpl;
+import github.pancras.provider.ProviderFactory;
+import github.pancras.provider.ProviderService;
+import github.pancras.registry.RegistryFactory;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
@@ -28,31 +29,36 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
 /**
- * @author pancras
- * @create 2021/6/15 16:28
+ * @author PancrasL
  */
 public class NettyRpcServer implements RpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcServer.class);
 
-    private static final NettyRpcServer INSTANCE = new NettyRpcServer();
-
-    private final ServiceProvider serviceProvider;
-
+    private final ServerBootstrap serverBootstrap = new ServerBootstrap();
+    /**
+     * 一个 accepter线程处理客户端连接 2*cpu个线程处理io cpu个线程处理业务 参考：https://www.cnblogs.com/jpfss/p/11016169.html
+     */
+    private final EventLoopGroup bossGroup;
+    private final EventLoopGroup workerGroup;
+    private final DefaultEventLoopGroup serviceHandlerGroup;
     private Channel serverChannel;
 
-    private boolean isStarted = false;
+    private final ProviderService providerService;
+    private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    private NettyRpcServer() {
-        serviceProvider = new ServiceProviderImpl();
-    }
-
-    public static NettyRpcServer getInstance() {
-        return INSTANCE;
+    public NettyRpcServer() {
+        providerService = ProviderFactory.getInstance();
+        // 监听线程组，监听客户端请求
+        bossGroup = new NioEventLoopGroup(1);
+        // 工作线程组，处理与客户端的数据通讯
+        workerGroup = new NioEventLoopGroup(SystemUtil.getAvailableProcessorNum() * 2);
+        // 业务线程，处理业务逻辑
+        serviceHandlerGroup = new DefaultEventLoopGroup(SystemUtil.getAvailableProcessorNum());
     }
 
     @Override
     public void registerService(RpcServiceConfig rpcServiceConfig) {
-        serviceProvider.publishService(rpcServiceConfig);
+        providerService.publishService(rpcServiceConfig);
     }
 
     @Override
@@ -62,18 +68,11 @@ public class NettyRpcServer implements RpcServer {
 
     @Override
     public void start(String host, int port) throws Exception {
-        if (isStarted) {
+        if (initialized.get()) {
             throw new IllegalStateException("The server is already started, please do not start the service repeatedly.");
         }
-        // 监听线程组，监听客户端请求
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        // 工作线程组，处理与客户端的数据通讯
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-        // 业务线程，处理业务逻辑
-        DefaultEventLoopGroup serviceHandlerGroup = new DefaultEventLoopGroup(SystemUtil.getAvailableProcessors() * 2);
 
-        ServerBootstrap b = new ServerBootstrap();
-        b.group(bossGroup, workerGroup)
+        this.serverBootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 // 开启TCP心跳机制
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
@@ -87,30 +86,35 @@ public class NettyRpcServer implements RpcServer {
                         ChannelPipeline p = ch.pipeline();
                         p.addLast(new Decoder());
                         p.addLast(new Encoder());
-                        p.addLast(serviceHandlerGroup, new NettyRpcServerHandler(serviceProvider));
+                        p.addLast(serviceHandlerGroup, new NettyRpcServerHandler());
                     }
                 });
 
-        // 绑定端口 同步等待
-        serverChannel = b.bind(host, port).sync().channel();
+        // 绑定端口，同步等待
+        try {
+            serverChannel = serverBootstrap.bind(host, port).sync().channel();
+            LOGGER.info("Server is started, listen at [{}:{}]", host, port);
+            initialized.set(true);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        // 采用异步的方式退出并释放资源
-        serverChannel.closeFuture().addListener((ChannelFutureListener) channelFuture -> {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
-            serviceHandlerGroup.shutdownGracefully();
-        });
-        isStarted = true;
-        LOGGER.info("Server is started, listen at [{}:{}]", host, port);
+        // 添加关闭钩子，在程序退出时调用 destroy() 释放资源
+        ShutdownHook.getInstance().addDisposable(this);
     }
 
     @Override
-    public void close() {
-        serverChannel.close();
+    public void destroy() {
         try {
-            serviceProvider.close();
-        } catch (IOException ignored) {
+            if (initialized.get()) {
+                RegistryFactory.getInstance().close();
+                serverChannel.close();
+            }
+            this.bossGroup.shutdownGracefully();
+            this.workerGroup.shutdownGracefully();
+            this.serviceHandlerGroup.shutdownGracefully();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
         }
-        isStarted = false;
     }
 }

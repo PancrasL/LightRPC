@@ -1,8 +1,7 @@
 package github.pancras;
 
 /**
- * @author pancras
- * @create 2021/6/3 18:51
+ * @author PancrasL
  */
 public interface HelloService {
     String hello(Hello hello);

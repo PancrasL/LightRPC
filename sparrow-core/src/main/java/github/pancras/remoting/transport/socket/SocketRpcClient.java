@@ -1,31 +1,29 @@
 package github.pancras.remoting.transport.socket;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import github.pancras.registry.ServiceDiscovery;
-import github.pancras.registry.zk.ZkServiceDiscoveryImpl;
+import github.pancras.registry.RegistryFactory;
+import github.pancras.registry.RegistryService;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.transport.RpcClient;
 
 /**
- * @author pancras
- * @create 2021/6/9 14:05
+ * @author PancrasL
  */
 public class SocketRpcClient implements RpcClient {
-    private final ServiceDiscovery serviceDiscovery;
+    private final RegistryService registryService;
 
     public SocketRpcClient() {
-        this.serviceDiscovery = new ZkServiceDiscoveryImpl();
+        this.registryService = RegistryFactory.getInstance();
     }
 
     @Override
     public Object sendRpcRequest(RpcRequest rpcRequest) {
-        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getRpcServiceName());
         try (Socket socket = new Socket()) {
+            InetSocketAddress inetSocketAddress = registryService.lookup(rpcRequest.getRpcServiceName());
             socket.connect(inetSocketAddress);
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(rpcRequest);
@@ -40,10 +38,11 @@ public class SocketRpcClient implements RpcClient {
     }
 
     @Override
-    public void close() {
+    public void destroy() {
         try {
-            serviceDiscovery.close();
-        } catch (IOException ignored) {
+            registryService.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

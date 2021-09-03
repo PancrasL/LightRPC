@@ -3,13 +3,12 @@ package github.pancras.remoting.transport.netty.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 
-import github.pancras.commons.factory.DiscoveryFactory;
 import github.pancras.config.SparrowConfig;
-import github.pancras.registry.ServiceDiscovery;
+import github.pancras.registry.RegistryFactory;
+import github.pancras.registry.RegistryService;
 import github.pancras.remoting.constants.RpcConstants;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;
@@ -31,13 +30,12 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
 /**
- * @author pancras
- * @create 2021/6/16 10:22
+ * @author PancrasL
  */
 public class NettyRpcClient implements RpcClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcClient.class);
 
-    private final ServiceDiscovery serviceDiscovery;
+    private final RegistryService registryService;
     private final Bootstrap bootstrap;
     private final EventLoopGroup workerGroup;
     private final ChannelPool channelPool;
@@ -60,7 +58,7 @@ public class NettyRpcClient implements RpcClient {
                         p.addLast(new NettyRpcClientHandler(unprocessedRequests));
                     }
                 });
-        serviceDiscovery = DiscoveryFactory.getDiscovery(SparrowConfig.DEFAULT_REGISRY_TYPE);
+        registryService = RegistryFactory.getInstance();
         channelPool = new ChannelPool();
         unprocessedRequests = new UnprocessedRequests();
     }
@@ -68,7 +66,7 @@ public class NettyRpcClient implements RpcClient {
     @Override
     public Object sendRpcRequest(RpcRequest rpcRequest) throws Exception {
         CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();
-        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getRpcServiceName());
+        InetSocketAddress inetSocketAddress = registryService.lookup(rpcRequest.getRpcServiceName());
 
         // 从ChannelPool中获取和服务器连接的Channel，避免重复连接
         Channel channel = getChannel(inetSocketAddress);
@@ -105,13 +103,17 @@ public class NettyRpcClient implements RpcClient {
         return future.channel();
     }
 
-    @Override
-    public void close() {
+    public void shutdown() {
         try {
-            serviceDiscovery.close();
-        } catch (IOException ignored) {
+            registryService.close();
+        } catch (Exception ignored) {
         }
         channelPool.close();
         workerGroup.shutdownGracefully();
+    }
+
+    @Override
+    public void destroy() {
+        shutdown();
     }
 }

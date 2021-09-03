@@ -8,8 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 /**
- * @author pancras
- * @create 2021/6/16 20:48
+ * @author PancrasL
  */
 public class Encoder extends MessageToByteEncoder<Object> {
     private final Serializer serializer = SerializerFactory.getSerializer(SparrowConfig.DEFAULT_SERIALIZER_TYPE);
