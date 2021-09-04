@@ -1,14 +1,11 @@
 package github.pancras.provider;
 
-import java.io.Closeable;
-
 import github.pancras.config.wrapper.RpcServiceConfig;
 
 /**
- * @author pancras
- * @create 2021/6/3 20:06
+ * @author PancrasL 会存在并发访问，需要保证线程安全
  */
-public interface ServiceProvider extends Closeable {
+public interface ProviderService {
     /**
      * 将服务发布到注册中心，并添加到本地缓存
      *
@@ -24,10 +21,10 @@ public interface ServiceProvider extends Closeable {
     void addService(RpcServiceConfig rpcServiceConfig);
 
     /**
-     * 从本地缓存获取服务地址，如果缓存中没有，则从注册中心中查询
+     * 服务调用，通过rpcServiceName获取服务实例
      *
      * @param rpcServiceName RPC服务名称
-     * @return RPC服务对象
+     * @return RPC服务实例
      */
-    Object getService(String rpcServiceName);
+    Object getServiceOrNull(String rpcServiceName);
 }

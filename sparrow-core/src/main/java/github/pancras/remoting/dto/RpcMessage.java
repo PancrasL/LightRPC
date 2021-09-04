@@ -3,8 +3,7 @@ package github.pancras.remoting.dto;
 import java.io.Serializable;
 
 /**
- * @author pancras
- * @create 2021/6/16 21:00
+ * @author PancrasL
  * <p>
  * RpcRequest和RpcResponse的包装类
  */

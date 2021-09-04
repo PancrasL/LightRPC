@@ -13,7 +13,7 @@ public class NettyServerMain {
         RpcServiceConfig rpcServiceConfig = new RpcServiceConfig();
         rpcServiceConfig.setService(new HelloServiceImpl());
 
-        NettyRpcServer nettyRpcServer = NettyRpcServer.getInstance();
+        NettyRpcServer nettyRpcServer = new NettyRpcServer();
         nettyRpcServer.registerService(rpcServiceConfig);
         try {
             nettyRpcServer.start();

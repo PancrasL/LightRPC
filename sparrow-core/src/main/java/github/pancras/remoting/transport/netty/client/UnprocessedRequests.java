@@ -7,8 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import github.pancras.remoting.dto.RpcResponse;
 
 /**
- * @author pancras
- * @create 2021/6/24 11:17
+ * @author PancrasL
  */
 public class UnprocessedRequests {
     private static final Map<String, CompletableFuture<RpcResponse<Object>>> UNPROCESSED_RESPONSE_FUTURES = new ConcurrentHashMap<>();

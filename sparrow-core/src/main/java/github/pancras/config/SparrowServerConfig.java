@@ -5,7 +5,7 @@ import github.pancras.config.constant.Constant;
 /**
  * @author PancrasL
  */
-public class SparrowConfig {
+public class SparrowServerConfig {
     /**
      * 客户端连接服务器的超时时间
      */
@@ -52,6 +52,6 @@ public class SparrowConfig {
      */
     public static String SERVICE_REGISTER_ADDRESS = Constant.DEFAULT_HOST_ADDRESS;
 
-    private SparrowConfig() {
+    private SparrowServerConfig() {
     }
 }

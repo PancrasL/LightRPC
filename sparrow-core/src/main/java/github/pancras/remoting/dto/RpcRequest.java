@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 /**
- * @author pancras
- * @create 2021/6/5 19:37
- *
+ * @author PancrasL
+ * <p>
  * RPC请求对象
  */
 

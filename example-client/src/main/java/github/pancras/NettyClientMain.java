@@ -19,6 +19,5 @@ public class NettyClientMain {
         }
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
-        rpcClient.close();
     }
 }

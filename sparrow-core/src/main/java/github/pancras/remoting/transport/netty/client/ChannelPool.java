@@ -8,8 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.netty.channel.Channel;
 
 /**
- * @author pancras
- * @create 2021/6/24 10:11 重用 Channel 避免重复连接服务端
+ * @author PancrasL
+ * <p>
+ * 重用 Channel 避免重复连接服务端
  */
 public class ChannelPool implements Closeable {
     private final Map<String, Channel> poolMap;

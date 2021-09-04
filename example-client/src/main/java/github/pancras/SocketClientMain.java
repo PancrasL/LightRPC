@@ -21,6 +21,6 @@ public class SocketClientMain {
         }
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
-        rpcClient.close();
+        rpcClient.destroy();
     }
 }

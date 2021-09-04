@@ -12,8 +12,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 
 /**
- * @author pancras
- * @create 2021/6/16 11:02
+ * @author PancrasL
  */
 public class NettyRpcClientHandler extends ChannelInboundHandlerAdapter {
 

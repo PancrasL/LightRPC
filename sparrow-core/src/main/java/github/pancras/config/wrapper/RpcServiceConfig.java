@@ -1,8 +1,8 @@
 package github.pancras.config.wrapper;
 
 /**
- * @author pancras
- *
+ * @author PancrasL
+ * <p>
  * RPC服务的包装类
  */
 public class RpcServiceConfig {

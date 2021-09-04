@@ -22,6 +22,20 @@ sparrow 是一款以学习RPC原理为目的的轻量 RPC 框架。
 
 - 异常处理：netty连接断开时直接关闭Channel
 
+## 1.2 TODO
+
+- 添加 NettyServerConfig 配置类
+
+- 自定义线程池
+
+- 添加关闭钩子
+
+- 实现基于文件的注册中心
+
+- 优化负载均衡机制
+
+- 添加测试类
+
 # 2. 模块介绍
 
 - sparrow-core：rpc框架的核心组件
