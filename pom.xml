@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>github.pancras</groupId>
-    <artifactId>sparrow</artifactId>
+    <artifactId>lightrpc</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>hello-service-api</module>
         <module>example-client</module>
         <module>example-server</module>
-        <module>sparrow-core</module>
+        <module>lightrpc-core</module>
     </modules>
 
     <properties>

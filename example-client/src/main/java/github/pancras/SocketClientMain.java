@@ -16,7 +16,7 @@ public class SocketClientMain {
         RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             String s = helloService.hello("good");
         }
         long endTime = System.currentTimeMillis();

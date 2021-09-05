@@ -22,19 +22,21 @@ sparrow 是一款以学习RPC原理为目的的轻量 RPC 框架。
 
 - 异常处理：netty连接断开时直接关闭Channel
 
+- 使用关闭钩子释放资源
+
 ## 1.2 TODO
 
 - 添加 NettyServerConfig 配置类
 
 - 自定义线程池
 
-- 添加关闭钩子
-
 - 实现基于文件的注册中心
 
 - 优化负载均衡机制
 
 - 添加测试类
+
+- Channel数量过多时使用LRU算法删除一部分
 
 # 2. 模块介绍
 
@@ -46,7 +48,7 @@ sparrow 是一款以学习RPC原理为目的的轻量 RPC 框架。
 
 # 3. 运行
 
-## 3.1 Zookeeper的安装
+## 3.1 Zookeeper的本地启动
 
 - 下载zookeeper安装包并解压：https://downloads.apache.org/zookeeper/zookeeper-3.6.3/
 
@@ -65,7 +67,13 @@ some info
 
 - zookeeper会占用8080端口，通过在 `zoo.cfg` 中添加 `admin.serverPort=8888` 解除8080端口的占用
 
-## 3.2 基于socket通信的示例的运行
+## 3.2 Zookeeper的容器启动
+
+```bash
+$ docker run -d --name=zookeeper -p 2181:2181 zookeeper:3.6.3
+```
+
+## 3.3 基于socket通信的示例的运行
 
 - 启动 `Zookeeper`
 
@@ -76,7 +84,7 @@ some info
 
 - 启动 `example-client/src/main/java/github/pancras/SocketClientMain.java`
 
-## 3.3 基于netty通信的示例的运行
+## 3.4 基于netty通信的示例的运行
 
 - 启动 `Zookeeper`
 
