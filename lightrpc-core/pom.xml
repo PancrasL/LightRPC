@@ -11,6 +11,7 @@
 
     <artifactId>lightrpc-core</artifactId>
     <dependencies>
+        <!-- curator -->
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>
@@ -20,6 +21,12 @@
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-recipes</artifactId>
             <version>${curator.version}</version>
+        </dependency>
+        <!-- redis -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${jedis.version}</version>
         </dependency>
         <!-- kryo -->
         <dependency>
@@ -38,15 +45,16 @@
             <artifactId>protostuff-runtime</artifactId>
             <version>${protostuff.version}</version>
         </dependency>
+        <!-- netty -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-handler</artifactId>
             <version>${netty.version}</version>
         </dependency>
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>${jedis.version}</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
         </dependency>
     </dependencies>
 
