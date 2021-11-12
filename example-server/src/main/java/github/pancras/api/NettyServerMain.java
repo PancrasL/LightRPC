@@ -1,4 +1,4 @@
-package github.pancras;
+package github.pancras.api;
 
 import github.pancras.wrapper.RpcServiceConfig;
 import github.pancras.remoting.transport.netty.server.NettyRpcServer;
@@ -6,7 +6,6 @@ import github.pancras.serviceimpl.HelloServiceImpl;
 
 /**
  * @author pancras
- * @create 2021/6/15 16:24
  */
 public class NettyServerMain {
     public static void main(String[] args) throws Exception {

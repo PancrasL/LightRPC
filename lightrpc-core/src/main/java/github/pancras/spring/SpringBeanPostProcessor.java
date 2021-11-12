@@ -1,48 +1,51 @@
 package github.pancras.spring;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 
-import github.javaguide.annotation.RpcReference;
-import github.javaguide.annotation.RpcService;
-import github.javaguide.config.RpcServiceConfig;
-import github.javaguide.extension.ExtensionLoader;
-import github.javaguide.factory.SingletonFactory;
-import github.javaguide.provider.ServiceProvider;
-import github.javaguide.provider.impl.ZkServiceProviderImpl;
-import github.javaguide.proxy.RpcClientProxy;
-import github.javaguide.remoting.transport.RpcRequestTransport;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import github.pancras.commons.factory.SingletonFactory;
+import github.pancras.provider.ProviderFactory;
+import github.pancras.provider.ProviderService;
+import github.pancras.proxy.RpcClientProxy;
+import github.pancras.remoting.transport.RpcClient;
+import github.pancras.remoting.transport.netty.client.NettyRpcClient;
+import github.pancras.spring.annotation.RpcReference;
+import github.pancras.spring.annotation.RpcService;
+import github.pancras.wrapper.RpcServiceConfig;
 
-@Slf4j
+/**
+ * @author PancrasL
+ */
 @Component
 public class SpringBeanPostProcessor implements BeanPostProcessor {
+    private final Logger LOGGER = LoggerFactory.getLogger(SpringBeanPostProcessor.class);
 
-    private final ServiceProvider serviceProvider;
-    private final RpcRequestTransport rpcClient;
+    private final ProviderService provider;
+    private final RpcClient rpcClient;
 
     public SpringBeanPostProcessor() {
-        this.serviceProvider = SingletonFactory.getInstance(ZkServiceProviderImpl.class);
-        this.rpcClient = ExtensionLoader.getExtensionLoader(RpcRequestTransport.class).getExtension("netty");
+        provider = ProviderFactory.getInstance();
+        this.rpcClient = SingletonFactory.getInstance(NettyRpcClient.class);
     }
 
-    @SneakyThrows
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (bean.getClass().isAnnotationPresent(RpcService.class)) {
-            log.info("[{}] is annotated with  [{}]", bean.getClass().getName(), RpcService.class.getCanonicalName());
+            LOGGER.info("[{}] is annotated with  [{}]", bean.getClass().getName(), RpcService.class.getCanonicalName());
             // get RpcService annotation
             RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
             // build RpcServiceProperties
-            RpcServiceConfig rpcServiceConfig = RpcServiceConfig.builder()
-                    .group(rpcService.group())
-                    .version(rpcService.version())
-                    .service(bean).build();
-            serviceProvider.publishService(rpcServiceConfig);
+            RpcServiceConfig serviceConfig = new RpcServiceConfig(rpcService);
+            try {
+                provider.publishService(serviceConfig);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage());
+            }
         }
         return bean;
     }
@@ -54,19 +57,15 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         for (Field declaredField : declaredFields) {
             RpcReference rpcReference = declaredField.getAnnotation(RpcReference.class);
             if (rpcReference != null) {
-                RpcServiceConfig rpcServiceConfig = RpcServiceConfig.builder()
-                        .group(rpcReference.group())
-                        .version(rpcReference.version()).build();
-                RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient, rpcServiceConfig);
+                RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient);
                 Object clientProxy = rpcClientProxy.getProxy(declaredField.getType());
                 declaredField.setAccessible(true);
                 try {
                     declaredField.set(bean, clientProxy);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    LOGGER.error(e.getMessage());
                 }
             }
-
         }
         return bean;
     }

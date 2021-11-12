@@ -1,12 +1,12 @@
-package github.pancras;
+package github.pancras.api;
 
+import github.pancras.HelloService;
 import github.pancras.proxy.RpcClientProxy;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.socket.SocketRpcClient;
 
 /**
  * @author pancras
- * @create 2021/6/3 18:54
  * <p>
  * RPC调用底层采用Socket数据传输的客户端实现
  */

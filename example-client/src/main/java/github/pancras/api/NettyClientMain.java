@@ -1,12 +1,12 @@
-package github.pancras;
+package github.pancras.api;
 
+import github.pancras.HelloService;
 import github.pancras.proxy.RpcClientProxy;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.client.NettyRpcClient;
 
 /**
  * @author pancras
- * @create 2021/6/16 10:19
  */
 public class NettyClientMain {
     public static void main(String[] args) {
