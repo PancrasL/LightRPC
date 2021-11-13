@@ -1,7 +1,7 @@
 package github.pancras.api;
 
 import github.pancras.remoting.transport.socket.SocketRpcServer;
-import github.pancras.serviceimpl.HelloServiceImpl;
+import github.pancras.api.service.HelloServiceImpl;
 import github.pancras.wrapper.RpcServiceConfig;
 
 /**

@@ -10,6 +10,9 @@ import java.lang.annotation.Target;
 
 import github.pancras.spring.CustomScannerRegister;
 
+/**
+ * @author PancrasL
+ */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Import(CustomScannerRegister.class)

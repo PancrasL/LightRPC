@@ -16,15 +16,12 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Inherited
 public @interface RpcReference {
-
-//    /**
-//     * Service version, default value is empty string
-//     */
-//    String version() default "";
-//
-//    /**
-//     * Service group, default value is empty string
-//     */
-//    String group() default "";
-
+    /**
+     * 组，区分不同接口的实现类
+     */
+    String group() default "";
+    /**
+     * 版本，区分不同版本
+     */
+    String version() default "";
 }

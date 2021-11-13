@@ -13,7 +13,7 @@ import redis.clients.jedis.Jedis;
  * @author PancrasL
  */
 public class JedisUtils {
-    public static final String REDIS_REGISTER_ROOT_PATH = "/sparrow-rpc";
+    public static final String REDIS_REGISTER_ROOT_PATH = "/LightRPC";
     private static final Logger LOGGER = LoggerFactory.getLogger(JedisUtils.class);
 
     public static Jedis getRedisClient() {

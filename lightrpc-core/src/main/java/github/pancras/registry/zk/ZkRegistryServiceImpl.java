@@ -24,7 +24,7 @@ import github.pancras.registry.RegistryService;
 public class ZkRegistryServiceImpl implements RegistryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZkRegistryServiceImpl.class);
     private static final Set<String> REGISTERED_PATH_SET = ConcurrentHashMap.newKeySet();
-    private static final String ZK_REGISTER_ROOT_PATH = "/sparrow-rpc/";
+    private static final String ZK_REGISTER_ROOT_PATH = "/LightRPC/";
     private static final String ZK_PATH_SPLIT_CHAR = "/";
     private static final int DEFAULT_SESSION_TIMEOUT = 6000;
     private static final int DEFAULT_CONNECT_TIMEOUT = 2000;

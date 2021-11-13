@@ -7,8 +7,16 @@ import github.pancras.spring.annotation.RpcReference;
 
 @Component
 public class HelloController {
-    @RpcReference
+    /**
+     * 需要和example-server模块下的indi.pancras.spring.service.HelloServiceImpl2一致
+     */
+    @RpcReference(group = "group2", version = "v1")
     private HelloService helloService;
 
-
+    public void test() {
+        for (int i = 0; i < 5; i++) {
+            String s = helloService.hello("Mike.");
+            System.out.println(s);
+        }
+    }
 }

@@ -8,20 +8,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * @author PancrasL
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Inherited
 public @interface RpcService {
-
     /**
-     * Service version, default value is empty string
-     */
-    String version() default "";
-
-    /**
-     * Service group, default value is empty string
+     * 组，区分不同接口的实现类
      */
     String group() default "";
-
+    /**
+     * 版本，区分不同版本
+     */
+    String version() default "";
 }

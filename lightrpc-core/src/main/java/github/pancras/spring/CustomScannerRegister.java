@@ -31,7 +31,7 @@ public class CustomScannerRegister implements ImportBeanDefinitionRegistrar, Res
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry beanDefinitionRegistry) {
-        //get the attributes and values ​​of RpcScan annotation
+        //get the attributes and values of RpcScan annotation
         AnnotationAttributes rpcScanAnnotationAttributes = AnnotationAttributes.fromMap(annotationMetadata.getAnnotationAttributes(RpcScan.class.getName()));
         String[] rpcScanBasePackages = new String[0];
         if (rpcScanAnnotationAttributes != null) {

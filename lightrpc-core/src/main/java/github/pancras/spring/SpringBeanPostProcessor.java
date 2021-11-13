@@ -40,7 +40,7 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
             // get RpcService annotation
             RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
             // build RpcServiceProperties
-            RpcServiceConfig serviceConfig = new RpcServiceConfig(rpcService);
+            RpcServiceConfig serviceConfig = new RpcServiceConfig(bean, rpcService.group(), rpcService.version());
             try {
                 provider.publishService(serviceConfig);
             } catch (Exception e) {
@@ -57,7 +57,8 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         for (Field declaredField : declaredFields) {
             RpcReference rpcReference = declaredField.getAnnotation(RpcReference.class);
             if (rpcReference != null) {
-                RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient);
+                RpcServiceConfig config = new RpcServiceConfig(null, rpcReference.group(), rpcReference.version());
+                RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient, config);
                 Object clientProxy = rpcClientProxy.getProxy(declaredField.getType());
                 declaredField.setAccessible(true);
                 try {
