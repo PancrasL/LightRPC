@@ -8,14 +8,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import github.pancras.spring.CustomScannerRegister;
+import github.pancras.spring.RpcScannerRegistrar;
 
 /**
  * @author PancrasL
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Import(CustomScannerRegister.class)
+@Import(RpcScannerRegistrar.class)
 @Documented
 public @interface RpcScan {
 

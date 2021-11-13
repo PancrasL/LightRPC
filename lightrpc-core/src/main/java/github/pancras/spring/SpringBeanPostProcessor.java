@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 
+import javax.annotation.Nonnull;
+
 import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.provider.ProviderFactory;
 import github.pancras.provider.ProviderService;
@@ -30,16 +32,17 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
 
     public SpringBeanPostProcessor() {
         provider = ProviderFactory.getInstance();
-        this.rpcClient = SingletonFactory.getInstance(NettyRpcClient.class);
+        rpcClient = SingletonFactory.getInstance(NettyRpcClient.class);
     }
 
+    /**
+     * 发布拥有@RpcServer的Bean
+     */
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, @Nonnull String beanName) throws BeansException {
         if (bean.getClass().isAnnotationPresent(RpcService.class)) {
             LOGGER.info("[{}] is annotated with  [{}]", bean.getClass().getName(), RpcService.class.getCanonicalName());
-            // get RpcService annotation
             RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
-            // build RpcServiceProperties
             RpcServiceConfig serviceConfig = new RpcServiceConfig(bean, rpcService.group(), rpcService.version());
             try {
                 provider.publishService(serviceConfig);
@@ -50,8 +53,11 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         return bean;
     }
 
+    /**
+     * 代理Bean中拥有@RpcReference的域
+     */
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, @Nonnull String beanName) throws BeansException {
         Class<?> targetClass = bean.getClass();
         Field[] declaredFields = targetClass.getDeclaredFields();
         for (Field declaredField : declaredFields) {

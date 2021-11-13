@@ -6,13 +6,13 @@ sparrow 是一款以学习RPC原理为目的的轻量 RPC 框架。
 
 ## 1.1 特性
 
-- 使用netty NIO替代socket BIO实现网络传输
+- 支持Netty和Socket两种传输方式
 
-- 可配置的注册中心，目前支持zookeeper、redis
+- 支持zookeeper、redis两种注册中心
 
-- 可配置的序列化机制，目前支持kryo、protostuff
+- 支持java序列化、kryo、protostuff三种序列化机制
 
-- 存在多个服务实例时，在客户端实现了随机负载均衡算法
+- 基于SPI机制实现了多负载均衡策略：
 
 - 服务端的IO线程和业务线程分离，优化执行效率
 
@@ -23,20 +23,6 @@ sparrow 是一款以学习RPC原理为目的的轻量 RPC 框架。
 - 异常处理：netty连接断开时直接关闭Channel
 
 - 使用关闭钩子释放资源
-
-## 1.2 TODO
-
-- 添加 NettyServerConfig 配置类
-
-- 自定义线程池
-
-- 实现基于文件的注册中心
-
-- 优化负载均衡机制
-
-- 添加测试类
-
-- Channel数量过多时使用LRU算法删除一部分
 
 # 2. 模块介绍
 
@@ -77,20 +63,21 @@ $ docker run -d --name=zookeeper -p 2181:2181 zookeeper:3.6.3
 
 - 启动 `Zookeeper`
 
-- 修改 `sparrow-core/src/main/java/github/pancras/config/ServerConfig.java`
-  中的Zookeeper地址为自己的（不修改也行，默认会自动获取本机ip）
+- 启动 `example-server/src/main/java/github/pancras/api/SocketServerMain.java`
 
-- 启动 `example-server/src/main/java/github/pancras/SocketServerMain.java`
-
-- 启动 `example-client/src/main/java/github/pancras/SocketClientMain.java`
+- 启动 `example-client/src/main/java/github/pancras/api/SocketClientMain.java`
 
 ## 3.4 基于netty通信的示例的运行
 
 - 启动 `Zookeeper`
 
-- 修改 `sparrow-core/src/main/java/github/pancras/config/ServerConfig.java`
-  中的Zookeeper地址为自己的（不修改也行，默认会自动获取本机ip）
+- 启动 `example-server/src/main/java/github/pancras/api/NettyServerMain.java`
 
-- 启动 `example-server/src/main/java/github/pancras/NettyServerMain.java`
+- 启动 `example-client/src/main/java/github/pancras/api/NettyClientMain.java`
 
-- 启动 `example-client/src/main/java/github/pancras/NettyClientMain.java`
+## 3.5 注解方式启动
+- 启动 `Zookeeper`
+
+- 启动 `example-server/src/main/java/github/pancras/spring/NettyServerApplication.java`
+
+- 启动 `example-client/src/main/java/github/pancras/api/NettyClientApplication.java`
