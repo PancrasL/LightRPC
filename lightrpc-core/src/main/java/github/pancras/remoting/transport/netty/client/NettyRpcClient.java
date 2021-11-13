@@ -5,13 +5,12 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import github.pancras.commons.ShutdownHook;
+import github.pancras.commons.enums.MessageType;
 import github.pancras.config.DefaultConfig;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
-import github.pancras.remoting.MessageConstant;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
@@ -75,7 +74,7 @@ public class NettyRpcClient implements RpcClient {
             unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
 
             RpcMessage rpcMessage = new RpcMessage();
-            rpcMessage.setMessageType(MessageConstant.REQUEST_TYPE);
+            rpcMessage.setMessageType(MessageType.RpcRequest);
             rpcMessage.setData(rpcRequest);
             channel.writeAndFlush(rpcMessage).addListener(future -> {
                 if (future.isSuccess()) {

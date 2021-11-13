@@ -2,33 +2,33 @@ package github.pancras.remoting.dto;
 
 import java.io.Serializable;
 
-import github.pancras.remoting.MessageConstant;
-
 /**
  * @author PancrasL
  * <p>
  * RPC 响应对象
  */
 public class RpcResponse<T> implements Serializable {
+    private static final Integer SUCCESS_FLAG = 1;
+    private static final Integer FAIL_FLAG = -1;
 
     private String requestId;
-    private Integer code;
+    private Integer status;
     private String message;
     private T data;
 
     public static <T> RpcResponse<T> success(T data, String requestId) {
         RpcResponse<T> response = new RpcResponse<>();
         response.setRequestId(requestId);
-        response.setCode(MessageConstant.SUCCESS_FLAG);
-        response.setMessage(MessageConstant.SUCESS);
+        response.setStatus(SUCCESS_FLAG);
+        response.setMessage("sucess");
         response.setData(data);
         return response;
     }
 
     public static <T> RpcResponse<T> fail() {
         RpcResponse<T> response = new RpcResponse<>();
-        response.setCode(MessageConstant.FAIL_FLAG);
-        response.setMessage(MessageConstant.FAIL);
+        response.setStatus(FAIL_FLAG);
+        response.setMessage("fail");
         return response;
     }
 
@@ -40,12 +40,12 @@ public class RpcResponse<T> implements Serializable {
         this.requestId = requestId;
     }
 
-    public Integer getCode() {
-        return code;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setCode(Integer code) {
-        this.code = code;
+    public void setStatus(Integer code) {
+        this.status = code;
     }
 
     public String getMessage() {
@@ -68,7 +68,7 @@ public class RpcResponse<T> implements Serializable {
     public String toString() {
         return "RpcResponse{" +
                 "requestId='" + requestId + '\'' +
-                ", code=" + code +
+                ", code=" + status +
                 ", message='" + message + '\'' +
                 ", data=" + data +
                 '}';

@@ -1,8 +1,8 @@
 package github.pancras.api;
 
-import github.pancras.wrapper.RpcServiceConfig;
 import github.pancras.remoting.transport.socket.SocketRpcServer;
 import github.pancras.serviceimpl.HelloServiceImpl;
+import github.pancras.wrapper.RpcServiceConfig;
 
 /**
  * @author pancras
@@ -11,8 +11,7 @@ import github.pancras.serviceimpl.HelloServiceImpl;
  */
 public class SocketServerMain {
     public static void main(String[] args) {
-        RpcServiceConfig rpcServiceConfig = new RpcServiceConfig();
-        rpcServiceConfig.setService(new HelloServiceImpl());
+        RpcServiceConfig rpcServiceConfig = new RpcServiceConfig(new HelloServiceImpl());
 
         SocketRpcServer socketRpcServer = new SocketRpcServer();
         socketRpcServer.registerService(rpcServiceConfig);

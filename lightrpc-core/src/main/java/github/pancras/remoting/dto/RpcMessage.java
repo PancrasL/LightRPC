@@ -2,6 +2,8 @@ package github.pancras.remoting.dto;
 
 import java.io.Serializable;
 
+import github.pancras.commons.enums.MessageType;
+
 /**
  * @author PancrasL
  * <p>
@@ -11,14 +13,14 @@ public class RpcMessage implements Serializable {
     /**
      * RPC 消息类型，详见RpcConstants
      */
-    private byte messageType;
+    private MessageType messageType;
     private Object data;
 
-    public byte getMessageType() {
+    public MessageType getMessageType() {
         return messageType;
     }
 
-    public void setMessageType(byte messageType) {
+    public void setMessageType(MessageType messageType) {
         this.messageType = messageType;
     }
 

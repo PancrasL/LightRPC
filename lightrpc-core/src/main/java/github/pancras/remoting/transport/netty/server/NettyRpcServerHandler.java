@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 
+import github.pancras.commons.enums.MessageType;
 import github.pancras.exception.RpcException;
-import github.pancras.remoting.MessageConstant;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
@@ -33,7 +33,7 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof RpcMessage) {
             RpcMessage rpcMessage = (RpcMessage) msg;
             LOGGER.info("Channel [{}] handle RpcMessage: [{}]", ctx.channel().id().toString(), msg);
-            if (rpcMessage.getMessageType() == MessageConstant.REQUEST_TYPE) {
+            if (rpcMessage.getMessageType() == MessageType.RpcRequest) {
                 RpcRequest rpcRequest = (RpcRequest) rpcMessage.getData();
                 Object result;
                 try {
@@ -50,7 +50,7 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
                 }
                 // 将RpcResponse包装成RpcMessage
                 RpcMessage response = new RpcMessage();
-                response.setMessageType(MessageConstant.RESPONSE_TYPE);
+                response.setMessageType(MessageType.RpcResponse);
                 response.setData(rpcResponse);
                 ctx.writeAndFlush(response);
             }

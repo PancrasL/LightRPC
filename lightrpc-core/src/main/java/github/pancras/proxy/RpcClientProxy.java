@@ -11,6 +11,7 @@ import java.util.UUID;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.remoting.transport.RpcClient;
+import github.pancras.wrapper.RpcServiceConfig;
 
 /**
  * @author PancrasL
@@ -21,15 +22,19 @@ public class RpcClientProxy implements InvocationHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcClientProxy.class);
 
     private final RpcClient rpcClient;
+    private final RpcServiceConfig rpcServiceConfig;
 
-    public RpcClientProxy(RpcClient rpcClient) {
+    public RpcClientProxy(RpcClient rpcClient, RpcServiceConfig rpcServiceConfig) {
         this.rpcClient = rpcClient;
+        this.rpcServiceConfig = rpcServiceConfig;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         LOGGER.info("invoke method: [{}]", method.getName());
         RpcRequest rpcRequest = new RpcRequest();
+        rpcRequest.setGroup(rpcServiceConfig.getGroup());
+        rpcRequest.setVersion(rpcServiceConfig.getVersion());
         rpcRequest.setRequestId(UUID.randomUUID().toString());
         rpcRequest.setInterfaceName(method.getDeclaringClass().getName());
         rpcRequest.setMethodName(method.getName());
