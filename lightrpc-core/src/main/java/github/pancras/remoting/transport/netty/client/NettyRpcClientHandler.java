@@ -3,7 +3,7 @@ package github.pancras.remoting.transport.netty.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import github.pancras.remoting.MessageConstant;
+import github.pancras.commons.enums.MessageType;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcResponse;
 import io.netty.channel.Channel;
@@ -29,7 +29,7 @@ public class NettyRpcClientHandler extends ChannelInboundHandlerAdapter {
             if (msg instanceof RpcMessage) {
                 RpcMessage rpcMessage = (RpcMessage) msg;
                 LOGGER.info("Client channel [{}] receive msg: [{}]", ctx.channel().id().toString(), rpcMessage);
-                if (rpcMessage.getMessageType() == MessageConstant.RESPONSE_TYPE) {
+                if (rpcMessage.getMessageType() == MessageType.RpcResponse) {
                     unprocessedRequests.complete((RpcResponse<Object>) rpcMessage.getData());
                 }
             }

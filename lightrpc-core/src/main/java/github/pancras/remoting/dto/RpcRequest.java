@@ -8,16 +8,17 @@ import java.util.Arrays;
  * <p>
  * RPC请求对象
  */
-
 public class RpcRequest implements Serializable {
     private String requestId;
+    private String group;
+    private String version;
     private String interfaceName;
     private String methodName;
     private Object[] parameters;
     private Class<?>[] paramTypes;
 
     public String getRpcServiceName() {
-        return this.interfaceName;
+        return group + '@' + version + '@' + interfaceName;
     }
 
     public String getRequestId() {
@@ -26,6 +27,22 @@ public class RpcRequest implements Serializable {
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public String getInterfaceName() {

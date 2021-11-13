@@ -1,17 +1,15 @@
 package github.pancras;
 
-import github.pancras.wrapper.RpcServiceConfig;
 import github.pancras.remoting.transport.netty.server.NettyRpcServer;
 import github.pancras.serviceimpl.HelloServiceImpl;
+import github.pancras.wrapper.RpcServiceConfig;
 
 /**
  * @author pancras
- * @create 2021/6/15 16:24
  */
 public class NettyServerMain {
     public static void main(String[] args) throws Exception {
-        RpcServiceConfig rpcServiceConfig = new RpcServiceConfig();
-        rpcServiceConfig.setService(new HelloServiceImpl());
+        RpcServiceConfig rpcServiceConfig = new RpcServiceConfig(new HelloServiceImpl(), "default_group", "latest");
 
         NettyRpcServer nettyRpcServer = new NettyRpcServer();
         nettyRpcServer.registerService(rpcServiceConfig);
