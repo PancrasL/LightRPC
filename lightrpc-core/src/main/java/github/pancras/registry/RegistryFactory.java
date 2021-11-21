@@ -1,6 +1,5 @@
 package github.pancras.registry;
 
-import github.pancras.commons.enums.RegistryType;
 import github.pancras.config.DefaultConfig;
 import github.pancras.registry.redis.RedisRegistryServiceImpl;
 import github.pancras.registry.zk.ZkRegistryServiceImpl;
@@ -9,20 +8,20 @@ import github.pancras.registry.zk.ZkRegistryServiceImpl;
  * @author PancrasL
  */
 public class RegistryFactory {
-    private static volatile RegistryService instance = null;
+    private static volatile RegistryService INSTANCE = null;
 
     private RegistryFactory() {
     }
 
     public static RegistryService getInstance() {
-        if (instance == null) {
+        if (INSTANCE == null) {
             synchronized (RegistryFactory.class) {
-                if (instance == null) {
-                    instance = buildRegistryService();
+                if (INSTANCE == null) {
+                    INSTANCE = buildRegistryService();
                 }
             }
         }
-        return instance;
+        return INSTANCE;
     }
 
     private static RegistryService buildRegistryService() {
@@ -32,15 +31,15 @@ public class RegistryFactory {
 
         switch (registryType) {
             case Zookeeper:
-                instance = new ZkRegistryServiceImpl();
+                INSTANCE = new ZkRegistryServiceImpl();
                 break;
             case Redis:
-                instance = new RedisRegistryServiceImpl();
+                INSTANCE = new RedisRegistryServiceImpl();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown type：" + registryType);
         }
-        return instance;
+        return INSTANCE;
     }
 
 }

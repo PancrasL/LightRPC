@@ -1,9 +1,9 @@
-package github.pancras.commons.enums;
+package github.pancras.registry;
 
 /**
  * @author PancrasL
  */
-public enum RegistryType {
+enum RegistryType {
     /**
      * Zookeeper registry type.
      */
@@ -14,7 +14,7 @@ public enum RegistryType {
      */
     Redis;
 
-    public static RegistryType getType(String name) {
+    static RegistryType getType(String name) {
         for (RegistryType registryType : RegistryType.values()) {
             if (registryType.name().equalsIgnoreCase(name)) {
                 return registryType;
