@@ -10,15 +10,16 @@ import java.lang.reflect.Field;
 
 import javax.annotation.Nonnull;
 
-import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.provider.ProviderFactory;
 import github.pancras.provider.ProviderService;
-import github.pancras.proxy.RpcClientProxy;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.client.NettyRpcClient;
 import github.pancras.spring.annotation.RpcReference;
 import github.pancras.spring.annotation.RpcService;
+import github.pancras.wrapper.RpcReferenceConfig;
 import github.pancras.wrapper.RpcServiceConfig;
+import github.pancras.wrapper.ServiceWrapper;
+
 
 /**
  * @author PancrasL
@@ -32,7 +33,7 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
 
     public SpringBeanPostProcessor() {
         provider = ProviderFactory.getInstance();
-        rpcClient = SingletonFactory.getInstance(NettyRpcClient.class);
+        rpcClient = NettyRpcClient.getInstance();
     }
 
     /**
@@ -43,7 +44,7 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         if (bean.getClass().isAnnotationPresent(RpcService.class)) {
             LOGGER.info("[{}] is annotated with  [{}]", bean.getClass().getName(), RpcService.class.getCanonicalName());
             RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
-            RpcServiceConfig serviceConfig = new RpcServiceConfig(bean, rpcService.group(), rpcService.version());
+            RpcServiceConfig serviceConfig = RpcServiceConfig.newInstance(bean, rpcService.group(), rpcService.version());
             try {
                 provider.publishService(serviceConfig);
             } catch (Exception e) {
@@ -63,12 +64,11 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         for (Field declaredField : declaredFields) {
             RpcReference rpcReference = declaredField.getAnnotation(RpcReference.class);
             if (rpcReference != null) {
-                RpcServiceConfig config = new RpcServiceConfig(null, rpcReference.group(), rpcReference.version());
-                RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient, config);
-                Object clientProxy = rpcClientProxy.getProxy(declaredField.getType());
+                ServiceWrapper wrapper = ServiceWrapper.newInstance(declaredField.getClass(), rpcReference.group(), rpcReference.version());
+                Object referent = RpcReferenceConfig.newInstance(rpcClient, wrapper).getReferent();
                 declaredField.setAccessible(true);
                 try {
-                    declaredField.set(bean, clientProxy);
+                    declaredField.set(bean, referent);
                 } catch (IllegalAccessException e) {
                     LOGGER.error(e.getMessage());
                 }

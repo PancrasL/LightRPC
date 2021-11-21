@@ -1,10 +1,10 @@
 package github.pancras.api;
 
 import github.pancras.HelloService;
-import github.pancras.proxy.RpcClientProxy;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.socket.SocketRpcClient;
-import github.pancras.wrapper.RpcServiceConfig;
+import github.pancras.wrapper.RpcReferenceConfig;
+import github.pancras.wrapper.ServiceWrapper;
 
 /**
  * @author pancras
@@ -14,9 +14,9 @@ import github.pancras.wrapper.RpcServiceConfig;
 public class SocketClientMain {
     public static void main(String[] args) {
         RpcClient rpcClient = new SocketRpcClient();
-        RpcServiceConfig config = new RpcServiceConfig(null);
-        RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient, config);
-        HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
+        ServiceWrapper wrapper = ServiceWrapper.newInstance(HelloService.class);
+        RpcReferenceConfig<HelloService> rpcReferenceConfig = RpcReferenceConfig.newInstance(rpcClient, wrapper);
+        HelloService helloService = rpcReferenceConfig.getReferent();
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 5; i++) {
             String s = helloService.hello("Good, socket transport is success.");

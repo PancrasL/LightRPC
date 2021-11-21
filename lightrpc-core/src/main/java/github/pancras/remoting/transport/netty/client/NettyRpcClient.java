@@ -31,6 +31,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  * @author PancrasL
  */
 public class NettyRpcClient implements RpcClient {
+    private volatile static NettyRpcClient INSTANCE;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcClient.class);
 
     private final RegistryService registryService;
@@ -39,7 +41,7 @@ public class NettyRpcClient implements RpcClient {
     private final ChannelPool channelPool;
     private final UnprocessedRequests unprocessedRequests;
 
-    public NettyRpcClient() {
+    private NettyRpcClient() {
         bootstrap = new Bootstrap();
         // 处理与服务端通信的线程组
         workerGroup = new NioEventLoopGroup();
@@ -60,6 +62,17 @@ public class NettyRpcClient implements RpcClient {
         unprocessedRequests = new UnprocessedRequests();
 
         ShutdownHook.getInstance().addDisposable(this);
+    }
+
+    public static NettyRpcClient getInstance() {
+        if(INSTANCE == null){
+            synchronized (NettyRpcClient.class){
+                if(INSTANCE == null){
+                    INSTANCE = new NettyRpcClient();
+                }
+            }
+        }
+        return INSTANCE;
     }
 
     @Override
