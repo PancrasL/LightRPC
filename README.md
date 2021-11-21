@@ -1,6 +1,6 @@
-# 1. Sparrow
+# 1. LightRPC
 
-sparrow 是一款以学习RPC原理为目的的轻量 RPC 框架。
+LightRPC 是一款以学习RPC原理为目的的轻量级 RPC 框架。
 
 本意是通过重复造轮子理解RPC原理，巩固对于自己所掌握的知识的运用。
 
@@ -81,3 +81,10 @@ $ docker run -d --name=zookeeper -p 2181:2181 zookeeper:3.6.3
 - 启动 `example-server/src/main/java/github/pancras/spring/NettyServerApplication.java`
 
 - 启动 `example-client/src/main/java/github/pancras/api/NettyClientApplication.java`
+
+
+> Reference:
+> 
+> [1] [guide-rpc-framework](https://github.com/Snailclimb/guide-rpc-framework)
+>
+> [2] [客户端池化](https://blog.csdn.net/a294634473/article/details/89710187)
