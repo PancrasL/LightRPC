@@ -13,9 +13,9 @@ import java.util.concurrent.Executors;
 import github.pancras.commons.ShutdownHook;
 import github.pancras.config.DefaultConfig;
 import github.pancras.provider.ProviderFactory;
-import github.pancras.wrapper.RpcServiceConfig;
 import github.pancras.provider.ProviderService;
 import github.pancras.remoting.transport.RpcServer;
+import github.pancras.wrapper.RpcServiceConfig;
 
 /**
  * @author PancrasL
@@ -58,11 +58,11 @@ public class SocketRpcServer implements RpcServer {
         isStarted = true;
         LOGGER.info("RPC Server listen at: [{}]", inetSocketAddress);
         ShutdownHook.getInstance().addDisposable(this);
-        
+
         Socket socket;
         while ((socket = server.accept()) != null) {
             LOGGER.info("RPC Client connected [{}]", socket.getInetAddress());
-            threadPool.execute(new SocketRpcServerHandler(socket));
+            threadPool.execute(new SocketRpcServerHandler(socket, providerService));
         }
     }
 

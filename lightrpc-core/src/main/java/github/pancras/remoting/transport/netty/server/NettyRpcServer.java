@@ -83,7 +83,7 @@ public class NettyRpcServer implements RpcServer {
                         ChannelPipeline p = ch.pipeline();
                         p.addLast(new Decoder());
                         p.addLast(new Encoder());
-                        p.addLast(serviceHandlerGroup, new NettyRpcServerHandler());
+                        p.addLast(serviceHandlerGroup, new NettyRpcServerHandler(providerService));
                     }
                 });
 

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 
 import github.pancras.exception.RpcException;
+import github.pancras.provider.ProviderService;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
@@ -23,8 +24,8 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcServerHandler.class);
     private final RpcRequestHandler rpcRequestHandler;
 
-    public NettyRpcServerHandler() {
-        rpcRequestHandler = new RpcRequestHandler();
+    public NettyRpcServerHandler(ProviderService providerService) {
+        rpcRequestHandler = new RpcRequestHandler(providerService);
     }
 
     @Override
