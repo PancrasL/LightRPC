@@ -1,9 +1,9 @@
-package github.pancras.commons.enums;
+package github.pancras.serialize;
 
 /**
  * @author PancrasL
  */
-public enum SerializerType {
+enum SerializerType {
     /**
      * Zookeeper registry type.
      */
@@ -14,7 +14,7 @@ public enum SerializerType {
      */
     Protostuff;
 
-    public static SerializerType getType(String name) {
+    static SerializerType getType(String name) {
         for (SerializerType registryType : SerializerType.values()) {
             if (registryType.name().equalsIgnoreCase(name)) {
                 return registryType;
