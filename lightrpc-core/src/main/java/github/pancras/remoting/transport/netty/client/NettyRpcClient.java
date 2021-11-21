@@ -7,7 +7,6 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 
 import github.pancras.commons.ShutdownHook;
-import github.pancras.commons.enums.MessageType;
 import github.pancras.config.DefaultConfig;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
@@ -73,9 +72,7 @@ public class NettyRpcClient implements RpcClient {
         if (channel.isActive()) {
             unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
 
-            RpcMessage rpcMessage = new RpcMessage();
-            rpcMessage.setMessageType(MessageType.RpcRequest);
-            rpcMessage.setData(rpcRequest);
+            RpcMessage rpcMessage = RpcMessage.newInstance(rpcRequest);
             channel.writeAndFlush(rpcMessage).addListener(future -> {
                 if (future.isSuccess()) {
                     LOGGER.debug("Client send message: [{}]", rpcMessage);
