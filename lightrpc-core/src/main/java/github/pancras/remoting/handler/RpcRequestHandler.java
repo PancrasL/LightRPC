@@ -14,8 +14,12 @@ import github.pancras.remoting.dto.RpcRequest;
 public class RpcRequestHandler {
     private final ProviderService providerService;
 
-    public RpcRequestHandler(ProviderService providerService) {
+    private RpcRequestHandler(ProviderService providerService) {
         this.providerService = providerService;
+    }
+
+    public static RpcRequestHandler newInstance(ProviderService providerService) {
+        return new RpcRequestHandler(providerService);
     }
 
     public Object handle(RpcRequest rpcRequest) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {

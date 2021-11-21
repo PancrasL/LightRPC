@@ -26,7 +26,7 @@ public class SocketRpcServerHandler implements Runnable {
 
     public SocketRpcServerHandler(Socket socket, ProviderService providerService) {
         this.socket = socket;
-        this.rpcRequestHandler = new RpcRequestHandler(providerService);
+        this.rpcRequestHandler = RpcRequestHandler.newInstance(providerService);
     }
 
     @Override

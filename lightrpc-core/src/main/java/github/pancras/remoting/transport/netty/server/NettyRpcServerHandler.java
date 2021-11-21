@@ -25,7 +25,7 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
     private final RpcRequestHandler rpcRequestHandler;
 
     public NettyRpcServerHandler(ProviderService providerService) {
-        rpcRequestHandler = new RpcRequestHandler(providerService);
+        rpcRequestHandler = RpcRequestHandler.newInstance(providerService);
     }
 
     @Override
