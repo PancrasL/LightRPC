@@ -18,13 +18,13 @@ import github.pancras.wrapper.RpcReferenceConfig;
  * <p>
  * 通过动态代理和反射机制隐藏数据传输细节
  */
-public class RpcClientProxy<T> implements InvocationHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RpcClientProxy.class);
+public class RpcReferenceProxy<T> implements InvocationHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RpcReferenceProxy.class);
 
     private final RpcClient rpcClient;
     private final RpcReferenceConfig<T> rpcReferenceConfig;
 
-    private RpcClientProxy(RpcClient rpcClient, RpcReferenceConfig<T> referenceConfig) {
+    private RpcReferenceProxy(RpcClient rpcClient, RpcReferenceConfig<T> referenceConfig) {
         this.rpcClient = rpcClient;
         this.rpcReferenceConfig = referenceConfig;
     }
@@ -38,7 +38,7 @@ public class RpcClientProxy<T> implements InvocationHandler {
     public static <T> Object newProxyInstance(RpcReferenceConfig<T> referenceConfig) {
         RpcClient rpcClient = referenceConfig.getRpcClient();
         Class<T> interfac = referenceConfig.getInterface();
-        return Proxy.newProxyInstance(interfac.getClassLoader(), new Class[]{interfac}, new RpcClientProxy<>(rpcClient, referenceConfig));
+        return Proxy.newProxyInstance(interfac.getClassLoader(), new Class[]{interfac}, new RpcReferenceProxy<>(rpcClient, referenceConfig));
     }
 
     @Override

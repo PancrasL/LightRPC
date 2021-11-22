@@ -3,7 +3,7 @@ package github.pancras.wrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import github.pancras.proxy.RpcClientProxy;
+import github.pancras.proxy.RpcReferenceProxy;
 import github.pancras.remoting.transport.RpcClient;
 
 public class RpcReferenceConfig<T> {
@@ -69,7 +69,7 @@ public class RpcReferenceConfig<T> {
 
     public T getReferent() {
         if (referent == null) {
-            referent = RpcClientProxy.newProxyInstance(this);
+            referent = RpcReferenceProxy.newProxyInstance(this);
         }
         return (T) referent;
     }
