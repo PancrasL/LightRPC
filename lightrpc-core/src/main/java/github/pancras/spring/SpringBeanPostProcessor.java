@@ -18,7 +18,6 @@ import github.pancras.spring.annotation.RpcReference;
 import github.pancras.spring.annotation.RpcService;
 import github.pancras.wrapper.RpcReferenceConfig;
 import github.pancras.wrapper.RpcServiceConfig;
-import github.pancras.wrapper.ServiceWrapper;
 
 
 /**
@@ -44,9 +43,10 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         if (bean.getClass().isAnnotationPresent(RpcService.class)) {
             LOGGER.info("[{}] is annotated with  [{}]", bean.getClass().getName(), RpcService.class.getCanonicalName());
             RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
-            RpcServiceConfig serviceConfig = RpcServiceConfig.newInstance(bean, rpcService.group(), rpcService.version());
+            //new RpcServiceConfig.Builder<Object>()
+            //RpcServiceConfig serviceConfig = RpcServiceConfig.newInstance(bean, rpcService.group(), rpcService.version());
             try {
-                provider.publishService(serviceConfig);
+                //provider.publishService(serviceConfig);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage());
             }
@@ -64,8 +64,9 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         for (Field declaredField : declaredFields) {
             RpcReference rpcReference = declaredField.getAnnotation(RpcReference.class);
             if (rpcReference != null) {
-                ServiceWrapper wrapper = ServiceWrapper.newInstance(declaredField.getClass(), rpcReference.group(), rpcReference.version());
-                Object referent = RpcReferenceConfig.newInstance(rpcClient, wrapper).getReferent();
+                Class interfac = declaredField.getClass();
+                RpcReferenceConfig<Object> reference = new RpcReferenceConfig.Builder<Object>(rpcClient, interfac).build();
+                Object referent = reference.getReferent();
                 declaredField.setAccessible(true);
                 try {
                     declaredField.set(bean, referent);

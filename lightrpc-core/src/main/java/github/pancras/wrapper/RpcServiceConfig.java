@@ -1,5 +1,7 @@
 package github.pancras.wrapper;
 
+import github.pancras.remoting.transport.RpcServer;
+
 /**
  * @author PancrasL
  * <p>
@@ -8,41 +10,63 @@ package github.pancras.wrapper;
 public class RpcServiceConfig<T> {
 
     /**
+     * 服务通信
+     */
+    private final RpcServer rpcServer;
+    /**
      * 当接口有多个实现类时，使用group来标识
      */
-    private String group;
+    private final String group;
     /**
      * 标识接口的不同版本，不同版本不兼容
      */
-    private String version;
+    private final String version;
     /**
-     * 客户端表示接口、服务端表示接口的实例
+     * 服务实例
      */
-    private T service;
-
-    private RpcServiceConfig(T service, String group, String version) {
-        this.group = group;
-        this.version = version;
-        this.service = service;
-    }
+    private final T service;
 
     /**
-     * 使用默认的group和version
+     * 暴露及注册服务
      */
-    public static <T> RpcServiceConfig<T> newInstance(T service) {
-        // 使用“”代表默认group和默认version
-        return new RpcServiceConfig<>(service, "", "");
+    public void export() throws Exception {
+        rpcServer.registerService(this);
     }
 
-    /**
-     * 使用指定的group和version
-     */
-    public static <T> RpcServiceConfig<T> newInstance(T service, String group, String version) {
-        return new RpcServiceConfig<>(service, group, version);
+    public static class Builder<T> {
+        // Required paramaters
+        private final RpcServer rpcServer;
+        private final T service;
+
+        // Optional parameters - initialized to default values
+        private String group = "";
+        private String version = "";
+
+        public Builder(RpcServer rpcServer, T service) {
+            this.rpcServer = rpcServer;
+            this.service = service;
+        }
+
+        public Builder<T> group(String group) {
+            this.group = group;
+            return this;
+        }
+
+        public Builder<T> version(String version) {
+            this.version = version;
+            return this;
+        }
+
+        public RpcServiceConfig<T> build() {
+            return new RpcServiceConfig<>(this);
+        }
     }
 
-    public RpcServiceConfig(T service) {
-        this.service = service;
+    private RpcServiceConfig(Builder<T> builder) {
+        this.rpcServer = builder.rpcServer;
+        this.group = builder.group;
+        this.version = builder.version;
+        this.service = builder.service;
     }
 
     public String getRpcServiceName() {
@@ -57,23 +81,11 @@ public class RpcServiceConfig<T> {
         return group;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
     public String getVersion() {
         return version;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
     public Object getService() {
         return service;
-    }
-
-    public void setService(T service) {
-        this.service = service;
     }
 }

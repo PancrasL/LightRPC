@@ -1,5 +1,7 @@
 package github.pancras.api;
 
+import java.net.InetSocketAddress;
+
 import github.pancras.api.service.HelloServiceImpl;
 import github.pancras.remoting.transport.netty.server.NettyRpcServer;
 import github.pancras.wrapper.RpcServiceConfig;
@@ -9,10 +11,12 @@ import github.pancras.wrapper.RpcServiceConfig;
  */
 public class NettyServerMain {
     public static void main(String[] args) throws Exception {
-        RpcServiceConfig<HelloServiceImpl> rpcServiceConfig = RpcServiceConfig.newInstance(new HelloServiceImpl());
+        NettyRpcServer nettyRpcServer = new NettyRpcServer(InetSocketAddress.createUnresolved("localhost", 7998));
+        HelloServiceImpl serviceInstance = new HelloServiceImpl();
+        RpcServiceConfig<HelloServiceImpl> rpcServiceConfig = new RpcServiceConfig.Builder<>(nettyRpcServer, serviceInstance).build();
 
-        NettyRpcServer nettyRpcServer = new NettyRpcServer();
-        nettyRpcServer.registerService(rpcServiceConfig);
+        // 暴露及注册服务
+        rpcServiceConfig.export();
         try {
             nettyRpcServer.start();
         } catch (Exception e) {

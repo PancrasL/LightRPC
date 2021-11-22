@@ -4,7 +4,6 @@ import github.pancras.HelloService;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.socket.SocketRpcClient;
 import github.pancras.wrapper.RpcReferenceConfig;
-import github.pancras.wrapper.ServiceWrapper;
 
 /**
  * @author pancras
@@ -14,8 +13,7 @@ import github.pancras.wrapper.ServiceWrapper;
 public class SocketClientMain {
     public static void main(String[] args) {
         RpcClient rpcClient = new SocketRpcClient();
-        ServiceWrapper wrapper = ServiceWrapper.newInstance(HelloService.class);
-        RpcReferenceConfig<HelloService> rpcReferenceConfig = RpcReferenceConfig.newInstance(rpcClient, wrapper);
+        RpcReferenceConfig<HelloService> rpcReferenceConfig = new RpcReferenceConfig.Builder<>(rpcClient, HelloService.class).build();
         HelloService helloService = rpcReferenceConfig.getReferent();
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 5; i++) {

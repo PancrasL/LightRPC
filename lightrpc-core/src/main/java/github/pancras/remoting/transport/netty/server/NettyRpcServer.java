@@ -3,11 +3,11 @@ package github.pancras.remoting.transport.netty.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import github.pancras.commons.ShutdownHook;
 import github.pancras.commons.utils.SystemUtil;
-import github.pancras.config.DefaultConfig;
 import github.pancras.provider.ProviderFactory;
 import github.pancras.provider.ProviderService;
 import github.pancras.registry.RegistryFactory;
@@ -32,6 +32,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class NettyRpcServer implements RpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcServer.class);
 
+    private InetSocketAddress address;
     private final ServerBootstrap serverBootstrap = new ServerBootstrap();
     /**
      * 一个 accepter线程处理客户端连接 2*cpu个线程处理io cpu个线程处理业务 参考：https://www.cnblogs.com/jpfss/p/11016169.html
@@ -44,7 +45,7 @@ public class NettyRpcServer implements RpcServer {
     private final ProviderService providerService;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    public NettyRpcServer() {
+    public NettyRpcServer(InetSocketAddress address) {
         providerService = ProviderFactory.getInstance();
         // 监听线程组，监听客户端请求
         bossGroup = new NioEventLoopGroup(1);
@@ -55,17 +56,12 @@ public class NettyRpcServer implements RpcServer {
     }
 
     @Override
-    public void registerService(RpcServiceConfig rpcServiceConfig) throws Exception {
+    public void registerService(RpcServiceConfig<?> rpcServiceConfig) throws Exception {
         providerService.publishService(rpcServiceConfig);
     }
 
     @Override
     public void start() throws Exception {
-        start(DefaultConfig.DEFAULT_SERVER_ADDRESS, DefaultConfig.DEFAULT_SERVER_PORT);
-    }
-
-    @Override
-    public void start(String host, int port) throws Exception {
         if (initialized.get()) {
             throw new Exception("The server is already started, please do not start the service repeatedly.");
         }
@@ -88,8 +84,8 @@ public class NettyRpcServer implements RpcServer {
                 });
 
         // 绑定端口，同步等待
-        serverChannel = serverBootstrap.bind(host, port).sync().channel();
-        LOGGER.info("Server is started, listen at [{}:{}]", host, port);
+        serverChannel = serverBootstrap.bind(address).sync().channel();
+        LOGGER.info("Server is started, listen at [{}]", address);
         initialized.set(true);
 
         // 添加关闭钩子，在程序退出时调用 destroy() 释放资源

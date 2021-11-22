@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import github.pancras.commons.ShutdownHook;
-import github.pancras.config.DefaultConfig;
 import github.pancras.provider.ProviderFactory;
 import github.pancras.provider.ProviderService;
 import github.pancras.remoting.transport.RpcServer;
@@ -22,19 +21,22 @@ import github.pancras.wrapper.RpcServiceConfig;
  */
 public class SocketRpcServer implements RpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcServer.class);
+
+    private final InetSocketAddress address;
     private final ExecutorService threadPool;
     private final ProviderService providerService;
 
     private boolean isStarted = false;
     private ServerSocket server;
 
-    public SocketRpcServer() {
-        threadPool = Executors.newCachedThreadPool();
-        providerService = ProviderFactory.getInstance();
+    public SocketRpcServer(InetSocketAddress address) {
+        this.address = address;
+        this.threadPool = Executors.newCachedThreadPool();
+        this.providerService = ProviderFactory.getInstance();
     }
 
     @Override
-    public void registerService(RpcServiceConfig rpcServiceConfig) {
+    public void registerService(RpcServiceConfig<?> rpcServiceConfig) {
         try {
             providerService.publishService(rpcServiceConfig);
         } catch (Exception e) {
@@ -44,19 +46,13 @@ public class SocketRpcServer implements RpcServer {
 
     @Override
     public void start() throws Exception {
-        start(DefaultConfig.DEFAULT_SERVER_ADDRESS, DefaultConfig.DEFAULT_SERVER_PORT);
-    }
-
-    @Override
-    public void start(String host, int port) throws Exception {
         if (isStarted) {
             throw new IllegalStateException("The server is already started, please do not start the service repeatedly.");
         }
         server = new ServerSocket();
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
-        server.bind(inetSocketAddress);
+        server.bind(address);
         isStarted = true;
-        LOGGER.info("RPC Server listen at: [{}]", inetSocketAddress);
+        LOGGER.info("RPC Server listen at: [{}]", address);
         ShutdownHook.getInstance().addDisposable(this);
 
         Socket socket;
