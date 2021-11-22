@@ -38,12 +38,12 @@ public class RpcClientProxy<T> implements InvocationHandler {
     public static <T> Object newProxyInstance(RpcReferenceConfig<T> referenceConfig) {
         RpcClient rpcClient = referenceConfig.getRpcClient();
         Class<T> interfac = referenceConfig.getInterface();
-        return Proxy.newProxyInstance(interfac.getClassLoader(), interfac.getInterfaces(), new RpcClientProxy<>(rpcClient, referenceConfig));
+        return Proxy.newProxyInstance(interfac.getClassLoader(), new Class[]{interfac}, new RpcClientProxy<>(rpcClient, referenceConfig));
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        LOGGER.info("invoke method: [{}]", method.getName());
+        LOGGER.debug("invoke method: [{}]", method.getName());
         RpcRequest rpcRequest = new RpcRequest();
         rpcRequest.setGroup(rpcReferenceConfig.getGroup());
         rpcRequest.setVersion(rpcReferenceConfig.getVersion());
@@ -53,7 +53,11 @@ public class RpcClientProxy<T> implements InvocationHandler {
         rpcRequest.setParameters(args);
         rpcRequest.setParamTypes(method.getParameterTypes());
 
-        RpcResponse<Object> rpcResponse = (RpcResponse<Object>) rpcClient.sendRpcRequest(rpcRequest);
-        return rpcResponse.getData();
+        Object response = rpcClient.sendRpcRequest(rpcRequest);
+
+        if (response instanceof RpcResponse) {
+            return ((RpcResponse<?>) response).getData();
+        }
+        throw new IllegalStateException("Bad response");
     }
 }

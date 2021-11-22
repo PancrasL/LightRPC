@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,6 +20,7 @@ import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.wrapper.RpcServiceConfig;
+import io.netty.resolver.InetSocketAddressResolver;
 
 /**
  * @author PancrasL
@@ -26,7 +28,7 @@ import github.pancras.wrapper.RpcServiceConfig;
 public class SocketRpcServer implements RpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcServer.class);
 
-    private final InetSocketAddress address;
+    private final SocketAddress address;
     private final ExecutorService threadPool;
     private final ProviderService providerService;
 

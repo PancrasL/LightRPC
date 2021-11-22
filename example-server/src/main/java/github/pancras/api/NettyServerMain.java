@@ -11,7 +11,8 @@ import github.pancras.wrapper.RpcServiceConfig;
  */
 public class NettyServerMain {
     public static void main(String[] args) throws Exception {
-        NettyRpcServer nettyRpcServer = new NettyRpcServer(InetSocketAddress.createUnresolved("localhost", 7998));
+        InetSocketAddress address = new InetSocketAddress("localhost", 7998);
+        NettyRpcServer nettyRpcServer = new NettyRpcServer(address);
         HelloServiceImpl serviceInstance = new HelloServiceImpl();
         RpcServiceConfig<HelloServiceImpl> rpcServiceConfig = new RpcServiceConfig.Builder<>(nettyRpcServer, serviceInstance).build();
 

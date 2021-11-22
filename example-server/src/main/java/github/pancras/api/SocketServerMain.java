@@ -13,7 +13,8 @@ import github.pancras.wrapper.RpcServiceConfig;
  */
 public class SocketServerMain {
     public static void main(String[] args) throws Exception {
-        SocketRpcServer socketRpcServer = new SocketRpcServer(InetSocketAddress.createUnresolved("localhost", 7998));
+        InetSocketAddress address = new InetSocketAddress("localhost", 7998);
+        SocketRpcServer socketRpcServer = new SocketRpcServer(address);
         HelloServiceImpl serviceInstance = new HelloServiceImpl();
         RpcServiceConfig<HelloServiceImpl> rpcServiceConfig = new RpcServiceConfig
                 .Builder<>(socketRpcServer, serviceInstance)
