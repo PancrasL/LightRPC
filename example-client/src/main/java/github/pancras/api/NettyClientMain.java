@@ -12,7 +12,7 @@ import github.pancras.wrapper.RpcServiceConfig;
 public class NettyClientMain {
     public static void main(String[] args) {
         RpcClient rpcClient = new NettyRpcClient();
-        RpcServiceConfig config = new RpcServiceConfig(null, "default_group", "latest");
+        RpcServiceConfig config = new RpcServiceConfig(null, "group1", "v1");
         RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient, config);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         long startTime = System.currentTimeMillis();
