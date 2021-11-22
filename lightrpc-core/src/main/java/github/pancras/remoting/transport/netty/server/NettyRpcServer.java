@@ -43,7 +43,7 @@ public class NettyRpcServer implements RpcServer {
     private final EventLoopGroup workerGroup;
     private final DefaultEventLoopGroup serviceHandlerGroup;
 
-    private InetSocketAddress address;
+    private final InetSocketAddress address;
     private final ServerBootstrap serverBootstrap = new ServerBootstrap();
 
     private Channel serverChannel;
@@ -54,6 +54,7 @@ public class NettyRpcServer implements RpcServer {
     public NettyRpcServer(InetSocketAddress address) {
         // 注册中心
         RegistryService registryService = RegistryFactory.getInstance();
+        this.address = address;
         // 提供者服务，用于发布和查询服务
         providerService = DefaultProviderServiceImpl.newInstance(registryService);
         // 监听线程组，监听客户端请求
