@@ -11,14 +11,14 @@ import github.pancras.wrapper.RpcReferenceConfig;
  * RPC调用底层采用Socket数据传输的客户端实现
  */
 public class SocketClientMain {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         RpcClient rpcClient = new SocketRpcClient();
         RpcReferenceConfig<HelloService> rpcReferenceConfig = new RpcReferenceConfig.Builder<>(rpcClient, HelloService.class).build();
-        HelloService helloService = rpcReferenceConfig.getReferent();
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 50000000; i++) {
+            HelloService helloService = rpcReferenceConfig.getReferent();
             String s = helloService.hello("Good, socket transport is success.");
-            System.out.println(s);
+            System.out.println(i);
         }
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));

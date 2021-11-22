@@ -3,12 +3,10 @@ package github.pancras.registry;
 import java.net.InetSocketAddress;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * @author PancrasL
  */
-@ThreadSafe
 public interface RegistryService {
     /**
      * 服务提供者使用，将服务注册到注册中心
