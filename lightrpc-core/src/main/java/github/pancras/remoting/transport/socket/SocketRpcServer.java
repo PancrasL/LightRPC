@@ -10,6 +10,8 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.annotation.Nonnull;
+
 import github.pancras.commons.ShutdownHook;
 import github.pancras.provider.ProviderFactory;
 import github.pancras.provider.ProviderService;
@@ -36,7 +38,7 @@ public class SocketRpcServer implements RpcServer {
     }
 
     @Override
-    public void registerService(RpcServiceConfig<?> rpcServiceConfig) {
+    public void registerService(@Nonnull RpcServiceConfig<?> rpcServiceConfig) {
         try {
             providerService.publishService(rpcServiceConfig);
         } catch (Exception e) {

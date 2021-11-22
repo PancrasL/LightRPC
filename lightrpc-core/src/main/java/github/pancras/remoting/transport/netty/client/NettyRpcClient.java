@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
+
 import github.pancras.commons.ShutdownHook;
 import github.pancras.config.DefaultConfig;
 import github.pancras.registry.RegistryFactory;
@@ -76,7 +78,7 @@ public class NettyRpcClient implements RpcClient {
     }
 
     @Override
-    public Object sendRpcRequest(RpcRequest rpcRequest) throws Exception {
+    public Object sendRpcRequest(@Nonnull RpcRequest rpcRequest) throws Exception {
         CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();
         InetSocketAddress inetSocketAddress = registryService.lookup(rpcRequest.getRpcServiceName());
 

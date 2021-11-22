@@ -1,5 +1,6 @@
 package github.pancras.remoting.transport;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 
 import github.pancras.commons.Disposable;
@@ -15,7 +16,7 @@ public interface RpcServer extends Disposable {
      *
      * @param rpcServiceConfig 服务的包装类
      */
-    void registerService(RpcServiceConfig<?> rpcServiceConfig) throws Exception;
+    void registerService(@Nonnull RpcServiceConfig<?> rpcServiceConfig) throws Exception;
 
     /**
      * 使用默认ip和默认port启动服务器，详见SparrowConfig

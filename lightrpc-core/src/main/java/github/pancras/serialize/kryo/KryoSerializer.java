@@ -9,6 +9,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import javax.annotation.Nonnull;
+
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.serialize.Serializer;
@@ -31,7 +33,7 @@ public class KryoSerializer implements Serializer {
     };
 
     @Override
-    public byte[] serialize(Object obj) throws IOException {
+    public byte[] serialize(@Nonnull Object obj) throws IOException {
         try (Output output = new Output(new ByteArrayOutputStream())) {
             Kryo kryo = KRYO_THREAD_LOCAL.get();
             // obj --> byte[]
@@ -44,7 +46,7 @@ public class KryoSerializer implements Serializer {
     }
 
     @Override
-    public <T> T deserialize(byte[] bytes, Class<T> clazz) throws IOException {
+    public <T> T deserialize(@Nonnull byte[] bytes, @Nonnull Class<T> clazz) throws IOException {
         try (Input input = new Input(new ByteArrayInputStream(bytes))) {
             Kryo kryo = KRYO_THREAD_LOCAL.get();
             // byte[] --> obj

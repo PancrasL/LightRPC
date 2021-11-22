@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.Nonnull;
+
 import github.pancras.commons.ShutdownHook;
 import github.pancras.commons.utils.SystemUtil;
 import github.pancras.provider.ProviderFactory;
@@ -56,7 +58,7 @@ public class NettyRpcServer implements RpcServer {
     }
 
     @Override
-    public void registerService(RpcServiceConfig<?> rpcServiceConfig) throws Exception {
+    public void registerService(@Nonnull RpcServiceConfig<?> rpcServiceConfig) throws Exception {
         providerService.publishService(rpcServiceConfig);
     }
 

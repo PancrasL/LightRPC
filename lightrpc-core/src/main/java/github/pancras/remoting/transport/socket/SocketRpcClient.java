@@ -5,6 +5,8 @@ import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import javax.annotation.Nonnull;
+
 import github.pancras.commons.ShutdownHook;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
@@ -18,12 +20,12 @@ public class SocketRpcClient implements RpcClient {
     private final RegistryService registryService;
 
     public SocketRpcClient() {
-        this.registryService = RegistryFactory.getInstance();
+        registryService = RegistryFactory.getInstance();
         ShutdownHook.getInstance().addDisposable(this);
     }
 
     @Override
-    public Object sendRpcRequest(RpcRequest rpcRequest) throws Exception {
+    public Object sendRpcRequest(@Nonnull RpcRequest rpcRequest) throws Exception {
         Socket socket = new Socket();
         InetSocketAddress inetSocketAddress = registryService.lookup(rpcRequest.getRpcServiceName());
         socket.connect(inetSocketAddress);
