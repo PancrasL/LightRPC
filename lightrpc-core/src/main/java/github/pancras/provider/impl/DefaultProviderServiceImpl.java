@@ -36,11 +36,11 @@ public class DefaultProviderServiceImpl implements ProviderService {
         String host = DefaultConfig.SERVICE_REGISTER_ADDRESS;
         int port = DefaultConfig.DEFAULT_SERVER_PORT;
         registry.register(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, port));
-        this.addService(rpcServiceConfig);
+        
+        addServiceToCache(rpcServiceConfig);
     }
 
-    @Override
-    public void addService(RpcServiceConfig rpcServiceConfig) {
+    private void addServiceToCache(RpcServiceConfig rpcServiceConfig) {
         String rpcServiceName = rpcServiceConfig.getRpcServiceName();
         if (registeredService.contains((rpcServiceName))) {
             LOGGER.warn("Service [{}] has been published already", rpcServiceName);

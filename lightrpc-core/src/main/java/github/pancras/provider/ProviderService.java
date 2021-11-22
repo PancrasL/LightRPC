@@ -11,14 +11,7 @@ public interface ProviderService {
      *
      * @param rpcServiceConfig RPC 服务的相关属性
      */
-    void publishService(RpcServiceConfig rpcServiceConfig) throws Exception;
-
-    /**
-     * 仅将服务添加到本地缓存
-     *
-     * @param rpcServiceConfig RPC 服务的相关属性
-     */
-    void addService(RpcServiceConfig rpcServiceConfig);
+    void publishService(RpcServiceConfig<?> rpcServiceConfig) throws Exception;
 
     /**
      * 服务调用，通过rpcServiceName获取服务实例
