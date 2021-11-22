@@ -10,14 +10,14 @@ import java.lang.reflect.Field;
 
 import javax.annotation.Nonnull;
 
-import github.pancras.provider.ProviderFactory;
 import github.pancras.provider.ProviderService;
+import github.pancras.provider.impl.DefaultProviderServiceImpl;
+import github.pancras.registry.RegistryFactory;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.client.NettyRpcClient;
 import github.pancras.spring.annotation.RpcReference;
 import github.pancras.spring.annotation.RpcService;
 import github.pancras.wrapper.RpcReferenceConfig;
-import github.pancras.wrapper.RpcServiceConfig;
 
 
 /**
@@ -31,7 +31,7 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
     private final RpcClient rpcClient;
 
     public SpringBeanPostProcessor() {
-        provider = ProviderFactory.getInstance();
+        provider = DefaultProviderServiceImpl.newInstance(RegistryFactory.getInstance());
         rpcClient = NettyRpcClient.getInstance();
     }
 

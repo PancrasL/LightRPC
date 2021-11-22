@@ -10,9 +10,10 @@ import javax.annotation.Nonnull;
 
 import github.pancras.commons.ShutdownHook;
 import github.pancras.commons.utils.SystemUtil;
-import github.pancras.provider.ProviderFactory;
 import github.pancras.provider.ProviderService;
+import github.pancras.provider.impl.DefaultProviderServiceImpl;
 import github.pancras.registry.RegistryFactory;
+import github.pancras.registry.RegistryService;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
@@ -34,21 +35,27 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class NettyRpcServer implements RpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcServer.class);
 
-    private InetSocketAddress address;
-    private final ServerBootstrap serverBootstrap = new ServerBootstrap();
+    private final ProviderService providerService;
     /**
      * 一个 accepter线程处理客户端连接 2*cpu个线程处理io cpu个线程处理业务 参考：https://www.cnblogs.com/jpfss/p/11016169.html
      */
     private final EventLoopGroup bossGroup;
     private final EventLoopGroup workerGroup;
     private final DefaultEventLoopGroup serviceHandlerGroup;
+
+    private InetSocketAddress address;
+    private final ServerBootstrap serverBootstrap = new ServerBootstrap();
+
     private Channel serverChannel;
 
-    private final ProviderService providerService;
+
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
     public NettyRpcServer(InetSocketAddress address) {
-        providerService = ProviderFactory.getInstance();
+        // 注册中心
+        RegistryService registryService = RegistryFactory.getInstance();
+        // 提供者服务，用于发布和查询服务
+        providerService = DefaultProviderServiceImpl.newInstance(registryService);
         // 监听线程组，监听客户端请求
         bossGroup = new NioEventLoopGroup(1);
         // 工作线程组，处理与客户端的数据通讯
@@ -98,7 +105,7 @@ public class NettyRpcServer implements RpcServer {
     public void destroy() {
         try {
             if (initialized.get()) {
-                RegistryFactory.getInstance().close();
+                providerService.close();
                 serverChannel.close();
             }
             this.bossGroup.shutdownGracefully();

@@ -13,8 +13,10 @@ import java.util.concurrent.Executors;
 import javax.annotation.Nonnull;
 
 import github.pancras.commons.ShutdownHook;
-import github.pancras.provider.ProviderFactory;
 import github.pancras.provider.ProviderService;
+import github.pancras.provider.impl.DefaultProviderServiceImpl;
+import github.pancras.registry.RegistryFactory;
+import github.pancras.registry.RegistryService;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.wrapper.RpcServiceConfig;
 
@@ -34,16 +36,13 @@ public class SocketRpcServer implements RpcServer {
     public SocketRpcServer(InetSocketAddress address) {
         this.address = address;
         this.threadPool = Executors.newCachedThreadPool();
-        this.providerService = ProviderFactory.getInstance();
+        RegistryService registryService = RegistryFactory.getInstance();
+        this.providerService = DefaultProviderServiceImpl.newInstance(registryService);
     }
 
     @Override
-    public void registerService(@Nonnull RpcServiceConfig<?> rpcServiceConfig) {
-        try {
-            providerService.publishService(rpcServiceConfig);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public void registerService(@Nonnull RpcServiceConfig<?> rpcServiceConfig) throws Exception {
+        providerService.publishService(rpcServiceConfig);
     }
 
     @Override
@@ -64,17 +63,14 @@ public class SocketRpcServer implements RpcServer {
         }
     }
 
-    public void shutdown() {
+    @Override
+    public void destroy() {
         try {
             isStarted = false;
             server.close();
             threadPool.shutdown();
         } catch (IOException ignored) {
+            // app will exit
         }
-    }
-
-    @Override
-    public void destroy() {
-        this.shutdown();
     }
 }

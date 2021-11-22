@@ -8,39 +8,43 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import github.pancras.config.DefaultConfig;
 import github.pancras.exception.RpcException;
 import github.pancras.provider.ProviderService;
-import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
 import github.pancras.wrapper.RpcServiceConfig;
 
 /**
  * @author PancrasL
  */
+@ThreadSafe
 public class DefaultProviderServiceImpl implements ProviderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultProviderServiceImpl.class);
 
-    private final Map<String, Object> serviceMap;
-    private final Set<String> registeredService;
+    private final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
     private final RegistryService registry;
 
-    public DefaultProviderServiceImpl() {
-        serviceMap = new ConcurrentHashMap<>();
-        registeredService = ConcurrentHashMap.newKeySet();
-        registry = RegistryFactory.getInstance();
+    public static DefaultProviderServiceImpl newInstance(RegistryService registry) {
+        return new DefaultProviderServiceImpl(registry);
+    }
+
+    private DefaultProviderServiceImpl(RegistryService registry) {
+        this.registry = registry;
     }
 
     @Override
-    public void publishService(RpcServiceConfig rpcServiceConfig) throws Exception {
+    public void publishService(RpcServiceConfig<?> rpcServiceConfig) throws Exception {
         String host = DefaultConfig.SERVICE_REGISTER_ADDRESS;
         int port = DefaultConfig.DEFAULT_SERVER_PORT;
         registry.register(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, port));
-        
+
         addServiceToCache(rpcServiceConfig);
     }
 
-    private void addServiceToCache(RpcServiceConfig rpcServiceConfig) {
+    private void addServiceToCache(RpcServiceConfig<?> rpcServiceConfig) {
         String rpcServiceName = rpcServiceConfig.getRpcServiceName();
         if (registeredService.contains((rpcServiceName))) {
             LOGGER.warn("Service [{}] has been published already", rpcServiceName);
@@ -57,5 +61,12 @@ public class DefaultProviderServiceImpl implements ProviderService {
             throw new RpcException(String.format("Service %s not found", rpcServiceName));
         }
         return service;
+    }
+
+    @Override
+    public void close() {
+        serviceMap.clear();
+        registeredService.clear();
+        registry.close();
     }
 }
