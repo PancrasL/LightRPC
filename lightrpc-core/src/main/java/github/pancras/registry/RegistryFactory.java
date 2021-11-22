@@ -1,5 +1,7 @@
 package github.pancras.registry;
 
+import java.net.InetSocketAddress;
+
 import github.pancras.config.DefaultConfig;
 import github.pancras.registry.redis.RedisRegistryServiceImpl;
 import github.pancras.registry.zk.ZkRegistryServiceImpl;
@@ -25,16 +27,19 @@ public class RegistryFactory {
     }
 
     private static RegistryService buildRegistryService() {
-        RegistryType registryType;
         String type = DefaultConfig.DEFAULT_REGISRY_TYPE;
-        registryType = RegistryType.getType(type);
+        RegistryType registryType = RegistryType.getType(type);
 
         switch (registryType) {
             case Zookeeper:
-                INSTANCE = new ZkRegistryServiceImpl();
+                INSTANCE = ZkRegistryServiceImpl.newInstance(
+                        InetSocketAddress.createUnresolved(
+                                DefaultConfig.DEFAULT_ZK_ADDRESS, DefaultConfig.DEFAULT_ZK_PORT));
                 break;
             case Redis:
-                INSTANCE = new RedisRegistryServiceImpl();
+                INSTANCE = RedisRegistryServiceImpl.newInstance(
+                        InetSocketAddress.createUnresolved(
+                                DefaultConfig.DEFAULT_REDIS_ADDRESS, DefaultConfig.DEFAULT_REDIS_PORT));
                 break;
             default:
                 throw new IllegalArgumentException("Unknown type：" + registryType);

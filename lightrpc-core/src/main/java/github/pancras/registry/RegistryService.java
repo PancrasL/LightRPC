@@ -2,6 +2,7 @@ package github.pancras.registry;
 
 import java.net.InetSocketAddress;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
@@ -16,7 +17,7 @@ public interface RegistryService {
      * @param address        the address
      * @throws Exception the exception
      */
-    void register(String rpcServiceName, InetSocketAddress address) throws Exception;
+    void register(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address) throws Exception;
 
     /**
      * 服务提供者使用，将服务取消注册
@@ -24,7 +25,7 @@ public interface RegistryService {
      * @param rpcServiceName the rpcServiceName
      * @param address        the address
      */
-    void unregister(String rpcServiceName, InetSocketAddress address);
+    void unregister(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address);
 
     /**
      * 服务消费者使用，查询服务地址，需要保证线程安全
@@ -32,7 +33,7 @@ public interface RegistryService {
      * @param rpcServiceName the rpcServiceName
      * @return the address list
      */
-    InetSocketAddress lookup(String rpcServiceName) throws Exception;
+    InetSocketAddress lookup(@Nonnull String rpcServiceName) throws Exception;
 
     /**
      * 释放连接注册中心的资源
