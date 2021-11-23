@@ -13,7 +13,7 @@ import io.netty.channel.Channel;
  * 重用 Channel 避免重复连接服务端
  */
 public class ChannelPool implements Closeable {
-    private final Map<String, Channel> poolMap;
+    private final ConcurrentHashMap<String, Channel> poolMap;
 
     public ChannelPool() {
         poolMap = new ConcurrentHashMap<>();

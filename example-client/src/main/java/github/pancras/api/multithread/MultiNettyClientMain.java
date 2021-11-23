@@ -2,7 +2,7 @@ package github.pancras.api.multithread;
 
 import github.pancras.HelloService;
 import github.pancras.remoting.transport.RpcClient;
-import github.pancras.remoting.transport.socket.SocketRpcClient;
+import github.pancras.remoting.transport.netty.client.NettyRpcClient;
 import github.pancras.wrapper.RpcReferenceConfig;
 
 /**
@@ -14,7 +14,7 @@ public class MultiNettyClientMain implements Runnable {
     public static RpcClient rpcClient;
 
     public static void main(String[] args) throws InterruptedException {
-        rpcClient = new SocketRpcClient();
+        rpcClient = NettyRpcClient.getInstance();
         Thread t1 = new Thread(new MultiNettyClientMain());
         Thread t2 = new Thread(new MultiNettyClientMain());
         Thread t3 = new Thread(new MultiNettyClientMain());
@@ -35,7 +35,7 @@ public class MultiNettyClientMain implements Runnable {
                 .build();
         for (int i = 0; i < 5; i++) {
             HelloService helloService = rpcReferenceConfig.getReferent();
-            String s = helloService.hello("Good, socket transport is success.");
+            String s = helloService.hello("Good, netty transport is success.");
             System.out.printf("线程%s第%d次调用结果：%s\n", Thread.currentThread(), i, s);
         }
     }

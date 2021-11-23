@@ -48,7 +48,6 @@ public class NettyRpcServer implements RpcServer {
 
     private Channel serverChannel;
 
-
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
     public NettyRpcServer(InetSocketAddress address) {
