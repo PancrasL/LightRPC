@@ -87,8 +87,8 @@ public class NettyRpcServer implements RpcServer {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline p = ch.pipeline();
-                        p.addLast(new Decoder());
                         p.addLast(new Encoder());
+                        p.addLast(new Decoder());
                         p.addLast(serviceHandlerGroup, new NettyRpcServerHandler(providerService));
                     }
                 });

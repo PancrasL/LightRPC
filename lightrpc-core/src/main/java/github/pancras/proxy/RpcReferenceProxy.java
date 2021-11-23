@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
 
-import github.pancras.exception.RpcException;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.remoting.transport.RpcClient;
@@ -21,11 +20,6 @@ import github.pancras.wrapper.RpcReferenceConfig;
  */
 public class RpcReferenceProxy<T> implements InvocationHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcReferenceProxy.class);
-
-    /**
-     * RPC请求重试次数
-     */
-    private static final int RETRY_TIMES = 3;
 
     private final RpcClient rpcClient;
     private final RpcReferenceConfig<T> rpcReferenceConfig;
@@ -48,7 +42,7 @@ public class RpcReferenceProxy<T> implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws InterruptedException {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Exception {
         LOGGER.debug("invoke method: [{}]", method.getName());
         RpcRequest rpcRequest = new RpcRequest();
         rpcRequest.setGroup(rpcReferenceConfig.getGroup());
@@ -59,32 +53,10 @@ public class RpcReferenceProxy<T> implements InvocationHandler {
         rpcRequest.setParameters(args);
         rpcRequest.setParamTypes(method.getParameterTypes());
 
-        Object response = null;
-        for (int i = 0; i < RETRY_TIMES; i++) {
-            response = send(rpcRequest);
-            if (response != null) {
-                break;
-            }
-            Thread.sleep(1000);
-        }
+        RpcResponse<?> response = (RpcResponse<?>) rpcClient.sendRpcRequest(rpcRequest);
         if (response == null) {
-            throw new RpcException("RpcRequest " + rpcRequest + " send fail.");
+            throw new IllegalStateException("Response is null");
         }
-
-        if (response instanceof RpcResponse) {
-            return ((RpcResponse<?>) response).getData();
-        }
-        throw new IllegalStateException("Bad response");
-    }
-
-    private Object send(RpcRequest request) {
-        Object response = null;
-        try {
-            response = rpcClient.sendRpcRequest(request);
-        } catch (Exception e) {
-            LOGGER.error("RpcRequest: " + request + " send fail, will try again: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return response;
+        return response.getData();
     }
 }

@@ -27,7 +27,7 @@ public class NettyRpcClientHandler extends ChannelInboundHandlerAdapter {
         try {
             if (msg instanceof RpcMessage) {
                 RpcMessage rpcMessage = (RpcMessage) msg;
-                LOGGER.info("Client channel [{}] receive msg: [{}]", ctx.channel().id().toString(), rpcMessage);
+                LOGGER.debug("Client channel [{}] receive msg: [{}]", ctx.channel().id().toString(), rpcMessage);
                 if (rpcMessage.isResponse()) {
                     unprocessedRequests.complete((RpcResponse<Object>) rpcMessage.getData());
                 }
@@ -42,8 +42,9 @@ public class NettyRpcClientHandler extends ChannelInboundHandlerAdapter {
         //在捕获异常的时候调用，发生异常并且如果通道处于激活状态就关闭
         Channel channel = ctx.channel();
         if (channel.isActive()) {
-            LOGGER.warn("The remote server [{}] has closed the connection.", ctx.channel().remoteAddress());
+            LOGGER.error("The remote server [{}] has closed the connection.", ctx.channel().remoteAddress());
             ctx.close();
+            cause.printStackTrace();
         }
     }
 }

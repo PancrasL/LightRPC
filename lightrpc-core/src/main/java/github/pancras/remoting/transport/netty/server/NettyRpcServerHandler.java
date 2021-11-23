@@ -49,7 +49,7 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
                     rpcResponse = RpcResponse.fail();
                 }
                 // 将RpcResponse包装成RpcMessage
-                RpcMessage response = RpcMessage.newInstance(rpcResponse);
+                RpcMessage response = RpcMessage.newResponse(rpcResponse);
                 ctx.writeAndFlush(response);
             }
         }
@@ -61,8 +61,9 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
         //在捕获异常的时候调用，发生异常并且如果通道处于激活状态就关闭
         Channel channel = ctx.channel();
         if (channel.isActive()) {
-            LOGGER.warn("The remote host [{}] has closed the connection, close channel [{}].", channel.remoteAddress(), channel.id());
+            LOGGER.error("The remote host [{}] has closed the connection.", channel.remoteAddress());
             ctx.close();
+            cause.printStackTrace();
         }
     }
 }

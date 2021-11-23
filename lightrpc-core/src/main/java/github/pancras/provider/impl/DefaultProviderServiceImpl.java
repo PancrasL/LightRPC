@@ -68,5 +68,6 @@ public class DefaultProviderServiceImpl implements ProviderService {
         serviceMap.clear();
         registeredService.clear();
         registry.close();
+        LOGGER.info("DefaultProviderServiceImpl is closed.");
     }
 }

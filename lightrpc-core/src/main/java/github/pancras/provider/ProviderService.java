@@ -5,7 +5,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import github.pancras.wrapper.RpcServiceConfig;
 
 /**
- * @author PancrasL 会存在并发访问，需要保证线程安全
+ * @author PancrasL 会被业务处理线程并发访问，需要保证线程安全
  */
 @ThreadSafe
 public interface ProviderService {

@@ -1,8 +1,8 @@
-package github.pancras.api;
+package github.pancras.api.multithread;
 
 import java.net.InetSocketAddress;
 
-import github.pancras.api.service.HelloServiceImpl;
+import github.pancras.api.multithread.service.BlockHelloServiceImpl;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.socket.SocketRpcServer;
 import github.pancras.wrapper.RpcServiceConfig;
@@ -12,20 +12,13 @@ import github.pancras.wrapper.RpcServiceConfig;
  * <p>
  * RPC调用底层采用Socket数据传输的服务器实现
  */
-public class SocketServerMain {
+public class MultiSocketServerMain {
     public static void main(String[] args) throws Exception {
         // 创建服务实例包装类
         // 默认组和默认版本
-        HelloServiceImpl service1 = new HelloServiceImpl();
-        RpcServiceConfig<HelloServiceImpl> serviceConfig1 = RpcServiceConfig
+        BlockHelloServiceImpl service1 = new BlockHelloServiceImpl();
+        RpcServiceConfig<BlockHelloServiceImpl> serviceConfig1 = RpcServiceConfig
                 .newInstance(service1)
-                .build();
-        // 指定组和指定版本
-        HelloServiceImpl service2 = new HelloServiceImpl();
-        RpcServiceConfig<HelloServiceImpl> serviceConfig2 = RpcServiceConfig
-                .newInstance(service2)
-                .group("group1")
-                .version("version1")
                 .build();
 
         // 创建服务器
@@ -34,7 +27,6 @@ public class SocketServerMain {
 
         // 发布服务
         server.registerService(serviceConfig1);
-        server.registerService(serviceConfig2);
 
         // 启动服务器
         server.start();

@@ -1,7 +1,5 @@
 package github.pancras.wrapper;
 
-import github.pancras.remoting.transport.RpcServer;
-
 /**
  * @author PancrasL
  * <p>
@@ -9,10 +7,6 @@ import github.pancras.remoting.transport.RpcServer;
  */
 public class RpcServiceConfig<T> {
 
-    /**
-     * 服务通信
-     */
-    private final RpcServer rpcServer;
     /**
      * 当接口有多个实现类时，使用group来标识
      */
@@ -26,24 +20,19 @@ public class RpcServiceConfig<T> {
      */
     private final T service;
 
-    /**
-     * 暴露及注册服务
-     */
-    public void export() throws Exception {
-        rpcServer.registerService(this);
+    public static <T> Builder<T> newInstance(T service) {
+        return new Builder<>(service);
     }
 
     public static class Builder<T> {
         // Required paramaters
-        private final RpcServer rpcServer;
         private final T service;
 
         // Optional parameters - initialized to default values
         private String group = "";
         private String version = "";
 
-        public Builder(RpcServer rpcServer, T service) {
-            this.rpcServer = rpcServer;
+        public Builder(T service) {
             this.service = service;
         }
 
@@ -63,7 +52,6 @@ public class RpcServiceConfig<T> {
     }
 
     private RpcServiceConfig(Builder<T> builder) {
-        this.rpcServer = builder.rpcServer;
         this.group = builder.group;
         this.version = builder.version;
         this.service = builder.service;

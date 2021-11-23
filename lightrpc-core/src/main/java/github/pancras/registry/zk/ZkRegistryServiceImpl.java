@@ -70,6 +70,7 @@ public class ZkRegistryServiceImpl implements RegistryService {
     public void close() {
         REGISTERED_PATH_SET.clear();
         zkClient.close();
+        LOGGER.info("ZkRegistryServiceImpl is closed.");
     }
 
     private void doRegister(String path) throws Exception {
