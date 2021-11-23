@@ -13,6 +13,7 @@ public class NettyClientMain {
         RpcClient rpcClient = NettyRpcClient.getInstance();
         RpcReferenceConfig<HelloService> rpcReferenceConfig = new RpcReferenceConfig.Builder<>(rpcClient, HelloService.class).build();
         HelloService helloService = rpcReferenceConfig.getReferent();
+      
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 5; i++) {
             String s = helloService.hello("Good, netty transport was success.");
