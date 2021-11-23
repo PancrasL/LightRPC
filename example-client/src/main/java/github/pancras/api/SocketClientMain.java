@@ -13,9 +13,7 @@ import github.pancras.wrapper.RpcReferenceConfig;
 public class SocketClientMain {
     public static void main(String[] args) {
         RpcClient rpcClient = new SocketRpcClient();
-        RpcReferenceConfig<HelloService> referenceConfig = new RpcReferenceConfig
-                .Builder<>(rpcClient, HelloService.class)
-                .build();
+        RpcReferenceConfig<HelloService> referenceConfig = RpcReferenceConfig.newDefaultConfig(rpcClient, HelloService.class);
         for (int i = 0; i < 5; i++) {
             HelloService helloService = referenceConfig.getReferent();
             String s = helloService.hello("Good, socket transport is success.");

@@ -11,6 +11,8 @@ import java.lang.annotation.Target;
 import github.pancras.spring.RpcScannerRegistrar;
 
 /**
+ * 标识需要扫描的包路径
+ *
  * @author PancrasL
  */
 @Target({ElementType.TYPE, ElementType.METHOD})

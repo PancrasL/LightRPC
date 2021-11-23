@@ -15,6 +15,10 @@ public class RpcReferenceConfig<T> {
     private final Class<T> interfac;
     private Object referent;
 
+    public static <T> RpcReferenceConfig<T> newDefaultConfig(RpcClient rpcClient, Class<T> interfac) {
+        return new RpcReferenceConfig.Builder<T>(rpcClient, interfac).build();
+    }
+
     public static class Builder<T> {
         // Required paramaters
         private final Class<T> interfac;

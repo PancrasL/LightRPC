@@ -20,8 +20,8 @@ public class RpcServiceConfig<T> {
      */
     private final T service;
 
-    public static <T> Builder<T> newInstance(T service) {
-        return new Builder<>(service);
+    public static <T> RpcServiceConfig<T> newDefaultConfig(T service) {
+        return new RpcServiceConfig.Builder<T>(service).build();
     }
 
     public static class Builder<T> {

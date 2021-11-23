@@ -9,6 +9,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 服务引用注解，客户端使用
+ *
  * @author PancrasL
  */
 @Documented
@@ -20,6 +22,7 @@ public @interface RpcReference {
      * 组，区分不同接口的实现类
      */
     String group() default "";
+
     /**
      * 版本，区分不同版本
      */

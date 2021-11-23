@@ -30,11 +30,9 @@ public class MultiSocketClientMain implements Runnable {
     @Override
     public void run() {
         System.out.println("线程" + Thread.currentThread() + "已创建");
-        RpcReferenceConfig<HelloService> rpcReferenceConfig = new RpcReferenceConfig
-                .Builder<>(rpcClient, HelloService.class)
-                .build();
+        RpcReferenceConfig<HelloService> referenceConfig = RpcReferenceConfig.newDefaultConfig(rpcClient, HelloService.class);
         for (int i = 0; i < 5; i++) {
-            HelloService helloService = rpcReferenceConfig.getReferent();
+            HelloService helloService = referenceConfig.getReferent();
             String s = helloService.hello("Good, socket transport is success.");
             System.out.printf("线程%s第%d次调用结果：%s\n", Thread.currentThread(), i, s);
         }

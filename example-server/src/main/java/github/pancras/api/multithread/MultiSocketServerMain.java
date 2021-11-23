@@ -18,8 +18,7 @@ public class MultiSocketServerMain {
         // 默认组和默认版本
         BlockHelloServiceImpl service1 = new BlockHelloServiceImpl();
         RpcServiceConfig<BlockHelloServiceImpl> serviceConfig1 = RpcServiceConfig
-                .newInstance(service1)
-                .build();
+                .newDefaultConfig(service1);
 
         // 创建服务器
         InetSocketAddress address = new InetSocketAddress("localhost", 7998);

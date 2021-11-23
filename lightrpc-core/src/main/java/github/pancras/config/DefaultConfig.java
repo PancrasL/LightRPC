@@ -7,11 +7,6 @@ import github.pancras.commons.utils.PropertyUtil;
  */
 public class DefaultConfig {
     /**
-     * 客户端连接服务器的超时时间
-     */
-    public static int CONNECT_TIMEOUT_MILLIS = 5000;
-
-    /**
      * 默认的注册中心
      */
     public static String DEFAULT_REGISRY_TYPE;

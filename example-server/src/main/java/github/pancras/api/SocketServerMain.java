@@ -18,12 +18,11 @@ public class SocketServerMain {
         // 默认组和默认版本
         HelloServiceImpl service1 = new HelloServiceImpl();
         RpcServiceConfig<HelloServiceImpl> serviceConfig1 = RpcServiceConfig
-                .newInstance(service1)
-                .build();
+                .newDefaultConfig(service1);
         // 指定组和指定版本
         HelloServiceImpl service2 = new HelloServiceImpl();
-        RpcServiceConfig<HelloServiceImpl> serviceConfig2 = RpcServiceConfig
-                .newInstance(service2)
+        RpcServiceConfig<HelloServiceImpl> serviceConfig2 = new RpcServiceConfig
+                .Builder<>(service2)
                 .group("group1")
                 .version("version1")
                 .build();

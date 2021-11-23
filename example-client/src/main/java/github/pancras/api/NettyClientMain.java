@@ -11,9 +11,9 @@ import github.pancras.wrapper.RpcReferenceConfig;
 public class NettyClientMain {
     public static void main(String[] args) {
         RpcClient rpcClient = NettyRpcClient.getInstance();
-        RpcReferenceConfig<HelloService> rpcReferenceConfig = new RpcReferenceConfig.Builder<>(rpcClient, HelloService.class).build();
-        HelloService helloService = rpcReferenceConfig.getReferent();
-      
+        RpcReferenceConfig<HelloService> referenceConfig = RpcReferenceConfig.newDefaultConfig(rpcClient, HelloService.class);
+        HelloService helloService = referenceConfig.getReferent();
+
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 5; i++) {
             String s = helloService.hello("Good, netty transport was success.");
