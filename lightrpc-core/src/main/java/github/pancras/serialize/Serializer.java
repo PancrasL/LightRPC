@@ -2,6 +2,8 @@ package github.pancras.serialize;
 
 import java.io.IOException;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author PancrasL
  */
@@ -13,7 +15,7 @@ public interface Serializer {
      * @return byte[]
      * @throws IOException 序列化异常
      */
-    byte[] serialize(Object obj) throws IOException;
+    byte[] serialize(@Nonnull Object obj) throws IOException;
 
     /**
      * byte[] -> obj
@@ -24,5 +26,5 @@ public interface Serializer {
      * @return obj
      * @throws IOException 反序列化异常
      */
-    <T> T deserialize(byte[] bytes, Class<T> clazz) throws IOException;
+    <T> T deserialize(@Nonnull byte[] bytes, @Nonnull Class<T> clazz) throws IOException;
 }

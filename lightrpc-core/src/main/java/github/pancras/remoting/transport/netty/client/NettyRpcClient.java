@@ -6,8 +6,9 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
+
 import github.pancras.commons.ShutdownHook;
-import github.pancras.commons.enums.MessageType;
 import github.pancras.config.DefaultConfig;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
@@ -33,6 +34,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  */
 public class NettyRpcClient implements RpcClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcClient.class);
+    private volatile static NettyRpcClient INSTANCE;
 
     private final RegistryService registryService;
     private final Bootstrap bootstrap;
@@ -40,19 +42,19 @@ public class NettyRpcClient implements RpcClient {
     private final ChannelPool channelPool;
     private final UnprocessedRequests unprocessedRequests;
 
-    public NettyRpcClient() {
+    private NettyRpcClient() {
         bootstrap = new Bootstrap();
         // 处理与服务端通信的线程组
         workerGroup = new NioEventLoopGroup();
         bootstrap.group(workerGroup)
                 .channel(NioSocketChannel.class)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, DefaultConfig.CONNECT_TIMEOUT_MILLIS)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline p = ch.pipeline();
-                        p.addLast(new Decoder());
                         p.addLast(new Encoder());
+                        p.addLast(new Decoder());
                         p.addLast(new NettyRpcClientHandler(unprocessedRequests));
                     }
                 });
@@ -63,8 +65,19 @@ public class NettyRpcClient implements RpcClient {
         ShutdownHook.getInstance().addDisposable(this);
     }
 
+    public static NettyRpcClient getInstance() {
+        if(INSTANCE == null){
+            synchronized (NettyRpcClient.class){
+                if(INSTANCE == null){
+                    INSTANCE = new NettyRpcClient();
+                }
+            }
+        }
+        return INSTANCE;
+    }
+
     @Override
-    public Object sendRpcRequest(RpcRequest rpcRequest) throws Exception {
+    public Object sendRpcRequest(@Nonnull RpcRequest rpcRequest) throws Exception {
         CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();
         InetSocketAddress inetSocketAddress = registryService.lookup(rpcRequest.getRpcServiceName());
 
@@ -73,9 +86,7 @@ public class NettyRpcClient implements RpcClient {
         if (channel.isActive()) {
             unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
 
-            RpcMessage rpcMessage = new RpcMessage();
-            rpcMessage.setMessageType(MessageType.RpcRequest);
-            rpcMessage.setData(rpcRequest);
+            RpcMessage rpcMessage = RpcMessage.newRequest(rpcRequest);
             channel.writeAndFlush(rpcMessage).addListener(future -> {
                 if (future.isSuccess()) {
                     LOGGER.debug("Client send message: [{}]", rpcMessage);
@@ -99,21 +110,17 @@ public class NettyRpcClient implements RpcClient {
 
     private Channel doConnect(InetSocketAddress inetSocketAddress) throws InterruptedException {
         ChannelFuture future = bootstrap.connect(inetSocketAddress).sync();
-        LOGGER.info("Connect to server [{}] success", inetSocketAddress.toString());
+        LOGGER.info("Client connect to server [{}] success", inetSocketAddress.toString());
         return future.channel();
     }
 
-    public void shutdown() {
+    @Override
+    public void destroy() {
         try {
             registryService.close();
         } catch (Exception ignored) {
         }
         channelPool.close();
         workerGroup.shutdownGracefully();
-    }
-
-    @Override
-    public void destroy() {
-        shutdown();
     }
 }

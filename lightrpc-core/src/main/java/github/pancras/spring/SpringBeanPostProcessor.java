@@ -10,15 +10,15 @@ import java.lang.reflect.Field;
 
 import javax.annotation.Nonnull;
 
-import github.pancras.commons.factory.SingletonFactory;
-import github.pancras.provider.ProviderFactory;
 import github.pancras.provider.ProviderService;
-import github.pancras.proxy.RpcClientProxy;
+import github.pancras.provider.impl.DefaultProviderServiceImpl;
+import github.pancras.registry.RegistryFactory;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.client.NettyRpcClient;
 import github.pancras.spring.annotation.RpcReference;
 import github.pancras.spring.annotation.RpcService;
-import github.pancras.wrapper.RpcServiceConfig;
+import github.pancras.wrapper.RpcReferenceConfig;
+
 
 /**
  * @author PancrasL
@@ -31,8 +31,8 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
     private final RpcClient rpcClient;
 
     public SpringBeanPostProcessor() {
-        provider = ProviderFactory.getInstance();
-        rpcClient = SingletonFactory.getInstance(NettyRpcClient.class);
+        provider = DefaultProviderServiceImpl.newInstance(RegistryFactory.getInstance());
+        rpcClient = NettyRpcClient.getInstance();
     }
 
     /**
@@ -43,9 +43,10 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         if (bean.getClass().isAnnotationPresent(RpcService.class)) {
             LOGGER.info("[{}] is annotated with  [{}]", bean.getClass().getName(), RpcService.class.getCanonicalName());
             RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
-            RpcServiceConfig serviceConfig = new RpcServiceConfig(bean, rpcService.group(), rpcService.version());
+            //new RpcServiceConfig.Builder<Object>()
+            //RpcServiceConfig serviceConfig = RpcServiceConfig.newInstance(bean, rpcService.group(), rpcService.version());
             try {
-                provider.publishService(serviceConfig);
+                //provider.publishService(serviceConfig);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage());
             }
@@ -63,12 +64,12 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         for (Field declaredField : declaredFields) {
             RpcReference rpcReference = declaredField.getAnnotation(RpcReference.class);
             if (rpcReference != null) {
-                RpcServiceConfig config = new RpcServiceConfig(null, rpcReference.group(), rpcReference.version());
-                RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient, config);
-                Object clientProxy = rpcClientProxy.getProxy(declaredField.getType());
+                Class interfac = declaredField.getClass();
+                RpcReferenceConfig<Object> reference = new RpcReferenceConfig.Builder<Object>(rpcClient, interfac).build();
+                Object referent = reference.getReferent();
                 declaredField.setAccessible(true);
                 try {
-                    declaredField.set(bean, clientProxy);
+                    declaredField.set(bean, referent);
                 } catch (IllegalAccessException e) {
                     LOGGER.error(e.getMessage());
                 }

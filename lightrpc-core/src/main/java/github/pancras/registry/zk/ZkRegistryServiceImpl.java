@@ -14,8 +14,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nonnull;
+
 import github.pancras.commons.utils.NetUtil;
-import github.pancras.config.DefaultConfig;
 import github.pancras.registry.RegistryService;
 
 /**
@@ -28,34 +29,32 @@ public class ZkRegistryServiceImpl implements RegistryService {
     private static final String ZK_PATH_SPLIT_CHAR = "/";
     private static final int DEFAULT_SESSION_TIMEOUT = 6000;
     private static final int DEFAULT_CONNECT_TIMEOUT = 2000;
-    private static volatile CuratorFramework zkClient;
+
+    private final CuratorFramework zkClient;
+
+    public static ZkRegistryServiceImpl newInstance(InetSocketAddress address) {
+        return new ZkRegistryServiceImpl(address);
+    }
+
+    private ZkRegistryServiceImpl(InetSocketAddress address) {
+        zkClient = buildZkClient(address);
+    }
 
     @Override
-    public void register(String rpcServiceName, InetSocketAddress address) throws Exception {
+    public void register(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address) throws Exception {
         NetUtil.validAddress(address);
 
         String path = getRegisterPath(rpcServiceName, address);
         doRegister(path);
     }
 
-    private void doRegister(String path) throws Exception {
-        if (checkExists(path)) {
-            LOGGER.info("Path already registered: [{}]", path);
-            return;
-        }
-        // 创建临时节点，断开连接后会自动删除
-        getInstance().create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(path);
-        LOGGER.info("Ephemeral ZNode [{}] was created successfully", path);
-        REGISTERED_PATH_SET.add(path);
-    }
-
     @Override
-    public void unregister(String rpcServiceName, InetSocketAddress address) {
+    public void unregister(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address) {
         NetUtil.validAddress(address);
 
         String path = getRegisterPath(rpcServiceName, address);
         try {
-            getInstance().delete().deletingChildrenIfNeeded().forPath(path);
+            zkClient.delete().deletingChildrenIfNeeded().forPath(path);
         } catch (Exception e) {
             LOGGER.warn(String.format("Delete ZNode %s fail", path));
         }
@@ -63,18 +62,32 @@ public class ZkRegistryServiceImpl implements RegistryService {
     }
 
     @Override
-    public InetSocketAddress lookup(String rpcServiceName) throws Exception {
-        if (rpcServiceName == null) {
-            return null;
-        }
-
+    public InetSocketAddress lookup(@Nonnull String rpcServiceName) throws Exception {
         return doLookup(rpcServiceName);
+    }
+
+    @Override
+    public void close() {
+        REGISTERED_PATH_SET.clear();
+        zkClient.close();
+        LOGGER.info("ZkRegistryServiceImpl is closed.");
+    }
+
+    private void doRegister(String path) throws Exception {
+        if (checkExists(path)) {
+            LOGGER.warn("Path already registered: [{}]", path);
+            return;
+        }
+        // 创建临时节点，断开连接后会自动删除
+        zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(path);
+        LOGGER.info("Ephemeral ZNode [{}] was created successfully", path);
+        REGISTERED_PATH_SET.add(path);
     }
 
     private InetSocketAddress doLookup(String rpcSerivceName) throws Exception {
         String path = ZK_REGISTER_ROOT_PATH + rpcSerivceName;
         List<String> serviceUrls;
-        serviceUrls = getInstance().getChildren().forPath(path);
+        serviceUrls = zkClient.getChildren().forPath(path);
 
         // TODO 利用SPI实现多种策略的负载均衡机制
         double randomNum = Math.random() * serviceUrls.size();
@@ -84,34 +97,17 @@ public class ZkRegistryServiceImpl implements RegistryService {
         return new InetSocketAddress(hostPort[0], Integer.parseInt(hostPort[1]));
     }
 
-    @Override
-    public void close() {
-        REGISTERED_PATH_SET.clear();
-        getInstance().close();
-    }
-
-    private CuratorFramework getInstance() {
-        if (zkClient == null) {
-            synchronized (ZkRegistryServiceImpl.class) {
-                if (zkClient == null) {
-                    String address = DefaultConfig.DEFAULT_ZK_ADDRESS + ":" + DefaultConfig.DEFAULT_ZK_PORT;
-                    zkClient = buildZkClient(address, DEFAULT_SESSION_TIMEOUT, DEFAULT_CONNECT_TIMEOUT);
-                }
-            }
-        }
-        return zkClient;
-    }
-
-    private CuratorFramework buildZkClient(String address, int sessionTimeoutMs, int connectTimeoutMs) {
+    private CuratorFramework buildZkClient(InetSocketAddress address) {
         CuratorFramework zkClient;
         // 重试3次，每次阻塞3s来连接Zookeeper
         RetryPolicy retryPolicy = new RetryNTimes(3, 1);
-        zkClient = CuratorFrameworkFactory.newClient(address, sessionTimeoutMs, connectTimeoutMs, retryPolicy);
+        String connectString = address.getHostString() + ":" + address.getPort();
+        zkClient = CuratorFrameworkFactory.newClient(connectString, ZkRegistryServiceImpl.DEFAULT_SESSION_TIMEOUT, ZkRegistryServiceImpl.DEFAULT_CONNECT_TIMEOUT, retryPolicy);
         zkClient.start();
         try {
             zkClient.blockUntilConnected(3, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            LOGGER.error("zookeeper connect fail.");
+            LOGGER.error("Zookeeper connect fail.");
         }
         return zkClient;
     }
@@ -124,12 +120,12 @@ public class ZkRegistryServiceImpl implements RegistryService {
         try {
             if (REGISTERED_PATH_SET.contains(path)) {
                 return true;
-            } else if (getInstance().checkExists().forPath(path) != null) {
+            } else if (zkClient.checkExists().forPath(path) != null) {
                 REGISTERED_PATH_SET.add(path);
                 return true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("ZNode " + path + " is not exist.");
         }
         return false;
     }

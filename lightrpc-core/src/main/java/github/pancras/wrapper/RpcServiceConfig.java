@@ -5,26 +5,56 @@ package github.pancras.wrapper;
  * <p>
  * RPC服务的包装类
  */
-public class RpcServiceConfig {
+public class RpcServiceConfig<T> {
 
     /**
      * 当接口有多个实现类时，使用group来标识
      */
-    private String group = "";
+    private final String group;
     /**
      * 标识接口的不同版本，不同版本不兼容
      */
-    private String version = "";
-    private Object service;
+    private final String version;
+    /**
+     * 服务实例
+     */
+    private final T service;
 
-    public RpcServiceConfig(Object service, String group, String version) {
-        this.group = group;
-        this.version = version;
-        this.service = service;
+    public static <T> Builder<T> newInstance(T service) {
+        return new Builder<>(service);
     }
 
-    public RpcServiceConfig(Object service) {
-        this.service = service;
+    public static class Builder<T> {
+        // Required paramaters
+        private final T service;
+
+        // Optional parameters - initialized to default values
+        private String group = "";
+        private String version = "";
+
+        public Builder(T service) {
+            this.service = service;
+        }
+
+        public Builder<T> group(String group) {
+            this.group = group;
+            return this;
+        }
+
+        public Builder<T> version(String version) {
+            this.version = version;
+            return this;
+        }
+
+        public RpcServiceConfig<T> build() {
+            return new RpcServiceConfig<>(this);
+        }
+    }
+
+    private RpcServiceConfig(Builder<T> builder) {
+        this.group = builder.group;
+        this.version = builder.version;
+        this.service = builder.service;
     }
 
     public String getRpcServiceName() {
@@ -39,23 +69,11 @@ public class RpcServiceConfig {
         return group;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
     public String getVersion() {
         return version;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
     public Object getService() {
         return service;
-    }
-
-    public void setService(Object service) {
-        this.service = service;
     }
 }

@@ -1,6 +1,5 @@
 package github.pancras.serialize;
 
-import github.pancras.commons.enums.SerializerType;
 import github.pancras.config.DefaultConfig;
 import github.pancras.serialize.kryo.KryoSerializer;
 import github.pancras.serialize.protostuff.ProtostuffSerializer;
@@ -10,7 +9,6 @@ import github.pancras.serialize.protostuff.ProtostuffSerializer;
  */
 public class SerializerFactory {
     private SerializerFactory() {
-
     }
 
     public static Serializer getInstance() {

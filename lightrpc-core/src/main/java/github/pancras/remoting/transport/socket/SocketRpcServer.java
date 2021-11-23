@@ -7,76 +7,72 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.annotation.Nonnull;
+
 import github.pancras.commons.ShutdownHook;
-import github.pancras.config.DefaultConfig;
-import github.pancras.provider.ProviderFactory;
-import github.pancras.wrapper.RpcServiceConfig;
 import github.pancras.provider.ProviderService;
+import github.pancras.provider.impl.DefaultProviderServiceImpl;
+import github.pancras.registry.RegistryFactory;
+import github.pancras.registry.RegistryService;
 import github.pancras.remoting.transport.RpcServer;
+import github.pancras.wrapper.RpcServiceConfig;
+import io.netty.resolver.InetSocketAddressResolver;
 
 /**
  * @author PancrasL
  */
 public class SocketRpcServer implements RpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(SocketRpcServer.class);
+
+    private final SocketAddress address;
     private final ExecutorService threadPool;
     private final ProviderService providerService;
 
     private boolean isStarted = false;
     private ServerSocket server;
 
-    public SocketRpcServer() {
-        threadPool = Executors.newCachedThreadPool();
-        providerService = ProviderFactory.getInstance();
+    public SocketRpcServer(InetSocketAddress address) {
+        this.address = address;
+        this.threadPool = Executors.newCachedThreadPool();
+        RegistryService registryService = RegistryFactory.getInstance();
+        this.providerService = DefaultProviderServiceImpl.newInstance(registryService);
     }
 
     @Override
-    public void registerService(RpcServiceConfig rpcServiceConfig) {
-        try {
-            providerService.publishService(rpcServiceConfig);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public void registerService(@Nonnull RpcServiceConfig<?> rpcServiceConfig) throws Exception {
+        providerService.publishService(rpcServiceConfig);
     }
 
     @Override
     public void start() throws Exception {
-        start(DefaultConfig.DEFAULT_SERVER_ADDRESS, DefaultConfig.DEFAULT_SERVER_PORT);
-    }
-
-    @Override
-    public void start(String host, int port) throws Exception {
         if (isStarted) {
             throw new IllegalStateException("The server is already started, please do not start the service repeatedly.");
         }
         server = new ServerSocket();
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
-        server.bind(inetSocketAddress);
+        server.bind(address);
         isStarted = true;
-        LOGGER.info("RPC Server listen at: [{}]", inetSocketAddress);
+        LOGGER.info("RPC Server listen at: [{}]", address);
         ShutdownHook.getInstance().addDisposable(this);
-        
+
         Socket socket;
         while ((socket = server.accept()) != null) {
             LOGGER.info("RPC Client connected [{}]", socket.getInetAddress());
-            threadPool.execute(new SocketRpcServerHandler(socket));
-        }
-    }
-
-    public void shutdown() {
-        try {
-            isStarted = false;
-            server.close();
-            threadPool.shutdown();
-        } catch (IOException ignored) {
+            threadPool.execute(new SocketRpcServerHandler(socket, providerService));
         }
     }
 
     @Override
     public void destroy() {
-        this.shutdown();
+        try {
+            isStarted = false;
+            server.close();
+            threadPool.shutdown();
+        } catch (IOException ignored) {
+            // app will exit
+        }
     }
 }

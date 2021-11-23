@@ -9,8 +9,8 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 
-import github.pancras.commons.factory.SingletonFactory;
 import github.pancras.exception.RpcException;
+import github.pancras.provider.ProviderService;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.remoting.handler.RpcRequestHandler;
@@ -24,9 +24,9 @@ public class SocketRpcServerHandler implements Runnable {
     private final Socket socket;
     private final RpcRequestHandler rpcRequestHandler;
 
-    public SocketRpcServerHandler(Socket socket) {
+    public SocketRpcServerHandler(Socket socket, ProviderService providerService) {
         this.socket = socket;
-        this.rpcRequestHandler = SingletonFactory.getInstance(RpcRequestHandler.class);
+        this.rpcRequestHandler = RpcRequestHandler.newInstance(providerService);
     }
 
     @Override

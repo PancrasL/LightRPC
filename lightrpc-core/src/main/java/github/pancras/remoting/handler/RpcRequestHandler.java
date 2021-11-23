@@ -1,12 +1,8 @@
 package github.pancras.remoting.handler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import github.pancras.provider.ProviderFactory;
 import github.pancras.provider.ProviderService;
 import github.pancras.remoting.dto.RpcRequest;
 
@@ -16,11 +12,14 @@ import github.pancras.remoting.dto.RpcRequest;
  * 获取到服务对象，并利用反射机制在服务器端执行RPC方法
  */
 public class RpcRequestHandler {
-
     private final ProviderService providerService;
 
-    public RpcRequestHandler() {
-        this.providerService = ProviderFactory.getInstance();
+    private RpcRequestHandler(ProviderService providerService) {
+        this.providerService = providerService;
+    }
+
+    public static RpcRequestHandler newInstance(ProviderService providerService) {
+        return new RpcRequestHandler(providerService);
     }
 
     public Object handle(RpcRequest rpcRequest) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {

@@ -3,14 +3,17 @@ package github.pancras.remoting.transport.netty.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.annotation.Nonnull;
 
 import github.pancras.commons.ShutdownHook;
 import github.pancras.commons.utils.SystemUtil;
-import github.pancras.config.DefaultConfig;
-import github.pancras.provider.ProviderFactory;
 import github.pancras.provider.ProviderService;
+import github.pancras.provider.impl.DefaultProviderServiceImpl;
 import github.pancras.registry.RegistryFactory;
+import github.pancras.registry.RegistryService;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
@@ -32,20 +35,27 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class NettyRpcServer implements RpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcServer.class);
 
-    private final ServerBootstrap serverBootstrap = new ServerBootstrap();
+    private final ProviderService providerService;
     /**
      * 一个 accepter线程处理客户端连接 2*cpu个线程处理io cpu个线程处理业务 参考：https://www.cnblogs.com/jpfss/p/11016169.html
      */
     private final EventLoopGroup bossGroup;
     private final EventLoopGroup workerGroup;
     private final DefaultEventLoopGroup serviceHandlerGroup;
+
+    private final InetSocketAddress address;
+    private final ServerBootstrap serverBootstrap = new ServerBootstrap();
+
     private Channel serverChannel;
 
-    private final ProviderService providerService;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    public NettyRpcServer() {
-        providerService = ProviderFactory.getInstance();
+    public NettyRpcServer(InetSocketAddress address) {
+        // 注册中心
+        RegistryService registryService = RegistryFactory.getInstance();
+        this.address = address;
+        // 提供者服务，用于发布和查询服务
+        providerService = DefaultProviderServiceImpl.newInstance(registryService);
         // 监听线程组，监听客户端请求
         bossGroup = new NioEventLoopGroup(1);
         // 工作线程组，处理与客户端的数据通讯
@@ -55,17 +65,12 @@ public class NettyRpcServer implements RpcServer {
     }
 
     @Override
-    public void registerService(RpcServiceConfig rpcServiceConfig) throws Exception {
+    public void registerService(@Nonnull RpcServiceConfig<?> rpcServiceConfig) throws Exception {
         providerService.publishService(rpcServiceConfig);
     }
 
     @Override
     public void start() throws Exception {
-        start(DefaultConfig.DEFAULT_SERVER_ADDRESS, DefaultConfig.DEFAULT_SERVER_PORT);
-    }
-
-    @Override
-    public void start(String host, int port) throws Exception {
         if (initialized.get()) {
             throw new Exception("The server is already started, please do not start the service repeatedly.");
         }
@@ -81,15 +86,15 @@ public class NettyRpcServer implements RpcServer {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline p = ch.pipeline();
-                        p.addLast(new Decoder());
                         p.addLast(new Encoder());
-                        p.addLast(serviceHandlerGroup, new NettyRpcServerHandler());
+                        p.addLast(new Decoder());
+                        p.addLast(serviceHandlerGroup, new NettyRpcServerHandler(providerService));
                     }
                 });
 
         // 绑定端口，同步等待
-        serverChannel = serverBootstrap.bind(host, port).sync().channel();
-        LOGGER.info("Server is started, listen at [{}:{}]", host, port);
+        serverChannel = serverBootstrap.bind(address).sync().channel();
+        LOGGER.info("Server is started, listen at [{}]", address);
         initialized.set(true);
 
         // 添加关闭钩子，在程序退出时调用 destroy() 释放资源
@@ -100,7 +105,7 @@ public class NettyRpcServer implements RpcServer {
     public void destroy() {
         try {
             if (initialized.get()) {
-                RegistryFactory.getInstance().close();
+                providerService.close();
                 serverChannel.close();
             }
             this.bossGroup.shutdownGracefully();

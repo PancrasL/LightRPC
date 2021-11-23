@@ -1,10 +1,9 @@
 package github.pancras.api;
 
 import github.pancras.HelloService;
-import github.pancras.proxy.RpcClientProxy;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.socket.SocketRpcClient;
-import github.pancras.wrapper.RpcServiceConfig;
+import github.pancras.wrapper.RpcReferenceConfig;
 
 /**
  * @author pancras
@@ -14,16 +13,14 @@ import github.pancras.wrapper.RpcServiceConfig;
 public class SocketClientMain {
     public static void main(String[] args) {
         RpcClient rpcClient = new SocketRpcClient();
-        RpcServiceConfig config = new RpcServiceConfig(null);
-        RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient, config);
-        HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
-        long startTime = System.currentTimeMillis();
+        RpcReferenceConfig<HelloService> referenceConfig = new RpcReferenceConfig
+                .Builder<>(rpcClient, HelloService.class)
+                .build();
         for (int i = 0; i < 5; i++) {
+            HelloService helloService = referenceConfig.getReferent();
             String s = helloService.hello("Good, socket transport is success.");
-            System.out.println(s);
+            System.out.println(i + s);
         }
-        long endTime = System.currentTimeMillis();
-        System.out.println((endTime - startTime));
         rpcClient.destroy();
     }
 }
