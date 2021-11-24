@@ -11,6 +11,10 @@
 
     <artifactId>example-client</artifactId>
 
+    <properties>
+        <maven.install.skip>true</maven.install.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>github.pancras</groupId>
