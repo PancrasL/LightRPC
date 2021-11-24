@@ -9,7 +9,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
 
 import github.pancras.commons.ShutdownHook;
-import github.pancras.config.DefaultConfig;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
 import github.pancras.remoting.dto.RpcMessage;
@@ -20,14 +19,16 @@ import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.pool.AbstractChannelPoolMap;
+import io.netty.channel.pool.ChannelPoolHandler;
+import io.netty.channel.pool.ChannelPoolMap;
+import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.FutureListener;
 
 /**
  * @author PancrasL
@@ -39,36 +40,13 @@ public class NettyRpcClient implements RpcClient {
     private final RegistryService registryService;
     private final Bootstrap bootstrap;
     private final EventLoopGroup workerGroup;
-    private final ChannelPool channelPool;
+    private ChannelPoolMap<InetSocketAddress, FixedChannelPool> poolMap;
     private final UnprocessedRequests unprocessedRequests;
 
-    private NettyRpcClient() {
-        bootstrap = new Bootstrap();
-        // 处理与服务端通信的线程组
-        workerGroup = new NioEventLoopGroup();
-        bootstrap.group(workerGroup)
-                .channel(NioSocketChannel.class)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) {
-                        ChannelPipeline p = ch.pipeline();
-                        p.addLast(new Encoder());
-                        p.addLast(new Decoder());
-                        p.addLast(new NettyRpcClientHandler(unprocessedRequests));
-                    }
-                });
-        registryService = RegistryFactory.getInstance();
-        channelPool = new ChannelPool();
-        unprocessedRequests = new UnprocessedRequests();
-
-        ShutdownHook.getInstance().addDisposable(this);
-    }
-
     public static NettyRpcClient getInstance() {
-        if(INSTANCE == null){
-            synchronized (NettyRpcClient.class){
-                if(INSTANCE == null){
+        if (INSTANCE == null) {
+            synchronized (NettyRpcClient.class) {
+                if (INSTANCE == null) {
                     INSTANCE = new NettyRpcClient();
                 }
             }
@@ -76,42 +54,70 @@ public class NettyRpcClient implements RpcClient {
         return INSTANCE;
     }
 
+    private NettyRpcClient() {
+        bootstrap = new Bootstrap();
+        // 处理与服务端通信的线程组
+        workerGroup = new NioEventLoopGroup();
+        bootstrap.group(workerGroup)
+                .channel(NioSocketChannel.class);
+        registryService = RegistryFactory.getInstance();
+        unprocessedRequests = new UnprocessedRequests();
+        poolMap = new AbstractChannelPoolMap<InetSocketAddress, FixedChannelPool>() {
+            @Override
+            protected FixedChannelPool newPool(InetSocketAddress socketAddress) {
+                ChannelPoolHandler handler = new ChannelPoolHandler() {
+                    // 调用released会触发
+                    @Override
+                    public void channelReleased(Channel ch) {
+                        LOGGER.info(String.format("Channel %s released", ch));
+                    }
+
+                    // 当channel不足时会触发，但不会超过最大channel数
+                    @Override
+                    public void channelAcquired(Channel ch) {
+                        LOGGER.info(String.format("Channel %s acquired", ch));
+                    }
+
+                    // 获取连接池中的chanel
+                    @Override
+                    public void channelCreated(Channel ch) {
+                        ChannelPipeline p = ch.pipeline();
+                        p.addLast(new Encoder());
+                        p.addLast(new Decoder());
+                        p.addLast(new NettyRpcClientHandler(unprocessedRequests));
+                        LOGGER.info(String.format("Channel %s created", ch));
+                    }
+                };
+                return new FixedChannelPool(bootstrap.remoteAddress(socketAddress), handler, 5);
+            }
+        };
+
+        ShutdownHook.getInstance().addDisposable(this);
+    }
+
     @Override
     public Object sendRpcRequest(@Nonnull RpcRequest rpcRequest) throws Exception {
         CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();
-        InetSocketAddress inetSocketAddress = registryService.lookup(rpcRequest.getRpcServiceName());
+        InetSocketAddress socketAddress = registryService.lookup(rpcRequest.getRpcServiceName());
+
 
         // 从ChannelPool中获取和服务器连接的Channel，避免重复连接
-        Channel channel = getChannel(inetSocketAddress);
-        if (channel.isActive()) {
-            unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
-
-            RpcMessage rpcMessage = RpcMessage.newRequest(rpcRequest);
-            channel.writeAndFlush(rpcMessage).addListener(future -> {
+        FixedChannelPool pool = poolMap.get(socketAddress);
+        Future<Channel> future = pool.acquire();
+        RpcMessage rpcMessage = RpcMessage.newRequest(rpcRequest);
+        future.addListener(new FutureListener<Channel>() {
+            @Override
+            public void operationComplete(Future<Channel> channelFuture) {
                 if (future.isSuccess()) {
-                    LOGGER.debug("Client send message: [{}]", rpcMessage);
-                } else {
-                    LOGGER.error("Client send failed");
+                    unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
+                    Channel ch = future.getNow();
+                    ch.writeAndFlush(rpcMessage);
+                    pool.release(ch);
                 }
-            });
-        }
+            }
+        });
 
         return resultFuture.get();
-    }
-
-    private Channel getChannel(InetSocketAddress inetSocketAddress) throws InterruptedException {
-        Channel channel = channelPool.getOrNull(inetSocketAddress);
-        if (channel == null) {
-            channel = doConnect(inetSocketAddress);
-            channelPool.addChannel(inetSocketAddress, channel);
-        }
-        return channel;
-    }
-
-    private Channel doConnect(InetSocketAddress inetSocketAddress) throws InterruptedException {
-        ChannelFuture future = bootstrap.connect(inetSocketAddress).sync();
-        LOGGER.info("Client connect to server [{}] success", inetSocketAddress.toString());
-        return future.channel();
     }
 
     @Override
@@ -120,7 +126,6 @@ public class NettyRpcClient implements RpcClient {
             registryService.close();
         } catch (Exception ignored) {
         }
-        channelPool.close();
         workerGroup.shutdownGracefully();
     }
 }
