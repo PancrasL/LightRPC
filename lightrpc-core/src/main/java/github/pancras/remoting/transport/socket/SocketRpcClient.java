@@ -16,6 +16,7 @@ import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.transport.RpcClient;
+import github.pancras.wrapper.RegistryConfig;
 
 /**
  * @author PancrasL
@@ -24,9 +25,13 @@ public class SocketRpcClient implements RpcClient {
     private final static Logger LOGGER = LoggerFactory.getLogger(SocketRpcClient.class);
     private final RegistryService registryService;
 
-    public SocketRpcClient() {
-        registryService = RegistryFactory.getInstance();
+    private SocketRpcClient(RegistryConfig registryConfig) {
+        registryService = RegistryFactory.getRegistry(registryConfig);
         ShutdownHook.getInstance().addDisposable(this);
+    }
+
+    public static SocketRpcClient getInstance(RegistryConfig registryConfig) {
+        return new SocketRpcClient(registryConfig);
     }
 
     @Override

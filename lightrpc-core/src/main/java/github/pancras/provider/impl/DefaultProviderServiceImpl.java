@@ -23,7 +23,7 @@ import github.pancras.wrapper.RpcServiceConfig;
 public class DefaultProviderServiceImpl implements ProviderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultProviderServiceImpl.class);
 
-    private final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Object> serviceMap = new ConcurrentHashMap<>();
     private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
     private final RegistryService registry;
 

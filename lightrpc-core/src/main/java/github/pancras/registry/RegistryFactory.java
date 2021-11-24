@@ -2,49 +2,40 @@ package github.pancras.registry;
 
 import java.net.InetSocketAddress;
 
-import github.pancras.config.DefaultConfig;
+import github.pancras.commons.utils.NetUtil;
 import github.pancras.registry.redis.RedisRegistryServiceImpl;
 import github.pancras.registry.zk.ZkRegistryServiceImpl;
+import github.pancras.wrapper.RegistryConfig;
 
 /**
  * @author PancrasL
  */
 public class RegistryFactory {
-    private static volatile RegistryService INSTANCE = null;
-
     private RegistryFactory() {
     }
 
-    public static RegistryService getInstance() {
-        if (INSTANCE == null) {
-            synchronized (RegistryFactory.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = buildRegistryService();
-                }
-            }
-        }
-        return INSTANCE;
+    public static RegistryService getRegistry(RegistryConfig registryConfig) {
+        return buildRegistryService(registryConfig);
     }
 
-    private static RegistryService buildRegistryService() {
-        String type = DefaultConfig.DEFAULT_REGISRY_TYPE;
-        RegistryType registryType = RegistryType.getType(type);
+    private static RegistryService buildRegistryService(RegistryConfig registryConfig) {
+        InetSocketAddress socketAddress = new InetSocketAddress(registryConfig.getHost(), registryConfig.getPort());
+        NetUtil.validAddress(socketAddress);
 
+        String type = registryConfig.getType();
+        RegistryType registryType = RegistryType.getType(type);
+        RegistryService registryService;
         switch (registryType) {
             case Zookeeper:
-                INSTANCE = ZkRegistryServiceImpl.newInstance(
-                        InetSocketAddress.createUnresolved(
-                                DefaultConfig.DEFAULT_ZK_ADDRESS, DefaultConfig.DEFAULT_ZK_PORT));
+                registryService = ZkRegistryServiceImpl.newInstance(socketAddress);
                 break;
             case Redis:
-                INSTANCE = RedisRegistryServiceImpl.newInstance(
-                        InetSocketAddress.createUnresolved(
-                                DefaultConfig.DEFAULT_REDIS_ADDRESS, DefaultConfig.DEFAULT_REDIS_PORT));
+                registryService = RedisRegistryServiceImpl.newInstance(socketAddress);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown type：" + registryType);
         }
-        return INSTANCE;
+        return registryService;
     }
 
 }

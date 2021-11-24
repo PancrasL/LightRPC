@@ -19,8 +19,8 @@ import github.pancras.provider.impl.DefaultProviderServiceImpl;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
 import github.pancras.remoting.transport.RpcServer;
+import github.pancras.wrapper.RegistryConfig;
 import github.pancras.wrapper.RpcServiceConfig;
-import io.netty.resolver.InetSocketAddressResolver;
 
 /**
  * @author PancrasL
@@ -32,29 +32,28 @@ public class SocketRpcServer implements RpcServer {
     private final ExecutorService threadPool;
     private final ProviderService providerService;
 
-    private boolean isStarted = false;
     private ServerSocket server;
 
-    public SocketRpcServer(InetSocketAddress address) {
+    private SocketRpcServer(InetSocketAddress address, RegistryConfig registryConfig) {
         this.address = address;
         this.threadPool = Executors.newCachedThreadPool();
-        RegistryService registryService = RegistryFactory.getInstance();
+        RegistryService registryService = RegistryFactory.getRegistry(registryConfig);
         this.providerService = DefaultProviderServiceImpl.newInstance(registryService);
+    }
+
+    public static SocketRpcServer getInstance(@Nonnull InetSocketAddress address, @Nonnull RegistryConfig registryConfig) {
+        return new SocketRpcServer(address, registryConfig);
     }
 
     @Override
     public void registerService(@Nonnull RpcServiceConfig<?> rpcServiceConfig) throws Exception {
         providerService.publishService(rpcServiceConfig);
     }
-
+    
     @Override
     public void start() throws Exception {
-        if (isStarted) {
-            throw new IllegalStateException("The server is already started, please do not start the service repeatedly.");
-        }
         server = new ServerSocket();
         server.bind(address);
-        isStarted = true;
         LOGGER.info("RPC Server listen at: [{}]", address);
         ShutdownHook.getInstance().addDisposable(this);
 
@@ -68,7 +67,6 @@ public class SocketRpcServer implements RpcServer {
     @Override
     public void destroy() {
         try {
-            isStarted = false;
             server.close();
             threadPool.shutdown();
         } catch (IOException ignored) {

@@ -9,22 +9,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
 
 import github.pancras.commons.utils.NetUtil;
 import github.pancras.registry.RegistryService;
 
 /**
+ * zookeeper path is /LightRPC/
+ *
  * @author PancrasL
  */
+@ThreadSafe
 public class ZkRegistryServiceImpl implements RegistryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZkRegistryServiceImpl.class);
     private static final Set<String> REGISTERED_PATH_SET = ConcurrentHashMap.newKeySet();
+    private static final ConcurrentHashMap<String, List<InetSocketAddress>> SERVICE_ADDRESS_MAP = new ConcurrentHashMap<>();
     private static final String ZK_REGISTER_ROOT_PATH = "/LightRPC/";
     private static final String ZK_PATH_SPLIT_CHAR = "/";
     private static final int DEFAULT_SESSION_TIMEOUT = 6000;
@@ -63,14 +69,29 @@ public class ZkRegistryServiceImpl implements RegistryService {
 
     @Override
     public InetSocketAddress lookup(@Nonnull String rpcServiceName) throws Exception {
-        return doLookup(rpcServiceName);
+        String path = ZK_REGISTER_ROOT_PATH + rpcServiceName;
+        if (!SERVICE_ADDRESS_MAP.containsKey(path)) {
+            List<String> serviceUrls = zkClient.getChildren().forPath(path);
+            List<InetSocketAddress> newAddressList = new ArrayList<>();
+            for (String url : serviceUrls) {
+                try {
+                    String[] ipAndPort = url.split(":");
+                    newAddressList.add(new InetSocketAddress(ipAndPort[0], Integer.parseInt(ipAndPort[1])));
+                } catch (Exception e) {
+                    LOGGER.warn("The rpcServiceName info is error, info:{}", url);
+                }
+            }
+            SERVICE_ADDRESS_MAP.put(path, newAddressList);
+        }
+        // TODO 利用SPI实现多种策略的负载均衡机制
+        return SERVICE_ADDRESS_MAP.get(path).get(0);
     }
 
     @Override
     public void close() {
         REGISTERED_PATH_SET.clear();
+        SERVICE_ADDRESS_MAP.clear();
         zkClient.close();
-        LOGGER.info("ZkRegistryServiceImpl is closed.");
     }
 
     private void doRegister(String path) throws Exception {
@@ -82,19 +103,6 @@ public class ZkRegistryServiceImpl implements RegistryService {
         zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(path);
         LOGGER.info("Ephemeral ZNode [{}] was created successfully", path);
         REGISTERED_PATH_SET.add(path);
-    }
-
-    private InetSocketAddress doLookup(String rpcSerivceName) throws Exception {
-        String path = ZK_REGISTER_ROOT_PATH + rpcSerivceName;
-        List<String> serviceUrls;
-        serviceUrls = zkClient.getChildren().forPath(path);
-
-        // TODO 利用SPI实现多种策略的负载均衡机制
-        double randomNum = Math.random() * serviceUrls.size();
-        String targetServiceUrl = serviceUrls.get((int) randomNum);
-        LOGGER.debug("Get service: [{}]", targetServiceUrl);
-        String[] hostPort = targetServiceUrl.split(":");
-        return new InetSocketAddress(hostPort[0], Integer.parseInt(hostPort[1]));
     }
 
     private CuratorFramework buildZkClient(InetSocketAddress address) {
