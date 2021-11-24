@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nonnull;
 
@@ -17,6 +19,7 @@ import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
+import github.pancras.wrapper.RegistryConfig;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
@@ -35,33 +38,33 @@ import io.netty.util.concurrent.FutureListener;
  */
 public class NettyRpcClient implements RpcClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcClient.class);
-    private volatile static NettyRpcClient INSTANCE;
 
     private final RegistryService registryService;
     private final Bootstrap bootstrap;
     private final EventLoopGroup workerGroup;
-    private ChannelPoolMap<InetSocketAddress, FixedChannelPool> poolMap;
+    private final Set<InetSocketAddress> CONNECTED_ADDRESS = ConcurrentHashMap.newKeySet();
+    private final ChannelPoolMap<InetSocketAddress, FixedChannelPool> poolMap;
     private final UnprocessedRequests unprocessedRequests;
 
-    public static NettyRpcClient getInstance() {
-        if (INSTANCE == null) {
-            synchronized (NettyRpcClient.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new NettyRpcClient();
-                }
-            }
-        }
-        return INSTANCE;
+    public static NettyRpcClient getInstance(RegistryConfig registryConfig) {
+        return new NettyRpcClient(registryConfig);
     }
 
-    private NettyRpcClient() {
+    private NettyRpcClient(RegistryConfig registryConfig) {
         bootstrap = new Bootstrap();
         // 处理与服务端通信的线程组
         workerGroup = new NioEventLoopGroup();
         bootstrap.group(workerGroup)
                 .channel(NioSocketChannel.class);
-        registryService = RegistryFactory.getInstance();
+        registryService = RegistryFactory.getRegistry(registryConfig);
         unprocessedRequests = new UnprocessedRequests();
+        poolMap = createPoolMap();
+
+        ShutdownHook.getInstance().addDisposable(this);
+    }
+
+    private ChannelPoolMap<InetSocketAddress, FixedChannelPool> createPoolMap() {
+        ChannelPoolMap<InetSocketAddress, FixedChannelPool> poolMap;
         poolMap = new AbstractChannelPoolMap<InetSocketAddress, FixedChannelPool>() {
             @Override
             protected FixedChannelPool newPool(InetSocketAddress socketAddress) {
@@ -91,8 +94,7 @@ public class NettyRpcClient implements RpcClient {
                 return new FixedChannelPool(bootstrap.remoteAddress(socketAddress), handler, 5);
             }
         };
-
-        ShutdownHook.getInstance().addDisposable(this);
+        return poolMap;
     }
 
     @Override
@@ -122,10 +124,15 @@ public class NettyRpcClient implements RpcClient {
 
     @Override
     public void destroy() {
+        workerGroup.shutdownGracefully();
+        for (InetSocketAddress address : CONNECTED_ADDRESS) {
+            if (poolMap.contains(address)) {
+                poolMap.get(address).closeAsync();
+            }
+        }
         try {
             registryService.close();
         } catch (Exception ignored) {
         }
-        workerGroup.shutdownGracefully();
     }
 }

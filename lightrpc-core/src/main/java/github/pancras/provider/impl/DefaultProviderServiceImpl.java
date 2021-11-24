@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,7 +22,7 @@ import github.pancras.wrapper.RpcServiceConfig;
 public class DefaultProviderServiceImpl implements ProviderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultProviderServiceImpl.class);
 
-    private final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Object> serviceMap = new ConcurrentHashMap<>();
     private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
     private final RegistryService registry;
 
@@ -41,10 +40,10 @@ public class DefaultProviderServiceImpl implements ProviderService {
         int port = DefaultConfig.DEFAULT_SERVER_PORT;
         registry.register(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, port));
 
-        addServiceToCache(rpcServiceConfig);
+        addService(rpcServiceConfig);
     }
 
-    private void addServiceToCache(RpcServiceConfig<?> rpcServiceConfig) {
+    private void addService(RpcServiceConfig<?> rpcServiceConfig) {
         String rpcServiceName = rpcServiceConfig.getRpcServiceName();
         if (registeredService.contains((rpcServiceName))) {
             LOGGER.warn("Service [{}] has been published already", rpcServiceName);

@@ -17,6 +17,7 @@ import github.pancras.registry.RegistryService;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
+import github.pancras.wrapper.RegistryConfig;
 import github.pancras.wrapper.RpcServiceConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -50,11 +51,11 @@ public class NettyRpcServer implements RpcServer {
 
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    public NettyRpcServer(InetSocketAddress address) {
-        // 注册中心
-        RegistryService registryService = RegistryFactory.getInstance();
+    private NettyRpcServer(InetSocketAddress address, RegistryConfig registryConfig) {
         this.address = address;
         // 提供者服务，用于发布和查询服务
+        // 注册中心
+        RegistryService registryService = RegistryFactory.getRegistry(registryConfig);
         providerService = DefaultProviderServiceImpl.newInstance(registryService);
         // 监听线程组，监听客户端请求
         bossGroup = new NioEventLoopGroup(1);
@@ -62,6 +63,10 @@ public class NettyRpcServer implements RpcServer {
         workerGroup = new NioEventLoopGroup(SystemUtil.getAvailableProcessorNum() * 2);
         // 业务线程，处理业务逻辑
         serviceHandlerGroup = new DefaultEventLoopGroup(SystemUtil.getAvailableProcessorNum());
+    }
+
+    public static NettyRpcServer getInstance(InetSocketAddress socketAddress, RegistryConfig registryConfig) {
+        return new NettyRpcServer(socketAddress, registryConfig);
     }
 
     @Override
