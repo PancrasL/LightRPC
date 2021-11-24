@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.client.NettyRpcClient;
+import github.pancras.wrapper.RegistryConfig;
 
 /**
  * 配置类，声明必要的Bean
@@ -15,7 +16,7 @@ import github.pancras.remoting.transport.netty.client.NettyRpcClient;
 public class AppConfiguration {
     @Bean
     public NettyRpcClient nettyRpcClient() {
-        return NettyRpcClient.getInstance();
+        return NettyRpcClient.getInstance(RegistryConfig.getDefaultConfig());
     }
 
     @Bean

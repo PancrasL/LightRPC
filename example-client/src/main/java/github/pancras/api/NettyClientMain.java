@@ -3,6 +3,7 @@ package github.pancras.api;
 import github.pancras.HelloService;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.client.NettyRpcClient;
+import github.pancras.wrapper.RegistryConfig;
 import github.pancras.wrapper.RpcReferenceConfig;
 
 /**
@@ -10,7 +11,8 @@ import github.pancras.wrapper.RpcReferenceConfig;
  */
 public class NettyClientMain {
     public static void main(String[] args) {
-        RpcClient rpcClient = NettyRpcClient.getInstance();
+        RegistryConfig config = RegistryConfig.getDefaultConfig();
+        RpcClient rpcClient = NettyRpcClient.getInstance(config);
         RpcReferenceConfig<HelloService> referenceConfig = RpcReferenceConfig.newDefaultConfig(rpcClient, HelloService.class);
         HelloService helloService = referenceConfig.getReferent();
 

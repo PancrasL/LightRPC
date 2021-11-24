@@ -1,7 +1,7 @@
 package github.pancras.wrapper;
 
 public class RegistryConfig {
-    private static final RegistryConfig DEFAULT_CONFIG = new RegistryConfig("zookeeper", "127.0.0.1", 2389);
+    private static final RegistryConfig DEFAULT_CONFIG = new RegistryConfig("zookeeper", "127.0.0.1", 2181);
     private final String type;
     private final String host;
     private final int port;
