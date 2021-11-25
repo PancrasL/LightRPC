@@ -1,8 +1,6 @@
 # 1. LightRPC
 
-LightRPC 是一款以学习RPC原理为目的的轻量级 RPC 框架。
-
-本意是通过重复造轮子理解RPC原理，巩固对于自己所掌握的知识的运用。
+LightRPC是一款使用Java语言编写，基于Netty和Zookeeper构建的以学习RPC原理为目的的轻量 RPC 框架。
 
 ## 1.1 特性
 
@@ -16,7 +14,7 @@ LightRPC 是一款以学习RPC原理为目的的轻量级 RPC 框架。
 
 - 服务端的IO线程和业务线程分离，优化执行效率
 
-- 重用客户端Channel，避免重复连接服务器
+- 基于Netty FixedChannelPool实现了客户端池化，加快调用速度
 
 - 使用CompletableFuture包装客户端返回结果
 
