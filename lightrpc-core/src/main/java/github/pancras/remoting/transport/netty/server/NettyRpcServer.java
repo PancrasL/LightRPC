@@ -46,10 +46,8 @@ public class NettyRpcServer implements RpcServer {
 
     private final InetSocketAddress address;
     private final ServerBootstrap serverBootstrap = new ServerBootstrap();
-
-    private Channel serverChannel;
-
     private final AtomicBoolean initialized = new AtomicBoolean(false);
+    private Channel serverChannel;
 
     private NettyRpcServer(InetSocketAddress address, RegistryConfig registryConfig) {
         this.address = address;

@@ -20,8 +20,34 @@ public class RpcServiceConfig<T> {
      */
     private final T service;
 
+    private RpcServiceConfig(Builder<T> builder) {
+        this.group = builder.group;
+        this.version = builder.version;
+        this.service = builder.service;
+    }
+
     public static <T> RpcServiceConfig<T> newDefaultConfig(T service) {
         return new RpcServiceConfig.Builder<T>(service).build();
+    }
+
+    public String getRpcServiceName() {
+        return group + '@' + version + '@' + getServiceName();
+    }
+
+    private String getServiceName() {
+        return this.service.getClass().getInterfaces()[0].getCanonicalName();
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public Object getService() {
+        return service;
     }
 
     public static class Builder<T> {
@@ -49,31 +75,5 @@ public class RpcServiceConfig<T> {
         public RpcServiceConfig<T> build() {
             return new RpcServiceConfig<>(this);
         }
-    }
-
-    private RpcServiceConfig(Builder<T> builder) {
-        this.group = builder.group;
-        this.version = builder.version;
-        this.service = builder.service;
-    }
-
-    public String getRpcServiceName() {
-        return group + '@' + version + '@' + getServiceName();
-    }
-
-    private String getServiceName() {
-        return this.service.getClass().getInterfaces()[0].getCanonicalName();
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public Object getService() {
-        return service;
     }
 }

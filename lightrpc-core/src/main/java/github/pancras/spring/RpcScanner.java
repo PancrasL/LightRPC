@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 
 /**
  * 扫描包路径basePackages，返回路径下拥有annoType注解的bean
+ *
  * @author PancrasL
  */
 public class RpcScanner extends ClassPathBeanDefinitionScanner {

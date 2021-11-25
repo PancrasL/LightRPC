@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import github.pancras.proxy.RpcReferenceProxy;
 import github.pancras.remoting.transport.RpcClient;
 
+/**
+ * @author PancrasL
+ */
 public class RpcReferenceConfig<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcReferenceConfig.class);
 
@@ -15,8 +18,38 @@ public class RpcReferenceConfig<T> {
     private final Class<T> interfac;
     private Object referent;
 
+    private RpcReferenceConfig(Builder<T> builder) {
+        this.group = builder.group;
+        this.version = builder.version;
+        this.interfac = builder.interfac;
+        this.rpcClient = builder.rpcClient;
+    }
+
     public static <T> RpcReferenceConfig<T> newDefaultConfig(RpcClient rpcClient, Class<T> interfac) {
         return new RpcReferenceConfig.Builder<T>(rpcClient, interfac).build();
+    }
+
+    public RpcClient getRpcClient() {
+        return rpcClient;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public Class<T> getInterface() {
+        return interfac;
+    }
+
+    public T getReferent() {
+        if (referent == null) {
+            referent = RpcReferenceProxy.newProxyInstance(this);
+        }
+        return (T) referent;
     }
 
     public static class Builder<T> {
@@ -46,35 +79,5 @@ public class RpcReferenceConfig<T> {
         public RpcReferenceConfig<T> build() {
             return new RpcReferenceConfig<>(this);
         }
-    }
-
-    private RpcReferenceConfig(Builder<T> builder) {
-        this.group = builder.group;
-        this.version = builder.version;
-        this.interfac = builder.interfac;
-        this.rpcClient = builder.rpcClient;
-    }
-
-    public RpcClient getRpcClient() {
-        return rpcClient;
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public Class<T> getInterface() {
-        return interfac;
-    }
-
-    public T getReferent() {
-        if (referent == null) {
-            referent = RpcReferenceProxy.newProxyInstance(this);
-        }
-        return (T) referent;
     }
 }

@@ -1,8 +1,8 @@
 package github.pancras.registry;
 
 import java.net.InetSocketAddress;
-
 import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 

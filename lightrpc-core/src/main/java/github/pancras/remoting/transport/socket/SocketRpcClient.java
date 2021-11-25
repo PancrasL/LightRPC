@@ -1,7 +1,5 @@
 package github.pancras.remoting.transport.socket;
 
-import github.pancras.discovery.DiscoverService;
-import github.pancras.discovery.DiscoverServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +12,8 @@ import java.net.Socket;
 import javax.annotation.Nonnull;
 
 import github.pancras.commons.ShutdownHook;
+import github.pancras.discovery.DiscoverService;
+import github.pancras.discovery.DiscoverServiceImpl;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
 import github.pancras.remoting.dto.RpcRequest;

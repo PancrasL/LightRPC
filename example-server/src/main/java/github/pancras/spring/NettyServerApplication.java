@@ -4,7 +4,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import github.pancras.remoting.transport.netty.server.NettyRpcServer;
-import github.pancras.api.service.HelloServiceImpl;
 import github.pancras.spring.annotation.RpcScan;
 
 /**

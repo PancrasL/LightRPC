@@ -1,6 +1,7 @@
 package github.pancras.discovery;
 
 import java.net.InetSocketAddress;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
