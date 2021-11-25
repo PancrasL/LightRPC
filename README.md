@@ -74,15 +74,15 @@ $ docker run -d --name=zookeeper -p 2181:2181 zookeeper:3.6.3
 - 启动 `example-client/src/main/java/github/pancras/api/NettyClientMain.java`
 
 ## 3.5 注解方式启动
+
 - 启动 `Zookeeper`
 
 - 启动 `example-server/src/main/java/github/pancras/spring/NettyServerApplication.java`
 
 - 启动 `example-client/src/main/java/github/pancras/api/NettyClientApplication.java`
 
-
 > Reference:
-> 
+>
 > [1] [guide-rpc-framework](https://github.com/Snailclimb/guide-rpc-framework)
 >
 > [2] [客户端池化](https://blog.csdn.net/a294634473/article/details/89710187)

@@ -1,10 +1,15 @@
 package github.pancras.discovery;
 
-import github.pancras.registry.RegistryService;
 import java.net.InetSocketAddress;
 import java.util.List;
+
 import javax.annotation.Nonnull;
 
+import github.pancras.registry.RegistryService;
+
+/**
+ * @author PancrasL
+ */
 public class DiscoverServiceImpl implements DiscoverService {
     private final RegistryService registry;
 
@@ -16,7 +21,8 @@ public class DiscoverServiceImpl implements DiscoverService {
         return new DiscoverServiceImpl(registry);
     }
 
-    @Override public InetSocketAddress lookup(@Nonnull String rpcServiceName) {
+    @Override
+    public InetSocketAddress lookup(@Nonnull String rpcServiceName) {
         List<InetSocketAddress> addresses = registry.lookup(rpcServiceName);
         if (addresses.isEmpty()) {
             return null;

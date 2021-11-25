@@ -1,10 +1,10 @@
 package github.pancras.registry.redis;
 
-import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -21,12 +21,20 @@ public class RedisRegistryServiceImpl implements RegistryService {
 
     private final Jedis jedis;
 
+    private RedisRegistryServiceImpl(InetSocketAddress socketAddress) {
+        this.jedis = buildJedis(socketAddress);
+    }
+
     public static RedisRegistryServiceImpl newInstance(InetSocketAddress socketAddress) {
         return new RedisRegistryServiceImpl(socketAddress);
     }
 
-    private RedisRegistryServiceImpl(InetSocketAddress socketAddress) {
-        this.jedis = buildJedis(socketAddress);
+    private static Jedis buildJedis(InetSocketAddress socketAddress) {
+        Jedis jedis;
+        // 连接redis，最多等待3s
+        jedis = new Jedis(socketAddress.getHostName(), socketAddress.getPort(), 3000);
+        jedis.connect();
+        return jedis;
     }
 
     @Override
@@ -60,13 +68,5 @@ public class RedisRegistryServiceImpl implements RegistryService {
     @Override
     public void close() {
 
-    }
-
-    private static Jedis buildJedis(InetSocketAddress socketAddress) {
-        Jedis jedis;
-        // 连接redis，最多等待3s
-        jedis = new Jedis(socketAddress.getHostName(), socketAddress.getPort(), 3000);
-        jedis.connect();
-        return jedis;
     }
 }

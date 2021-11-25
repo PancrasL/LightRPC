@@ -26,12 +26,12 @@ public class DefaultProviderServiceImpl implements ProviderService {
     private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
     private final RegistryService registry;
 
-    public static DefaultProviderServiceImpl newInstance(RegistryService registry) {
-        return new DefaultProviderServiceImpl(registry);
-    }
-
     private DefaultProviderServiceImpl(RegistryService registry) {
         this.registry = registry;
+    }
+
+    public static DefaultProviderServiceImpl newInstance(RegistryService registry) {
+        return new DefaultProviderServiceImpl(registry);
     }
 
     @Override

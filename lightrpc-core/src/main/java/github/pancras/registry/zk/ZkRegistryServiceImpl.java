@@ -38,12 +38,12 @@ public class ZkRegistryServiceImpl implements RegistryService {
 
     private final CuratorFramework zkClient;
 
-    public static ZkRegistryServiceImpl newInstance(InetSocketAddress address) {
-        return new ZkRegistryServiceImpl(address);
-    }
-
     private ZkRegistryServiceImpl(InetSocketAddress address) {
         zkClient = buildZkClient(address);
+    }
+
+    public static ZkRegistryServiceImpl newInstance(InetSocketAddress address) {
+        return new ZkRegistryServiceImpl(address);
     }
 
     @Override

@@ -49,7 +49,7 @@ public class SocketRpcServer implements RpcServer {
     public void registerService(@Nonnull RpcServiceConfig<?> rpcServiceConfig) throws Exception {
         providerService.publishService(rpcServiceConfig);
     }
-    
+
     @Override
     public void start() throws Exception {
         server = new ServerSocket();

@@ -1,7 +1,5 @@
 package github.pancras.remoting.transport.netty.client;
 
-import github.pancras.discovery.DiscoverService;
-import github.pancras.discovery.DiscoverServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 
 import github.pancras.commons.ShutdownHook;
+import github.pancras.discovery.DiscoverService;
+import github.pancras.discovery.DiscoverServiceImpl;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;
@@ -47,10 +47,6 @@ public class NettyRpcClient implements RpcClient {
     private final ChannelPoolMap<InetSocketAddress, FixedChannelPool> poolMap;
     private final UnprocessedRequests unprocessedRequests;
 
-    public static NettyRpcClient getInstance(RegistryConfig registryConfig) {
-        return new NettyRpcClient(registryConfig);
-    }
-
     private NettyRpcClient(RegistryConfig registryConfig) {
         bootstrap = new Bootstrap();
         // 处理与服务端通信的线程组
@@ -63,6 +59,10 @@ public class NettyRpcClient implements RpcClient {
         poolMap = createPoolMap();
 
         ShutdownHook.getInstance().addDisposable(this);
+    }
+
+    public static NettyRpcClient getInstance(RegistryConfig registryConfig) {
+        return new NettyRpcClient(registryConfig);
     }
 
     private ChannelPoolMap<InetSocketAddress, FixedChannelPool> createPoolMap() {
