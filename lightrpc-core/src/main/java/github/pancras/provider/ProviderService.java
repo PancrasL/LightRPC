@@ -5,19 +5,21 @@ import javax.annotation.concurrent.ThreadSafe;
 import github.pancras.wrapper.RpcServiceConfig;
 
 /**
- * @author PancrasL 会被业务处理线程并发访问，需要保证线程安全
+ * 保存和提供服务实例
+ *
+ * @author PancrasL
  */
 @ThreadSafe
 public interface ProviderService {
     /**
-     * 将服务发布到注册中心，并添加到本地缓存
+     * 将服务发布到注册中心
      *
      * @param rpcServiceConfig RPC 服务的相关属性
      */
     void publishService(RpcServiceConfig<?> rpcServiceConfig) throws Exception;
 
     /**
-     * 服务调用，通过rpcServiceName获取服务实例
+     * 通过rpcServiceName获取服务实例
      *
      * @param rpcServiceName RPC服务名称
      * @return RPC服务实例

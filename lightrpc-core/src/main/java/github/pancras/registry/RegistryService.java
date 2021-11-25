@@ -28,7 +28,7 @@ public interface RegistryService {
     void unregister(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address);
 
     /**
-     * client调用，查询服务地址，需要保证线程安全
+     * 查询服务地址，需要保证线程安全
      *
      * @param rpcServiceName the rpcServiceName
      * @return the address list
