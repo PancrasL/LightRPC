@@ -101,12 +101,12 @@ public class ZkRegistryServiceImpl implements RegistryService {
 
     private void doRegister(String path) throws Exception {
         if (checkExists(path)) {
-            LOGGER.warn("Path already registered: [{}]", path);
+            LOGGER.warn("Fail: ZNode already existed [{}]", path);
             return;
         }
         // 创建临时节点，断开连接后会自动删除
         zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(path);
-        LOGGER.info("Ephemeral ZNode [{}] was created successfully", path);
+        LOGGER.info("Success: Ephemeral ZNode [{}] was created", path);
         REGISTERED_PATH_SET.add(path);
     }
 
