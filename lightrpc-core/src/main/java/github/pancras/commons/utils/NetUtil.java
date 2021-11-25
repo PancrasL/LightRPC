@@ -18,17 +18,17 @@ public class NetUtil {
     private static final String ANY_HOST = "0.0.0.0";
 
     public static String getLocalHost() {
-        InetAddress address = getLocalAddressOrNull();
+        InetAddress address = getLocalAddress();
         return address == null ? "localhost" : address.getHostName();
     }
 
     public static String getLocalIp() {
-        InetAddress address = getLocalAddressOrNull();
+        InetAddress address = getLocalAddress();
         return address == null ? LOCAL_HOST_IP : address.getHostAddress();
     }
 
     @Nullable
-    public static InetAddress getLocalAddressOrNull() {
+    public static InetAddress getLocalAddress() {
         InetAddress address = null;
         try {
             address = InetAddress.getLocalHost();

@@ -68,10 +68,16 @@ public class ZkRegistryServiceImpl implements RegistryService {
     }
 
     @Override
-    public InetSocketAddress lookup(@Nonnull String rpcServiceName) throws Exception {
+    public List<InetSocketAddress> lookup(@Nonnull String rpcServiceName) {
         String path = ZK_REGISTER_ROOT_PATH + rpcServiceName;
         if (!SERVICE_ADDRESS_MAP.containsKey(path)) {
-            List<String> serviceUrls = zkClient.getChildren().forPath(path);
+            List<String> serviceUrls;
+            try {
+                serviceUrls = zkClient.getChildren().forPath(path);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage());
+                serviceUrls = new ArrayList<>(0);
+            }
             List<InetSocketAddress> newAddressList = new ArrayList<>();
             for (String url : serviceUrls) {
                 try {
@@ -83,8 +89,7 @@ public class ZkRegistryServiceImpl implements RegistryService {
             }
             SERVICE_ADDRESS_MAP.put(path, newAddressList);
         }
-        // TODO 利用SPI实现多种策略的负载均衡机制
-        return SERVICE_ADDRESS_MAP.get(path).get(0);
+        return SERVICE_ADDRESS_MAP.get(path);
     }
 
     @Override

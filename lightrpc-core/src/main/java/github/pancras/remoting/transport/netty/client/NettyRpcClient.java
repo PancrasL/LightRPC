@@ -1,5 +1,7 @@
 package github.pancras.remoting.transport.netty.client;
 
+import github.pancras.discovery.DiscoverService;
+import github.pancras.discovery.DiscoverServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +14,6 @@ import javax.annotation.Nonnull;
 
 import github.pancras.commons.ShutdownHook;
 import github.pancras.registry.RegistryFactory;
-import github.pancras.registry.RegistryService;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;
@@ -39,7 +40,7 @@ import io.netty.util.concurrent.FutureListener;
 public class NettyRpcClient implements RpcClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyRpcClient.class);
 
-    private final RegistryService registryService;
+    private final DiscoverService discoverService;
     private final Bootstrap bootstrap;
     private final EventLoopGroup workerGroup;
     private final Set<InetSocketAddress> CONNECTED_ADDRESS = ConcurrentHashMap.newKeySet();
@@ -55,8 +56,9 @@ public class NettyRpcClient implements RpcClient {
         // 处理与服务端通信的线程组
         workerGroup = new NioEventLoopGroup();
         bootstrap.group(workerGroup)
-                .channel(NioSocketChannel.class);
-        registryService = RegistryFactory.getRegistry(registryConfig);
+            .channel(NioSocketChannel.class);
+
+        discoverService = DiscoverServiceImpl.getInstance(RegistryFactory.getRegistry(registryConfig));
         unprocessedRequests = new UnprocessedRequests();
         poolMap = createPoolMap();
 
@@ -100,8 +102,7 @@ public class NettyRpcClient implements RpcClient {
     @Override
     public Object sendRpcRequest(@Nonnull RpcRequest rpcRequest) throws Exception {
         CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();
-        InetSocketAddress socketAddress = registryService.lookup(rpcRequest.getRpcServiceName());
-
+        InetSocketAddress socketAddress = discoverService.lookup(rpcRequest.getRpcServiceName());
 
         // 从ChannelPool中获取和服务器连接的Channel，避免重复连接
         FixedChannelPool pool = poolMap.get(socketAddress);
@@ -130,9 +131,6 @@ public class NettyRpcClient implements RpcClient {
                 poolMap.get(address).closeAsync();
             }
         }
-        try {
-            registryService.close();
-        } catch (Exception ignored) {
-        }
+        discoverService.close();
     }
 }

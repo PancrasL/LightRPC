@@ -1,5 +1,7 @@
 package github.pancras.remoting.transport.socket;
 
+import github.pancras.discovery.DiscoverService;
+import github.pancras.discovery.DiscoverServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +25,11 @@ import github.pancras.wrapper.RegistryConfig;
  */
 public class SocketRpcClient implements RpcClient {
     private final static Logger LOGGER = LoggerFactory.getLogger(SocketRpcClient.class);
-    private final RegistryService registryService;
+    private final DiscoverService discoverService;
 
     private SocketRpcClient(RegistryConfig registryConfig) {
-        registryService = RegistryFactory.getRegistry(registryConfig);
+        RegistryService registry = RegistryFactory.getRegistry(registryConfig);
+        discoverService = DiscoverServiceImpl.getInstance(registry);
         ShutdownHook.getInstance().addDisposable(this);
     }
 
@@ -39,7 +42,7 @@ public class SocketRpcClient implements RpcClient {
         Socket socket = new Socket();
         // 重试3次连接，每次等待1s
         for (int i = 0; i < 3; i++) {
-            InetSocketAddress address = getServiceAddress(rpcRequest.getRpcServiceName());
+            InetSocketAddress address = discoverService.lookup(rpcRequest.getRpcServiceName());
             if (doConnect(socket, address)) {
                 break;
             }
@@ -62,7 +65,7 @@ public class SocketRpcClient implements RpcClient {
 
     @Override
     public void destroy() {
-        registryService.close();
+        discoverService.close();
         LOGGER.info("SocketRpcClient is closed.");
     }
 
@@ -74,9 +77,5 @@ public class SocketRpcClient implements RpcClient {
             return false;
         }
         return true;
-    }
-
-    private InetSocketAddress getServiceAddress(String serviceName) throws Exception {
-        return registryService.lookup(serviceName);
     }
 }

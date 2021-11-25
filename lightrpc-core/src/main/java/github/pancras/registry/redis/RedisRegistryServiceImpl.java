@@ -1,5 +1,6 @@
 package github.pancras.registry.redis;
 
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,17 +42,19 @@ public class RedisRegistryServiceImpl implements RegistryService {
     }
 
     @Override
-    public InetSocketAddress lookup(@Nonnull String rpcServiceName) {
+    public List<InetSocketAddress> lookup(@Nonnull String rpcServiceName) {
         String key = JedisUtils.REDIS_REGISTER_ROOT_PATH + "/" + rpcServiceName;
         List<String> serviceUrls = JedisUtils.getNodes(jedis, key);
-        if (serviceUrls.isEmpty()) {
-            throw new RuntimeException(String.format("Service %s not found", rpcServiceName));
+        List<InetSocketAddress> newAddressList = new ArrayList<>();
+        for (String url : serviceUrls) {
+            try {
+                String[] ipAndPort = url.split(":");
+                newAddressList.add(new InetSocketAddress(ipAndPort[0], Integer.parseInt(ipAndPort[1])));
+            } catch (Exception e) {
+                LOGGER.warn("The rpcServiceName info is error, info:{}", url);
+            }
         }
-        double randomNum = Math.random() * serviceUrls.size();
-        String targetServiceUrl = serviceUrls.get((int) randomNum);
-        String[] hostPort = targetServiceUrl.split(":");
-        LOGGER.debug("Get service: [{}]", targetServiceUrl);
-        return new InetSocketAddress(hostPort[0], Integer.parseInt(hostPort[1]));
+        return newAddressList;
     }
 
     @Override

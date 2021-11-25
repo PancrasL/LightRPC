@@ -2,6 +2,7 @@ package github.pancras.registry;
 
 import java.net.InetSocketAddress;
 
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -33,7 +34,7 @@ public interface RegistryService {
      * @param rpcServiceName the rpcServiceName
      * @return the address list
      */
-    InetSocketAddress lookup(@Nonnull String rpcServiceName) throws Exception;
+    List<InetSocketAddress> lookup(@Nonnull String rpcServiceName);
 
     /**
      * 释放连接注册中心的资源
