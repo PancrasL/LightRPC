@@ -52,7 +52,7 @@ public class NettyRpcClient implements RpcClient {
         // 处理与服务端通信的线程组
         workerGroup = new NioEventLoopGroup();
         bootstrap.group(workerGroup)
-            .channel(NioSocketChannel.class);
+                .channel(NioSocketChannel.class);
 
         discoverService = DiscoverServiceImpl.getInstance(RegistryFactory.getRegistry(registryConfig));
         unprocessedRequests = new UnprocessedRequests();
@@ -101,18 +101,18 @@ public class NettyRpcClient implements RpcClient {
 
     @Override
     public Object sendRpcRequest(@Nonnull RpcRequest rpcRequest) throws Exception {
-        CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();
         InetSocketAddress socketAddress = discoverService.lookup(rpcRequest.getRpcServiceName());
 
         // 从ChannelPool中获取和服务器连接的Channel，避免重复连接
         FixedChannelPool pool = poolMap.get(socketAddress);
-        Future<Channel> future = pool.acquire();
+        Future<Channel> channel = pool.acquire();
         RpcMessage rpcMessage = RpcMessage.newRequest(rpcRequest);
-        future.addListener(new FutureListener<Channel>() {
+        CompletableFuture<RpcResponse<Object>> result = new CompletableFuture<>();
+        channel.addListener(new FutureListener<Channel>() {
             @Override
-            public void operationComplete(Future<Channel> channelFuture) {
+            public void operationComplete(Future<Channel> future) {
                 if (future.isSuccess()) {
-                    unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
+                    unprocessedRequests.put(rpcRequest.getRequestId(), result);
                     Channel ch = future.getNow();
                     ch.writeAndFlush(rpcMessage);
                     pool.release(ch);
@@ -120,7 +120,7 @@ public class NettyRpcClient implements RpcClient {
             }
         });
 
-        return resultFuture.get();
+        return result.get();
     }
 
     @Override

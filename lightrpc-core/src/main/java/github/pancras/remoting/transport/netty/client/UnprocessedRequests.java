@@ -12,8 +12,14 @@ import github.pancras.remoting.dto.RpcResponse;
 public class UnprocessedRequests {
     private static final Map<String, CompletableFuture<RpcResponse<Object>>> UNPROCESSED_RESPONSE_FUTURES = new ConcurrentHashMap<>();
 
-    public void put(String requestId, CompletableFuture<RpcResponse<Object>> future) {
-        UNPROCESSED_RESPONSE_FUTURES.put(requestId, future);
+    /**
+     * requestId请求的结果执行完毕后，存放在result中
+     *
+     * @param requestId the requestId
+     * @param result    the result container
+     */
+    public void put(String requestId, CompletableFuture<RpcResponse<Object>> result) {
+        UNPROCESSED_RESPONSE_FUTURES.put(requestId, result);
     }
 
     public void complete(RpcResponse<Object> rpcResponse) {
