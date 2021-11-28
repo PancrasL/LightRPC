@@ -31,6 +31,7 @@ import io.netty.channel.pool.ChannelPoolHandler;
 import io.netty.channel.pool.ChannelPoolMap;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.FutureListener;
 
@@ -87,6 +88,8 @@ public class NettyRpcClient implements RpcClient {
                     @Override
                     public void channelCreated(Channel ch) {
                         ChannelPipeline p = ch.pipeline();
+                        // 使用LengthFieldBasedFrameDecoder解决TCP粘包、粘包问题
+                        p.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
                         p.addLast(new Encoder());
                         p.addLast(new Decoder());
                         p.addLast(new NettyRpcClientHandler(unprocessedRequests));
