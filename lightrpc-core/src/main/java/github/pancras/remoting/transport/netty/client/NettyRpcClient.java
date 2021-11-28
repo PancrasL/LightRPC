@@ -110,7 +110,7 @@ public class NettyRpcClient implements RpcClient {
         FixedChannelPool pool = poolMap.get(socketAddress);
         Future<Channel> channel = pool.acquire();
         RpcMessage rpcMessage = RpcMessage.newRequest(rpcRequest);
-        CompletableFuture<RpcResponse<Object>> result = new CompletableFuture<>();
+        CompletableFuture<RpcResponse<?>> result = new CompletableFuture<>();
         channel.addListener(new FutureListener<Channel>() {
             @Override
             public void operationComplete(Future<Channel> future) {
