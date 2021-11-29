@@ -8,7 +8,6 @@ import java.net.InetSocketAddress;
 import github.pancras.config.DefaultConfig;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.server.NettyRpcServer;
-import github.pancras.wrapper.RegistryConfig;
 
 /**
  * 配置类，声明必要的Bean
@@ -20,7 +19,7 @@ public class AppConfiguration {
     @Bean
     public NettyRpcServer nettyRpcServer() {
         InetSocketAddress socketAddress = new InetSocketAddress(DefaultConfig.DEFAULT_SERVER_ADDRESS, DefaultConfig.DEFAULT_SERVER_PORT);
-        return NettyRpcServer.getInstance(socketAddress, RegistryConfig.getDefaultConfig());
+        return NettyRpcServer.getInstance(socketAddress, DefaultConfig.DEFAULT_REGISTRY_CONFIG);
     }
 
     @Bean
