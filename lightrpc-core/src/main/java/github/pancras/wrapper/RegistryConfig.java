@@ -1,7 +1,8 @@
 package github.pancras.wrapper;
 
-import github.pancras.config.DefaultConfig;
-
+/**
+ * @author PancrasL
+ */
 public class RegistryConfig {
     private final String type;
     private final String host;
@@ -11,10 +12,6 @@ public class RegistryConfig {
         this.type = type;
         this.host = host;
         this.port = port;
-    }
-
-    public static RegistryConfig getDefaultConfig() {
-        return DefaultConfig.DEFAULT_REGISTRY_CONFIG;
     }
 
     public static RegistryConfig newConfig(String type, String host, int port) {

@@ -3,6 +3,7 @@ package github.pancras.api;
 import java.net.InetSocketAddress;
 
 import github.pancras.api.service.HelloServiceImpl;
+import github.pancras.config.DefaultConfig;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.server.NettyRpcServer;
 import github.pancras.wrapper.RegistryConfig;
@@ -28,7 +29,7 @@ public class NettyServerMain {
 
         // 创建服务器
         InetSocketAddress address = new InetSocketAddress("localhost", 7998);
-        RegistryConfig config = RegistryConfig.getDefaultConfig();
+        RegistryConfig config = DefaultConfig.DEFAULT_REGISTRY_CONFIG;
         RpcServer server = NettyRpcServer.getInstance(address, config);
 
         // 发布服务

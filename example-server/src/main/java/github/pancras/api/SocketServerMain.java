@@ -3,6 +3,7 @@ package github.pancras.api;
 import java.net.InetSocketAddress;
 
 import github.pancras.api.service.HelloServiceImpl;
+import github.pancras.config.DefaultConfig;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.socket.SocketRpcServer;
 import github.pancras.wrapper.RegistryConfig;
@@ -30,7 +31,7 @@ public class SocketServerMain {
 
         // 创建服务器
         InetSocketAddress address = new InetSocketAddress("localhost", 7998);
-        RegistryConfig registryConfig = RegistryConfig.getDefaultConfig();
+        RegistryConfig registryConfig = DefaultConfig.DEFAULT_REGISTRY_CONFIG;
         RpcServer server = SocketRpcServer.getInstance(address, registryConfig);
 
         // 发布服务
