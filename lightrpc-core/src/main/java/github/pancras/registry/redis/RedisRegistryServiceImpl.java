@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -50,19 +49,9 @@ public class RedisRegistryServiceImpl implements RegistryService {
     }
 
     @Override
-    public List<InetSocketAddress> lookup(@Nonnull String rpcServiceName) {
+    public List<String> lookup(@Nonnull String rpcServiceName) {
         String key = JedisUtils.REDIS_REGISTER_ROOT_PATH + "/" + rpcServiceName;
-        List<String> serviceUrls = JedisUtils.getNodes(jedis, key);
-        List<InetSocketAddress> newAddressList = new ArrayList<>();
-        for (String url : serviceUrls) {
-            try {
-                String[] ipAndPort = url.split(":");
-                newAddressList.add(new InetSocketAddress(ipAndPort[0], Integer.parseInt(ipAndPort[1])));
-            } catch (Exception e) {
-                LOGGER.warn("The rpcServiceName info is error, info:{}", url);
-            }
-        }
-        return newAddressList;
+        return JedisUtils.getNodes(jedis, key);
     }
 
     @Override

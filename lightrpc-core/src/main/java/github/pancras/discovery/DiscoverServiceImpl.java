@@ -1,13 +1,16 @@
 package github.pancras.discovery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import github.pancras.commons.utils.SpiServiceLoader;
 import github.pancras.discovery.loadbalance.LoadBalancer;
 import github.pancras.registry.RegistryService;
-import java.net.InetSocketAddress;
-import java.util.List;
-import javax.annotation.Nonnull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DiscoverServiceImpl implements DiscoverService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscoverServiceImpl.class);
@@ -26,11 +29,13 @@ public class DiscoverServiceImpl implements DiscoverService {
 
     @Override
     public InetSocketAddress lookup(@Nonnull String rpcServiceName) {
-        List<InetSocketAddress> addresses = registry.lookup(rpcServiceName);
+        List<String> addresses = registry.lookup(rpcServiceName);
         if (addresses.isEmpty()) {
             return null;
         }
-        return loadBalancer.selectAddress(addresses);
+        String url = loadBalancer.selectAddress(addresses, rpcServiceName);
+        String[] ipAndPort = url.split(":");
+        return new InetSocketAddress(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
     }
 
     @Override

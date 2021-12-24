@@ -30,7 +30,7 @@ import github.pancras.registry.RegistryService;
 public class ZkRegistryServiceImpl implements RegistryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZkRegistryServiceImpl.class);
     private static final Set<String> REGISTERED_PATH_SET = ConcurrentHashMap.newKeySet();
-    private static final ConcurrentHashMap<String, List<InetSocketAddress>> SERVICE_ADDRESS_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, List<String>> SERVICE_ADDRESS_MAP = new ConcurrentHashMap<>();
     private static final String ZK_REGISTER_ROOT_PATH = "/LightRPC/";
     private static final String ZK_PATH_SPLIT_CHAR = "/";
     private static final int DEFAULT_SESSION_TIMEOUT = 6000;
@@ -68,26 +68,16 @@ public class ZkRegistryServiceImpl implements RegistryService {
     }
 
     @Override
-    public List<InetSocketAddress> lookup(@Nonnull String rpcServiceName) {
+    public List<String> lookup(@Nonnull String rpcServiceName) {
         String path = ZK_REGISTER_ROOT_PATH + rpcServiceName;
         if (!SERVICE_ADDRESS_MAP.containsKey(path)) {
-            List<String> serviceUrls;
+            List<String> serviceUrls = new ArrayList<>(0);
             try {
                 serviceUrls = zkClient.getChildren().forPath(path);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage());
-                serviceUrls = new ArrayList<>(0);
             }
-            List<InetSocketAddress> newAddressList = new ArrayList<>();
-            for (String url : serviceUrls) {
-                try {
-                    String[] ipAndPort = url.split(":");
-                    newAddressList.add(new InetSocketAddress(ipAndPort[0], Integer.parseInt(ipAndPort[1])));
-                } catch (Exception e) {
-                    LOGGER.warn("The rpcServiceName info is error, info:{}", url);
-                }
-            }
-            SERVICE_ADDRESS_MAP.put(path, newAddressList);
+            SERVICE_ADDRESS_MAP.put(path, serviceUrls);
         }
         return SERVICE_ADDRESS_MAP.get(path);
     }

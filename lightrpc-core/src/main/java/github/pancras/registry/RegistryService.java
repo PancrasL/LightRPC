@@ -34,7 +34,7 @@ public interface RegistryService {
      * @param rpcServiceName the rpcServiceName
      * @return the address list
      */
-    List<InetSocketAddress> lookup(@Nonnull String rpcServiceName);
+    List<String> lookup(@Nonnull String rpcServiceName);
 
     /**
      * 释放连接注册中心的资源
