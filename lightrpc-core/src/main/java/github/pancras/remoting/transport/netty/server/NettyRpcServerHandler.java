@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 
-import github.pancras.exception.RpcException;
+import github.pancras.commons.exception.RpcException;
 import github.pancras.provider.ProviderService;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;

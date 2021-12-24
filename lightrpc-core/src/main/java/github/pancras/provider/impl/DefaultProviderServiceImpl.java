@@ -9,8 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import github.pancras.commons.exception.RpcException;
 import github.pancras.config.DefaultConfig;
-import github.pancras.exception.RpcException;
 import github.pancras.provider.ProviderService;
 import github.pancras.registry.RegistryService;
 import github.pancras.wrapper.RpcServiceConfig;

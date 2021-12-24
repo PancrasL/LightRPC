@@ -1,4 +1,4 @@
-package github.pancras.exception;
+package github.pancras.commons.exception;
 
 public class RpcException extends RuntimeException {
     public RpcException(String detail) {
