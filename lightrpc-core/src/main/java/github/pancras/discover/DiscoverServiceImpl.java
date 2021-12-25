@@ -1,4 +1,4 @@
-package github.pancras.discovery;
+package github.pancras.discover;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import github.pancras.commons.utils.SpiServiceLoader;
-import github.pancras.discovery.loadbalance.LoadBalancer;
+import github.pancras.discover.loadbalance.LoadBalancer;
 import github.pancras.registry.RegistryService;
 
 public class DiscoverServiceImpl implements DiscoverService {

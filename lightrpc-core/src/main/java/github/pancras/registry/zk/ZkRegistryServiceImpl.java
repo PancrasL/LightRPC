@@ -47,24 +47,11 @@ public class ZkRegistryServiceImpl implements RegistryService {
     }
 
     @Override
-    public void register(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address) throws Exception {
+    public void register(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address, @Nonnull Integer weight) throws Exception {
         NetUtil.validAddress(address);
 
-        String path = getRegisterPath(rpcServiceName, address);
+        String path = getRegisterPath(rpcServiceName, address, weight);
         doRegister(path);
-    }
-
-    @Override
-    public void unregister(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address) {
-        NetUtil.validAddress(address);
-
-        String path = getRegisterPath(rpcServiceName, address);
-        try {
-            zkClient.delete().deletingChildrenIfNeeded().forPath(path);
-        } catch (Exception e) {
-            LOGGER.warn(String.format("Delete ZNode %s fail", path));
-        }
-        REGISTERED_PATH_SET.remove(path);
     }
 
     @Override
@@ -115,8 +102,8 @@ public class ZkRegistryServiceImpl implements RegistryService {
         return zkClient;
     }
 
-    private String getRegisterPath(String rpcServiceName, InetSocketAddress address) {
-        return ZK_REGISTER_ROOT_PATH + rpcServiceName + ZK_PATH_SPLIT_CHAR + NetUtil.toStringAddress(address);
+    private String getRegisterPath(String rpcServiceName, InetSocketAddress address, Integer weight) {
+        return ZK_REGISTER_ROOT_PATH + rpcServiceName + ZK_PATH_SPLIT_CHAR + NetUtil.toStringAddress(address) + "@" + weight;
     }
 
     private boolean checkExists(String path) {

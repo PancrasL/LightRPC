@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -21,9 +20,9 @@ import github.pancras.wrapper.RpcServiceConfig;
 @ThreadSafe
 public class ProviderServiceImpl implements ProviderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProviderServiceImpl.class);
+    private static final InetSocketAddress SERVICE_ADDRESS = new InetSocketAddress(DefaultConfig.DEFAULT_SERVER_ADDRESS, DefaultConfig.DEFAULT_SERVER_PORT);
 
     private final ConcurrentHashMap<String, Object> serviceMap = new ConcurrentHashMap<>();
-    private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
     private final RegistryService registry;
 
     private ProviderServiceImpl(RegistryService registry) {
@@ -36,10 +35,7 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public void publishService(RpcServiceConfig<?> rpcServiceConfig) throws Exception {
-        String host = DefaultConfig.SERVICE_REGISTER_ADDRESS;
-        int port = DefaultConfig.DEFAULT_SERVER_PORT;
-        registry.register(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, port));
-
+        registry.register(rpcServiceConfig.getRpcServiceName(), SERVICE_ADDRESS, rpcServiceConfig.getWeight());
         addService(rpcServiceConfig);
     }
 
@@ -55,14 +51,13 @@ public class ProviderServiceImpl implements ProviderService {
     @Override
     public void close() {
         serviceMap.clear();
-        registeredService.clear();
         registry.close();
         LOGGER.info("DefaultProviderServiceImpl is closed.");
     }
 
     private void addService(RpcServiceConfig<?> rpcServiceConfig) {
         String rpcServiceName = rpcServiceConfig.getRpcServiceName();
-        if (registeredService.contains((rpcServiceName))) {
+        if (serviceMap.containsKey(rpcServiceName)) {
             LOGGER.warn("Service [{}] has been published already", rpcServiceName);
             return;
         }

@@ -37,15 +37,10 @@ public class RedisRegistryServiceImpl implements RegistryService {
     }
 
     @Override
-    public void register(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address) {
+    public void register(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address, @Nonnull Integer weight) {
         String key = JedisUtils.REDIS_REGISTER_ROOT_PATH + "/" + rpcServiceName;
         String value = address.toString();
         JedisUtils.createNode(jedis, key, value);
-    }
-
-    @Override
-    public void unregister(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address) {
-
     }
 
     @Override

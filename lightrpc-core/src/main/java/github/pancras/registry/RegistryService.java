@@ -18,15 +18,7 @@ public interface RegistryService {
      * @param address        the address
      * @throws Exception the exception
      */
-    void register(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address) throws Exception;
-
-    /**
-     * server调用，将服务取消注册
-     *
-     * @param rpcServiceName the rpcServiceName
-     * @param address        the address
-     */
-    void unregister(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address);
+    void register(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address, @Nonnull Integer weight) throws Exception;
 
     /**
      * 查询服务地址，需要保证线程安全

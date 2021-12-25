@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 
 import github.pancras.commons.ShutdownHook;
-import github.pancras.discovery.DiscoverService;
-import github.pancras.discovery.DiscoverServiceImpl;
+import github.pancras.discover.DiscoverService;
+import github.pancras.discover.DiscoverServiceImpl;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.remoting.dto.RpcMessage;
 import github.pancras.remoting.dto.RpcRequest;

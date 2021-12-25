@@ -1,4 +1,4 @@
-package github.pancras.discovery;
+package github.pancras.discover;
 
 import java.net.InetSocketAddress;
 
