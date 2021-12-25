@@ -24,7 +24,7 @@ public interface ProviderService {
      * @param rpcServiceName RPC服务名称
      * @return RPC服务实例
      */
-    Object getService(String rpcServiceName);
+    Object getServiceInstance(String rpcServiceName);
 
     /**
      * 释放注册中心的资源

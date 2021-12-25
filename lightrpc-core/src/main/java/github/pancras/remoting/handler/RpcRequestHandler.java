@@ -23,7 +23,7 @@ public class RpcRequestHandler {
     }
 
     public Object handle(RpcRequest rpcRequest) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Object service = providerService.getService(rpcRequest.getRpcServiceName());
+        Object service = providerService.getServiceInstance(rpcRequest.getRpcServiceName());
         return invokeTargetMethod(rpcRequest, service);
     }
 

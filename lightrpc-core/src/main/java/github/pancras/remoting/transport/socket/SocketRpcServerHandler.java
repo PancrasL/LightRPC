@@ -9,7 +9,7 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 
-import github.pancras.exception.RpcException;
+import github.pancras.commons.exception.RpcException;
 import github.pancras.provider.ProviderService;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.dto.RpcResponse;

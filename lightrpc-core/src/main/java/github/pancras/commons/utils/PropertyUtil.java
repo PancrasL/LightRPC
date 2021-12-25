@@ -15,9 +15,9 @@ public class PropertyUtil {
 
     public static String getProperty(String key, String defaultValue) {
         try {
-            PROPERTIES.load(PropertyUtil.class.getResourceAsStream("/transport.properties"));
+            PROPERTIES.load(PropertyUtil.class.getResourceAsStream("/lightrpc.properties"));
         } catch (IOException e) {
-            LOGGER.warn("Can not find transport.properties");
+            LOGGER.warn("Can not find lightrpc.properties");
             return defaultValue;
         }
         return PROPERTIES.getProperty(key, defaultValue);
