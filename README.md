@@ -22,6 +22,8 @@ LightRPC是一款使用Java语言编写，基于Netty和Zookeeper构建的以学
 
 - 使用关闭钩子释放资源
 
+- 使用LengthFieldBasedFrameDecoder解决TCP粘包、拆包
+
 # 2. 模块介绍
 
 - sparrow-core：rpc框架的核心组件
