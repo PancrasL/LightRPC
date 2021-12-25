@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import github.pancras.commons.ShutdownHook;
 import github.pancras.commons.utils.SystemUtil;
 import github.pancras.provider.ProviderService;
-import github.pancras.provider.impl.DefaultProviderServiceImpl;
+import github.pancras.provider.impl.ProviderServiceImpl;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
 import github.pancras.remoting.transport.RpcServer;
@@ -55,7 +55,7 @@ public class NettyRpcServer implements RpcServer {
         // 提供者服务，用于发布和查询服务
         // 注册中心
         RegistryService registryService = RegistryFactory.getRegistry(registryConfig);
-        providerService = DefaultProviderServiceImpl.newInstance(registryService);
+        providerService = ProviderServiceImpl.newInstance(registryService);
         // 监听线程组，监听客户端请求
         bossGroup = new NioEventLoopGroup(1);
         // 工作线程组，处理与客户端的数据通讯

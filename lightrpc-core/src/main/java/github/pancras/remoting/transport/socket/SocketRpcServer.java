@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 
 import github.pancras.commons.ShutdownHook;
 import github.pancras.provider.ProviderService;
-import github.pancras.provider.impl.DefaultProviderServiceImpl;
+import github.pancras.provider.impl.ProviderServiceImpl;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
 import github.pancras.remoting.transport.RpcServer;
@@ -38,7 +38,7 @@ public class SocketRpcServer implements RpcServer {
         this.address = address;
         this.threadPool = Executors.newCachedThreadPool();
         RegistryService registryService = RegistryFactory.getRegistry(registryConfig);
-        this.providerService = DefaultProviderServiceImpl.newInstance(registryService);
+        this.providerService = ProviderServiceImpl.newInstance(registryService);
     }
 
     public static SocketRpcServer getInstance(@Nonnull InetSocketAddress address, @Nonnull RegistryConfig registryConfig) {

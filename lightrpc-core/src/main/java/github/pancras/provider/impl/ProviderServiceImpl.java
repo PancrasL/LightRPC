@@ -19,19 +19,19 @@ import github.pancras.wrapper.RpcServiceConfig;
  * @author PancrasL
  */
 @ThreadSafe
-public class DefaultProviderServiceImpl implements ProviderService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultProviderServiceImpl.class);
+public class ProviderServiceImpl implements ProviderService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProviderServiceImpl.class);
 
     private final ConcurrentHashMap<String, Object> serviceMap = new ConcurrentHashMap<>();
     private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
     private final RegistryService registry;
 
-    private DefaultProviderServiceImpl(RegistryService registry) {
+    private ProviderServiceImpl(RegistryService registry) {
         this.registry = registry;
     }
 
-    public static DefaultProviderServiceImpl newInstance(RegistryService registry) {
-        return new DefaultProviderServiceImpl(registry);
+    public static ProviderServiceImpl newInstance(RegistryService registry) {
+        return new ProviderServiceImpl(registry);
     }
 
     @Override
@@ -43,18 +43,8 @@ public class DefaultProviderServiceImpl implements ProviderService {
         addService(rpcServiceConfig);
     }
 
-    private void addService(RpcServiceConfig<?> rpcServiceConfig) {
-        String rpcServiceName = rpcServiceConfig.getRpcServiceName();
-        if (registeredService.contains((rpcServiceName))) {
-            LOGGER.warn("Service [{}] has been published already", rpcServiceName);
-            return;
-        }
-        serviceMap.put(rpcServiceName, rpcServiceConfig.getService());
-        LOGGER.info("Add service:[{}], interfaces: [{}]", rpcServiceName, rpcServiceConfig.getService().getClass().getInterfaces());
-    }
-
     @Override
-    public Object getService(String rpcServiceName) {
+    public Object getServiceInstance(String rpcServiceName) {
         Object service = serviceMap.get(rpcServiceName);
         if (service == null) {
             throw new RpcException(String.format("Service %s not found", rpcServiceName));
@@ -68,5 +58,15 @@ public class DefaultProviderServiceImpl implements ProviderService {
         registeredService.clear();
         registry.close();
         LOGGER.info("DefaultProviderServiceImpl is closed.");
+    }
+
+    private void addService(RpcServiceConfig<?> rpcServiceConfig) {
+        String rpcServiceName = rpcServiceConfig.getRpcServiceName();
+        if (registeredService.contains((rpcServiceName))) {
+            LOGGER.warn("Service [{}] has been published already", rpcServiceName);
+            return;
+        }
+        serviceMap.put(rpcServiceName, rpcServiceConfig.getService());
+        LOGGER.info("Add service:[{}], interfaces: [{}]", rpcServiceName, rpcServiceConfig.getService().getClass().getInterfaces());
     }
 }

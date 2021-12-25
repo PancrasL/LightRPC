@@ -16,6 +16,10 @@ public class RpcServiceConfig<T> {
      */
     private final String version;
     /**
+     * 标识服务的权重，默认为1
+     */
+    private final Integer weight;
+    /**
      * 服务实例
      */
     private final T service;
@@ -24,6 +28,7 @@ public class RpcServiceConfig<T> {
         this.group = builder.group;
         this.version = builder.version;
         this.service = builder.service;
+        this.weight = builder.weight;
     }
 
     public static <T> RpcServiceConfig<T> newDefaultConfig(T service) {
@@ -50,6 +55,10 @@ public class RpcServiceConfig<T> {
         return service;
     }
 
+    public Integer getWeight() {
+        return weight;
+    }
+
     public static class Builder<T> {
         // Required paramaters
         private final T service;
@@ -57,6 +66,7 @@ public class RpcServiceConfig<T> {
         // Optional parameters - initialized to default values
         private String group = "";
         private String version = "";
+        private Integer weight = 1;
 
         public Builder(T service) {
             this.service = service;
@@ -69,6 +79,11 @@ public class RpcServiceConfig<T> {
 
         public Builder<T> version(String version) {
             this.version = version;
+            return this;
+        }
+
+        public Builder<T> weight(Integer weight) {
+            this.weight = weight;
             return this;
         }
 
