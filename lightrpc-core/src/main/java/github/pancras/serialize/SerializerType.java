@@ -5,12 +5,17 @@ package github.pancras.serialize;
  */
 enum SerializerType {
     /**
-     * Zookeeper registry type.
+     * Java serializer type.
+     */
+    Java,
+
+    /**
+     * Zookeeper serializer type.
      */
     Kryo,
 
     /**
-     * Redis registry type.
+     * Redis serializer type.
      */
     Protostuff;
 

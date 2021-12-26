@@ -111,8 +111,7 @@ public class ZkRegistryServiceImpl implements RegistryService {
 
     private void doRegister(String path) throws Exception {
         if (checkExists(path)) {
-            LOGGER.warn("Fail: ZNode already existed [{}]", path);
-            return;
+            throw new IllegalStateException("Fail: ZNode already existed: " + path);
         }
 
         // 创建临时节点，断开连接后会自动删除

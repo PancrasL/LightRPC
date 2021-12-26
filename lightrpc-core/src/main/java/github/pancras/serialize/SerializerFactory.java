@@ -1,6 +1,7 @@
 package github.pancras.serialize;
 
 import github.pancras.config.DefaultConfig;
+import github.pancras.serialize.javaserial.JavaSerializer;
 import github.pancras.serialize.kryo.KryoSerializer;
 import github.pancras.serialize.protostuff.ProtostuffSerializer;
 
@@ -15,6 +16,8 @@ public class SerializerFactory {
         String name = DefaultConfig.DEFAULT_SERIALIZER_TYPE;
         SerializerType type = SerializerType.getType(name);
         switch (type) {
+            case Java:
+                return new JavaSerializer();
             case Kryo:
                 return new KryoSerializer();
             case Protostuff:
