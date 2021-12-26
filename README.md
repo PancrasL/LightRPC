@@ -8,6 +8,8 @@ LightRPC是一款使用Java语言编写，基于Netty和Zookeeper构建的以学
 
 - 支持zookeeper、redis两种注册中心
 
+  - zookeeper监听器，在服务地址变化时会自动更新本地缓存
+
 - 支持java序列化、kryo、protostuff三种序列化机制
 
 - 基于SPI机制实现了多负载均衡策略：轮询负载均衡、权重轮询负载均衡、随机负载均衡、一致性哈希负载均衡
