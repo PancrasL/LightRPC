@@ -75,13 +75,13 @@ public class NettyRpcClient implements RpcClient {
                     // 调用released会触发
                     @Override
                     public void channelReleased(Channel ch) {
-                        LOGGER.info(String.format("Channel %s released", ch));
+                        LOGGER.debug(String.format("Channel %s released", ch));
                     }
 
                     // 当channel不足时会触发，但不会超过最大channel数
                     @Override
                     public void channelAcquired(Channel ch) {
-                        LOGGER.info(String.format("Channel %s acquired", ch));
+                        LOGGER.debug(String.format("Channel %s acquired", ch));
                     }
 
                     // 获取连接池中的chanel
@@ -93,7 +93,7 @@ public class NettyRpcClient implements RpcClient {
                         p.addLast(new Encoder());
                         p.addLast(new Decoder());
                         p.addLast(new NettyRpcClientHandler(unprocessedRequests));
-                        LOGGER.info(String.format("Channel %s created", ch));
+                        LOGGER.debug(String.format("Channel %s created", ch));
                     }
                 };
                 return new FixedChannelPool(bootstrap.remoteAddress(socketAddress), handler, 5);

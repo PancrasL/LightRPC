@@ -3,6 +3,7 @@ package github.pancras.registry.zk;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.retry.RetryNTimes;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
@@ -57,16 +58,48 @@ public class ZkRegistryServiceImpl implements RegistryService {
     @Override
     public List<String> lookup(@Nonnull String rpcServiceName) {
         String path = ZK_REGISTER_ROOT_PATH + rpcServiceName;
+
+        // 如果是第一次查询，为该服务路径创建监听器，并更新服务地址
+        // 监听器的的作用是当服务地址发生变化时，会自动更新地址缓存
         if (!SERVICE_ADDRESS_MAP.containsKey(path)) {
-            List<String> serviceUrls = new ArrayList<>(0);
-            try {
-                serviceUrls = zkClient.getChildren().forPath(path);
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage());
-            }
+            List<String> serviceUrls = updateServiceAddress(path);
             SERVICE_ADDRESS_MAP.put(path, serviceUrls);
+            addListener(path);
         }
         return SERVICE_ADDRESS_MAP.get(path);
+    }
+
+    private List<String> updateServiceAddress(String path) {
+        List<String> serviceUrls = new ArrayList<>(0);
+        try {
+            serviceUrls = zkClient.getChildren().forPath(path);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+        return serviceUrls;
+    }
+
+    private void addListener(String path) {
+        LOGGER.info("Add listener for path:" + path);
+        PathChildrenCache pathChildrenCache = new PathChildrenCache(zkClient, path, false);
+        pathChildrenCache.getListenable().addListener((client, event) -> {
+            switch (event.getType()) {
+                case CHILD_ADDED:
+                case CHILD_REMOVED:
+                    List<String> addresses = updateServiceAddress(path);
+                    SERVICE_ADDRESS_MAP.put(path, addresses);
+                    LOGGER.info("Service address {} is updated：{}", path, addresses);
+                    break;
+                default:
+                    LOGGER.warn("State changed:{}", event.getType());
+                    break;
+            }
+        });
+        try {
+            pathChildrenCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
     }
 
     @Override
@@ -81,6 +114,7 @@ public class ZkRegistryServiceImpl implements RegistryService {
             LOGGER.warn("Fail: ZNode already existed [{}]", path);
             return;
         }
+
         // 创建临时节点，断开连接后会自动删除
         zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(path);
         LOGGER.info("Success: Ephemeral ZNode [{}] was created", path);
@@ -115,7 +149,7 @@ public class ZkRegistryServiceImpl implements RegistryService {
                 return true;
             }
         } catch (Exception e) {
-            LOGGER.error("ZNode " + path + " is not exist.");
+            LOGGER.warn("ZNode " + path + " is not exist.");
         }
         return false;
     }
