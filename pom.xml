@@ -13,7 +13,7 @@
         <module>example-client</module>
         <module>example-server</module>
         <module>lightrpc-core</module>
-        <module>lighttcc</module>
+        <module>tcc</module>
     </modules>
 
     <properties>
