@@ -30,7 +30,9 @@ LightRPC是一款使用Java语言编写，基于Netty和Zookeeper构建的以学
 
 # 2. 模块介绍
 
-- sparrow-core：rpc框架的核心组件
+- lightrpc-core：rpc框架的核心组件
+
+- lighttcc: 基于LightRPC实现的简易TCC框架
 
 - example-server ：服务器示例
 
