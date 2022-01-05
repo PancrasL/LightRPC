@@ -70,7 +70,7 @@ public class NettyRpcServer implements RpcServer {
 
     @Override
     public void registerService(@Nonnull RpcServiceConfig<?> rpcServiceConfig) throws Exception {
-        providerService.publishService(rpcServiceConfig);
+        providerService.publishService(rpcServiceConfig, address);
     }
 
     @Override
