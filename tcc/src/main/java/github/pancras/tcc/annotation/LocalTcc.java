@@ -6,11 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface TccTry {
-    // 对应的消费接口
-    Class<?> interfaceClass();
-
+@Target({ElementType.TYPE})
+public @interface LocalTcc {
     // 对应的提交方法
     String confirm() default "confirm";
 
