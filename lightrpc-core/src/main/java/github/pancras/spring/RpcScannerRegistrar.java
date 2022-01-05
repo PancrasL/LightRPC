@@ -42,6 +42,7 @@ public class RpcScannerRegistrar implements ImportBeanDefinitionRegistrar, Resou
         }
         if (basePkgs == null) {
             basePkgs = new String[]{((StandardAnnotationMetadata) metadata).getIntrospectedClass().getPackage().getName()};
+            LOGGER.info("Not set baskPkgs, use: " + basePkgs);
         }
 
         // 扫描@RpcService注解
