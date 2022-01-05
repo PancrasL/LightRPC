@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.concurrent.ThreadSafe;
 
 import github.pancras.commons.exception.RpcException;
-import github.pancras.config.DefaultConfig;
 import github.pancras.provider.ProviderService;
 import github.pancras.registry.RegistryService;
 import github.pancras.wrapper.RpcServiceConfig;
@@ -20,7 +19,6 @@ import github.pancras.wrapper.RpcServiceConfig;
 @ThreadSafe
 public class ProviderServiceImpl implements ProviderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProviderServiceImpl.class);
-    private static final InetSocketAddress SERVICE_ADDRESS = new InetSocketAddress(DefaultConfig.DEFAULT_SERVER_ADDRESS, DefaultConfig.DEFAULT_SERVER_PORT);
 
     private final ConcurrentHashMap<String, Object> serviceMap = new ConcurrentHashMap<>();
     private final RegistryService registry;
@@ -34,8 +32,8 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public void publishService(RpcServiceConfig<?> rpcServiceConfig) throws Exception {
-        registry.register(rpcServiceConfig.getRpcServiceName(), SERVICE_ADDRESS, rpcServiceConfig.getWeight());
+    public void publishService(RpcServiceConfig<?> rpcServiceConfig, InetSocketAddress address) throws Exception {
+        registry.register(rpcServiceConfig.getRpcServiceName(), address, rpcServiceConfig.getWeight());
         addService(rpcServiceConfig);
     }
 
