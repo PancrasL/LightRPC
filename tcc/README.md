@@ -14,6 +14,9 @@ LightTCC是基于LightRPC实现的简易TCC框架
 
 ### （1）启动数据库
 
+默认使用h2内存数据库构建，详细配置见application.yaml文件
+> Reference: https://blog.csdn.net/zhanglf02/article/details/74502582
+
 ### （2）添加数据库
 
 ### （3）启动测试样例

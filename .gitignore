@@ -38,5 +38,5 @@ hs_err_pid*
 .vscode/
 
 # target files
-*/target/*
+**/target/*
 

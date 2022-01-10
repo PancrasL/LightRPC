@@ -16,7 +16,7 @@ public class DemoService {
     public void test() {
         demoDao.insert("server1");
         HttpClient.get("http://localhost:8082/test");
-        // int i = 100 / 0;
+        int i = 100 / 0;
         System.out.println("success insert server1");
     }
 }
