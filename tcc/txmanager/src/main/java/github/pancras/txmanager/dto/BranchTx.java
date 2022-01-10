@@ -1,4 +1,6 @@
-package github.pancras.txmanager;
+package github.pancras.txmanager.dto;
+
+import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +13,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class BranchTransaction {
+public class BranchTx implements Serializable {
     private String xid;
     private String branchId;
     private String commitMethod;

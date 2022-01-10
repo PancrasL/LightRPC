@@ -18,7 +18,6 @@ import github.pancras.serialize.Serializer;
 public class JavaSerializer implements Serializer {
     @Override
     public byte[] serialize(@Nonnull Object obj) throws IOException {
-        System.out.println("java serial");
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(bos);
         oos.writeObject(obj);
@@ -27,7 +26,6 @@ public class JavaSerializer implements Serializer {
 
     @Override
     public <T> T deserialize(@Nonnull byte[] bytes, @Nonnull Class<T> clazz) throws IOException {
-        System.out.println("java deserial");
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bis);
         Object obj;

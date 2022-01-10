@@ -13,7 +13,7 @@ public class TransferController {
 
     @RequestMapping("/test")
     public String handle01() {
-        service.doTransfer();
+        service.doTransfer(null);
         return "Hello, Spring Boot 2!";
     }
 }

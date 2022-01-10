@@ -1,7 +1,7 @@
 package github.pancras.transfer.action;
 
-import github.pancras.txmanager.TccActionContext;
 import github.pancras.txmanager.annotation.TccTry;
+import github.pancras.txmanager.dto.TccActionContext;
 
 /**
  * 转出人：扣钱

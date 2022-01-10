@@ -1,12 +1,15 @@
 package github.pancras.transfer.action.impl;
 
+import org.springframework.stereotype.Component;
+
 import github.pancras.transfer.action.ToTccAction;
-import github.pancras.txmanager.TccActionContext;
 import github.pancras.txmanager.annotation.TccTry;
+import github.pancras.txmanager.dto.TccActionContext;
 
 /**
  * 加钱参与者实现
  */
+@Component
 public class ToTccActionImpl implements ToTccAction {
     @TccTry
     @Override

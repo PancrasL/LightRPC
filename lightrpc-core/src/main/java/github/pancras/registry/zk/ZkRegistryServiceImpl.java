@@ -4,7 +4,7 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
-import org.apache.curator.retry.RetryNTimes;
+import org.apache.curator.retry.RetryOneTime;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +34,6 @@ public class ZkRegistryServiceImpl implements RegistryService {
     private static final ConcurrentHashMap<String, List<String>> SERVICE_ADDRESS_MAP = new ConcurrentHashMap<>();
     private static final String ZK_REGISTER_ROOT_PATH = "/LightRPC/";
     private static final String ZK_PATH_SPLIT_CHAR = "/";
-    private static final int DEFAULT_SESSION_TIMEOUT = 6000;
-    private static final int DEFAULT_CONNECT_TIMEOUT = 2000;
 
     private final CuratorFramework zkClient;
 
@@ -123,12 +121,12 @@ public class ZkRegistryServiceImpl implements RegistryService {
     private CuratorFramework buildZkClient(InetSocketAddress address) {
         CuratorFramework zkClient;
         // 重试3次，每次阻塞3s来连接Zookeeper
-        RetryPolicy retryPolicy = new RetryNTimes(3, 1);
+        RetryPolicy retryPolicy = new RetryOneTime(1);
         String connectString = address.getHostString() + ":" + address.getPort();
-        zkClient = CuratorFrameworkFactory.newClient(connectString, ZkRegistryServiceImpl.DEFAULT_SESSION_TIMEOUT, ZkRegistryServiceImpl.DEFAULT_CONNECT_TIMEOUT, retryPolicy);
+        zkClient = CuratorFrameworkFactory.newClient(connectString, retryPolicy);
         zkClient.start();
         try {
-            zkClient.blockUntilConnected(3, TimeUnit.SECONDS);
+            zkClient.blockUntilConnected(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             LOGGER.error("Zookeeper connect fail.");
         }

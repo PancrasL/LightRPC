@@ -1,4 +1,4 @@
-package github.pancras.txmanager;
+package github.pancras.txmanager.dto;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -14,7 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TccActionContext implements Serializable {
     private String xid;
-    private String branchId;
     private HashMap<String, String> map;
 
     public String getContext(String key) {
