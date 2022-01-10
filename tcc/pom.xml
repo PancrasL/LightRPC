@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>server1</module>
+        <module>transfer</module>
         <module>server2</module>
         <module>txmanager</module>
     </modules>
