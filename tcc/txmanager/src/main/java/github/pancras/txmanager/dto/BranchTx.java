@@ -18,4 +18,6 @@ public class BranchTx implements Serializable {
     private String branchId;
     private String commitMethod;
     private String rollbackMethod;
+    private String resourceId;
+    private String resourceAddress;
 }

@@ -11,8 +11,7 @@ import java.util.UUID;
 import github.pancras.txmanager.annotation.TccTry;
 import github.pancras.txmanager.dto.BranchTx;
 import github.pancras.txmanager.dto.TccActionContext;
-import github.pancras.txmanager.store.TxStore;
-import github.pancras.txmanager.store.impl.ZkTxStore;
+import github.pancras.txmanager.rm.ResourceManager;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -21,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Aspect
 @Slf4j
 public class TccTryAspect {
-    private final TxStore txStore = ZkTxStore.INSTANCE;
+    private final ResourceManager RM = ResourceManager.INSTANCE;
 
     @Around("@annotation(github.pancras.txmanager.annotation.TccTry)")
     public Object invoke(ProceedingJoinPoint point) {
@@ -32,8 +31,8 @@ public class TccTryAspect {
 
         // 2. 注册分支事务
         TccActionContext context = (TccActionContext) point.getArgs()[0];
-        registBranch(context, tccTry);
-        //point.getTarget();
+        RM.registResource(point.getTarget());
+        registBranch(context, tccTry, point.getTarget().getClass().getCanonicalName());
         try {
             Object result = point.proceed();
             // 2.1 tccTry执行成功
@@ -47,9 +46,9 @@ public class TccTryAspect {
         }
     }
 
-    private void registBranch(TccActionContext context, TccTry tccTry) {
+    private void registBranch(TccActionContext context, TccTry tccTry, String resourceId) {
         String branchId = UUID.randomUUID().toString();
-        BranchTx branch = new BranchTx(context.getXid(), branchId, tccTry.commitMethod(), tccTry.rollbackMethod());
-        txStore.writeBranchTx(branch);
+        BranchTx branch = new BranchTx(context.getXid(), branchId, tccTry.commitMethod(), tccTry.rollbackMethod(), resourceId, RM.getAddress());
+        RM.writeBranchTx(branch);
     }
 }
