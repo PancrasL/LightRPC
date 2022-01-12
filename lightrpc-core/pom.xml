@@ -10,8 +10,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>lightrpc-core</artifactId>
+
     <dependencies>
-        <!-- curator -->
+        <!-- log -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <!-- zookeeper -->
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>
@@ -27,6 +39,7 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <version>${jedis.version}</version>
+            <optional>true</optional>
         </dependency>
         <!-- kryo -->
         <dependency>
@@ -51,6 +64,14 @@
             <artifactId>netty-handler</artifactId>
             <version>${netty.version}</version>
         </dependency>
+        <!-- test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- spring annotation -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
