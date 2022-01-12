@@ -1,4 +1,4 @@
-package github.pancras.txmanager.store.impl;
+package github.pancras.txmanager.store;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 
 import github.pancras.txmanager.dto.BranchTx;
-import github.pancras.txmanager.store.TxStore;
 import lombok.extern.slf4j.Slf4j;
 
 /**

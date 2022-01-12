@@ -8,10 +8,10 @@ import org.aspectj.lang.reflect.MethodSignature;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
+import github.pancras.txmanager.ResourceManager;
 import github.pancras.txmanager.annotation.TccTry;
 import github.pancras.txmanager.dto.BranchTx;
 import github.pancras.txmanager.dto.TccActionContext;
-import github.pancras.txmanager.rm.ResourceManager;
 import lombok.extern.slf4j.Slf4j;
 
 /**

@@ -1,4 +1,4 @@
-package github.pancras.txmanager.rm;
+package github.pancras.txmanager;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 
 import github.pancras.txmanager.dto.BranchTx;
 import github.pancras.txmanager.store.TxStore;
-import github.pancras.txmanager.store.impl.ZkTxStore;
+import github.pancras.txmanager.store.ZkTxStore;
 
 public enum ResourceManager {
     /**

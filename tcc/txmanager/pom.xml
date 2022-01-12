@@ -11,6 +11,10 @@
 
     <artifactId>txmanager</artifactId>
 
+    <properties>
+        <curator.version>4.2.0</curator.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

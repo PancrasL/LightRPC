@@ -10,7 +10,7 @@ import java.util.UUID;
 import github.pancras.txmanager.dto.BranchTx;
 import github.pancras.txmanager.dto.TccActionContext;
 import github.pancras.txmanager.store.TxStore;
-import github.pancras.txmanager.store.impl.ZkTxStore;
+import github.pancras.txmanager.store.ZkTxStore;
 import lombok.extern.slf4j.Slf4j;
 
 @Aspect
