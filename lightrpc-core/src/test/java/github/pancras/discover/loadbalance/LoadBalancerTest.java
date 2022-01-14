@@ -16,8 +16,8 @@ public class LoadBalancerTest {
 
     {
         fakeAddresses.add("1.1.1.1:7998@1");
-        fakeAddresses.add("2.2.2.2:7998@2");
-        fakeAddresses.add("3.3.3.3:7998@3");
+//        fakeAddresses.add("2.2.2.2:7998@2");
+//        fakeAddresses.add("3.3.3.3:7998@3");
         fakeAddresses.add("4.4.4.4:7998@4");
     }
 
