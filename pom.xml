@@ -8,34 +8,12 @@
     <artifactId>lightrpc</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
     <modules>
         <module>hello-service-api</module>
         <module>example-client</module>
         <module>example-server</module>
         <module>lightrpc-core</module>
     </modules>
-
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <!-- logging -->
-        <slf4j.version>1.7.6</slf4j.version>
-        <!-- zk -->
-        <curator.version>4.2.0</curator.version>
-        <!-- redis -->
-        <jedis.version>2.9.0</jedis.version>
-        <!-- kryo -->
-        <kryo.version>4.0.2</kryo.version>
-        <!-- protostuff -->
-        <protostuff.version>1.6.0</protostuff.version>
-        <!-- netty -->
-        <netty.version>4.1.65.Final</netty.version>
-        <!-- spring -->
-        <spring.version>5.2.7.RELEASE</spring.version>
-        <!-- test -->
-        <junit.version>4.12</junit.version>
-    </properties>
 
 </project>
