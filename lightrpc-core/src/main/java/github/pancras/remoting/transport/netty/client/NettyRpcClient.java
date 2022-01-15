@@ -20,7 +20,6 @@ import github.pancras.remoting.dto.RpcResponse;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
-import github.pancras.wrapper.RegistryConfig;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
@@ -48,22 +47,18 @@ public class NettyRpcClient implements RpcClient {
     private final ChannelPoolMap<InetSocketAddress, FixedChannelPool> poolMap;
     private final UnprocessedRequests unprocessedRequests;
 
-    private NettyRpcClient(RegistryConfig registryConfig) {
+    public NettyRpcClient(String registryAddress) {
         bootstrap = new Bootstrap();
         // 处理与服务端通信的线程组
         workerGroup = new NioEventLoopGroup();
         bootstrap.group(workerGroup)
                 .channel(NioSocketChannel.class);
 
-        discoverService = DiscoverServiceImpl.getInstance(RegistryFactory.getRegistry(registryConfig));
+        discoverService = DiscoverServiceImpl.getInstance(RegistryFactory.getRegistry(registryAddress));
         unprocessedRequests = new UnprocessedRequests();
         poolMap = createPoolMap();
 
         ShutdownHook.getInstance().addDisposable(this);
-    }
-
-    public static NettyRpcClient getInstance(RegistryConfig registryConfig) {
-        return new NettyRpcClient(registryConfig);
     }
 
     private ChannelPoolMap<InetSocketAddress, FixedChannelPool> createPoolMap() {
@@ -104,7 +99,7 @@ public class NettyRpcClient implements RpcClient {
 
     @Override
     public Object sendRpcRequest(@Nonnull RpcRequest rpcRequest) throws Exception {
-        InetSocketAddress socketAddress = discoverService.lookup(rpcRequest.getRpcServiceName());
+        InetSocketAddress socketAddress = discoverService.lookup(rpcRequest.getServiceName());
 
         // 从ChannelPool中获取和服务器连接的Channel，避免重复连接
         FixedChannelPool pool = poolMap.get(socketAddress);

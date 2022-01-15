@@ -33,7 +33,7 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public void publishService(RpcServiceConfig<?> rpcServiceConfig, InetSocketAddress address) throws Exception {
-        registry.register(rpcServiceConfig.getRpcServiceName(), address, rpcServiceConfig.getWeight());
+        registry.register(rpcServiceConfig.getServiceName(), address, rpcServiceConfig.getWeight());
         addService(rpcServiceConfig);
     }
 
@@ -54,7 +54,7 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     private void addService(RpcServiceConfig<?> rpcServiceConfig) {
-        String rpcServiceName = rpcServiceConfig.getRpcServiceName();
+        String rpcServiceName = rpcServiceConfig.getServiceName();
         if (serviceMap.containsKey(rpcServiceName)) {
             LOGGER.warn("Service [{}] has been published already", rpcServiceName);
             return;

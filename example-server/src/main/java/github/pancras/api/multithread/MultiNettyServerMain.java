@@ -1,12 +1,8 @@
 package github.pancras.api.multithread;
 
-import java.net.InetSocketAddress;
-
 import github.pancras.api.multithread.service.BlockHelloServiceImpl;
-import github.pancras.config.DefaultConfig;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.server.NettyRpcServer;
-import github.pancras.wrapper.RegistryConfig;
 import github.pancras.wrapper.RpcServiceConfig;
 
 /**
@@ -23,15 +19,10 @@ public class MultiNettyServerMain {
                 .newDefaultConfig(service1);
 
         // 创建服务器
-        InetSocketAddress address = new InetSocketAddress("localhost", 7998);
-        RegistryConfig config = DefaultConfig.DEFAULT_REGISTRY_CONFIG;
-        RpcServer server = NettyRpcServer.getInstance(address, config);
+        RpcServer server = new NettyRpcServer("localhost:7998", "zookeeper://localhost:2181");
 
         // 发布服务
         server.registerService(serviceConfig1);
-
-        // 启动服务器
-        server.start();
     }
 
 }

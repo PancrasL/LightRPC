@@ -3,7 +3,6 @@ package github.pancras.spring;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import github.pancras.config.DefaultConfig;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.client.NettyRpcClient;
 
@@ -16,7 +15,7 @@ import github.pancras.remoting.transport.netty.client.NettyRpcClient;
 public class AppConfiguration {
     @Bean
     public NettyRpcClient nettyRpcClient() {
-        return NettyRpcClient.getInstance(DefaultConfig.DEFAULT_REGISTRY_CONFIG);
+        return new NettyRpcClient("zookeeper://localhost:2181");
     }
 
     @Bean

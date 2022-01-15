@@ -12,13 +12,17 @@ public class RpcRequest implements Serializable {
     private String requestId;
     private String group;
     private String version;
-    private String interfaceName;
+    private String serviceName;
     private String methodName;
     private Object[] parameters;
     private Class<?>[] paramTypes;
 
-    public String getRpcServiceName() {
-        return group + '@' + version + '@' + interfaceName;
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
     public String getRequestId() {
@@ -43,14 +47,6 @@ public class RpcRequest implements Serializable {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public String getInterfaceName() {
-        return interfaceName;
-    }
-
-    public void setInterfaceName(String interfaceName) {
-        this.interfaceName = interfaceName;
     }
 
     public String getMethodName() {
@@ -81,7 +77,9 @@ public class RpcRequest implements Serializable {
     public String toString() {
         return "RpcRequest{" +
                 "requestId='" + requestId + '\'' +
-                ", interfaceName='" + interfaceName + '\'' +
+                ", group='" + group + '\'' +
+                ", version='" + version + '\'' +
+                ", rpcServiceName='" + serviceName + '\'' +
                 ", methodName='" + methodName + '\'' +
                 ", parameters=" + Arrays.toString(parameters) +
                 ", paramTypes=" + Arrays.toString(paramTypes) +

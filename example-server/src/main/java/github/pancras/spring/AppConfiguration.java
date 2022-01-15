@@ -3,9 +3,6 @@ package github.pancras.spring;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.net.InetSocketAddress;
-
-import github.pancras.config.DefaultConfig;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.server.NettyRpcServer;
 
@@ -18,8 +15,7 @@ import github.pancras.remoting.transport.netty.server.NettyRpcServer;
 public class AppConfiguration {
     @Bean
     public NettyRpcServer nettyRpcServer() {
-        InetSocketAddress socketAddress = new InetSocketAddress(DefaultConfig.DEFAULT_SERVER_ADDRESS, DefaultConfig.DEFAULT_SERVER_PORT);
-        return NettyRpcServer.getInstance(socketAddress, DefaultConfig.DEFAULT_REGISTRY_CONFIG);
+        return new NettyRpcServer("localhost:7998", "zookeeper://localhost:2181");
     }
 
     @Bean

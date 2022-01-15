@@ -1,12 +1,8 @@
 package github.pancras.api;
 
-import java.net.InetSocketAddress;
-
 import github.pancras.api.service.HelloServiceImpl;
-import github.pancras.config.DefaultConfig;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.socket.SocketRpcServer;
-import github.pancras.wrapper.RegistryConfig;
 import github.pancras.wrapper.RpcServiceConfig;
 
 /**
@@ -30,16 +26,11 @@ public class SocketServerMain {
                 .build();
 
         // 创建服务器
-        InetSocketAddress address = new InetSocketAddress("localhost", 7998);
-        RegistryConfig registryConfig = DefaultConfig.DEFAULT_REGISTRY_CONFIG;
-        RpcServer server = SocketRpcServer.getInstance(address, registryConfig);
+        RpcServer server = new SocketRpcServer("localhost:7998", "zookeeper://localhost:2181");
 
         // 发布服务
         server.registerService(serviceConfig1);
         server.registerService(serviceConfig2);
-
-        // 启动服务器
-        server.start();
     }
 
 }

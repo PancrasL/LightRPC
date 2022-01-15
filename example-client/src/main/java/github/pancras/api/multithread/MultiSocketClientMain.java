@@ -4,7 +4,6 @@ import github.pancras.HelloService;
 import github.pancras.config.DefaultConfig;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.socket.SocketRpcClient;
-import github.pancras.wrapper.RegistryConfig;
 import github.pancras.wrapper.RpcReferenceConfig;
 
 /**
@@ -16,8 +15,7 @@ public class MultiSocketClientMain implements Runnable {
     public static RpcClient rpcClient;
 
     public static void main(String[] args) throws InterruptedException {
-        RegistryConfig config = DefaultConfig.DEFAULT_REGISTRY_CONFIG;
-        rpcClient = SocketRpcClient.getInstance(config);
+        RpcClient rpcClient = new SocketRpcClient(DefaultConfig.REGISTRY);
         Thread t1 = new Thread(new MultiSocketClientMain());
         Thread t2 = new Thread(new MultiSocketClientMain());
         Thread t3 = new Thread(new MultiSocketClientMain());

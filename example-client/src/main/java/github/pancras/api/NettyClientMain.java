@@ -4,17 +4,14 @@ import github.pancras.HelloService;
 import github.pancras.config.DefaultConfig;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.netty.client.NettyRpcClient;
-import github.pancras.wrapper.RegistryConfig;
 import github.pancras.wrapper.RpcReferenceConfig;
-import java.util.ServiceLoader;
 
 /**
  * @author pancras
  */
 public class NettyClientMain {
     public static void main(String[] args) {
-        RegistryConfig config = DefaultConfig.DEFAULT_REGISTRY_CONFIG;
-        RpcClient rpcClient = NettyRpcClient.getInstance(config);
+        RpcClient rpcClient = new NettyRpcClient(DefaultConfig.REGISTRY);
         RpcReferenceConfig<HelloService> referenceConfig = RpcReferenceConfig.newDefaultConfig(rpcClient, HelloService.class);
         HelloService helloService = referenceConfig.getReferent();
 
@@ -26,5 +23,16 @@ public class NettyClientMain {
         }
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
+
+        // 指定serviceName调用
+        RpcReferenceConfig<HelloService> config = new
+                RpcReferenceConfig.Builder<HelloService>(rpcClient, HelloService.class)
+                .serviceName("github.pancras.HelloService")
+                .group("group1")
+                .version("version1")
+                .build();
+        HelloService service = config.getReferent();
+        String s = service.hello("Do");
+        System.out.println(s);
     }
 }

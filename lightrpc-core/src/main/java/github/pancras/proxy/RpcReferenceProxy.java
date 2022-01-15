@@ -48,7 +48,7 @@ public class RpcReferenceProxy<T> implements InvocationHandler {
         rpcRequest.setGroup(rpcReferenceConfig.getGroup());
         rpcRequest.setVersion(rpcReferenceConfig.getVersion());
         rpcRequest.setRequestId(UUID.randomUUID().toString());
-        rpcRequest.setInterfaceName(method.getDeclaringClass().getName());
+        rpcRequest.setServiceName(rpcReferenceConfig.getServiceName());
         rpcRequest.setMethodName(method.getName());
         rpcRequest.setParameters(args);
         rpcRequest.setParamTypes(method.getParameterTypes());

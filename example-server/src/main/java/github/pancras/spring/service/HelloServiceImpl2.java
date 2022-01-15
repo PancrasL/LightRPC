@@ -4,7 +4,7 @@ import github.pancras.Hello;
 import github.pancras.HelloService;
 import github.pancras.spring.annotation.RpcService;
 
-@RpcService(group = "group2", version = "v1")
+@RpcService
 public class HelloServiceImpl2 implements HelloService {
     @Override
     public String hello(Hello hello) {

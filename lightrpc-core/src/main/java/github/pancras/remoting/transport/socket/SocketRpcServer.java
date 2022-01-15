@@ -13,12 +13,12 @@ import java.util.concurrent.Executors;
 import javax.annotation.Nonnull;
 
 import github.pancras.commons.ShutdownHook;
+import github.pancras.commons.utils.NetUtil;
 import github.pancras.provider.ProviderService;
 import github.pancras.provider.impl.ProviderServiceImpl;
 import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
 import github.pancras.remoting.transport.RpcServer;
-import github.pancras.wrapper.RegistryConfig;
 import github.pancras.wrapper.RpcServiceConfig;
 
 /**
@@ -33,15 +33,11 @@ public class SocketRpcServer implements RpcServer {
 
     private ServerSocket server;
 
-    private SocketRpcServer(InetSocketAddress address, RegistryConfig registryConfig) {
-        this.address = address;
+    public SocketRpcServer(String serverAddress, String registryAddress) {
+        this.address = NetUtil.toInetSocketAddress(serverAddress);
         this.threadPool = Executors.newCachedThreadPool();
-        RegistryService registryService = RegistryFactory.getRegistry(registryConfig);
+        RegistryService registryService = RegistryFactory.getRegistry(registryAddress);
         this.providerService = ProviderServiceImpl.newInstance(registryService);
-    }
-
-    public static SocketRpcServer getInstance(@Nonnull InetSocketAddress address, @Nonnull RegistryConfig registryConfig) {
-        return new SocketRpcServer(address, registryConfig);
     }
 
     @Override
@@ -49,8 +45,7 @@ public class SocketRpcServer implements RpcServer {
         providerService.publishService(rpcServiceConfig, address);
     }
 
-    @Override
-    public void start() throws Exception {
+    private void start() throws Exception {
         server = new ServerSocket();
         server.bind(address);
         LOGGER.info("RPC Server listen at: [{}]", address);

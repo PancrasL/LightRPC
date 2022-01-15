@@ -1,12 +1,9 @@
 package github.pancras.api.multithread;
 
-import java.net.InetSocketAddress;
-
 import github.pancras.api.multithread.service.BlockHelloServiceImpl;
 import github.pancras.config.DefaultConfig;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.socket.SocketRpcServer;
-import github.pancras.wrapper.RegistryConfig;
 import github.pancras.wrapper.RpcServiceConfig;
 
 /**
@@ -23,15 +20,10 @@ public class MultiSocketServerMain {
                 .newDefaultConfig(service1);
 
         // 创建服务器
-        InetSocketAddress address = new InetSocketAddress("localhost", 7998);
-        RegistryConfig defaultConfig = DefaultConfig.DEFAULT_REGISTRY_CONFIG;
-        RpcServer server = SocketRpcServer.getInstance(address, defaultConfig);
+        RpcServer server = new SocketRpcServer(DefaultConfig.SERVER_ADDRESS, DefaultConfig.REGISTRY);
 
         // 发布服务
         server.registerService(serviceConfig1);
-
-        // 启动服务器
-        server.start();
     }
 
 }

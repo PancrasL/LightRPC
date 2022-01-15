@@ -5,7 +5,6 @@ import java.net.InetSocketAddress;
 import github.pancras.commons.utils.NetUtil;
 import github.pancras.registry.redis.RedisRegistryServiceImpl;
 import github.pancras.registry.zk.ZkRegistryServiceImpl;
-import github.pancras.wrapper.RegistryConfig;
 
 /**
  * @author PancrasL
@@ -14,16 +13,15 @@ public class RegistryFactory {
     private RegistryFactory() {
     }
 
-    public static RegistryService getRegistry(RegistryConfig registryConfig) {
-        return buildRegistryService(registryConfig);
+    public static RegistryService getRegistry(String registryAddress) {
+        return buildRegistryService(registryAddress);
     }
 
-    private static RegistryService buildRegistryService(RegistryConfig registryConfig) {
-        InetSocketAddress socketAddress = new InetSocketAddress(registryConfig.getHost(), registryConfig.getPort());
-        NetUtil.validAddress(socketAddress);
+    private static RegistryService buildRegistryService(String registryAddress) {
+        String[] typeAndAddress = registryAddress.split("://");
+        InetSocketAddress socketAddress = NetUtil.toInetSocketAddress(typeAndAddress[1]);
 
-        String type = registryConfig.getType();
-        RegistryType registryType = RegistryType.getType(type);
+        RegistryType registryType = RegistryType.getType(typeAndAddress[0]);
         RegistryService registryService;
         switch (registryType) {
             case Zookeeper:

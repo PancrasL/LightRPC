@@ -4,12 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
 
 import github.pancras.commons.ShutdownHook;
-import github.pancras.commons.utils.SystemUtil;
+import github.pancras.commons.utils.NetUtil;
 import github.pancras.provider.ProviderService;
 import github.pancras.provider.impl.ProviderServiceImpl;
 import github.pancras.registry.RegistryFactory;
@@ -17,7 +16,6 @@ import github.pancras.registry.RegistryService;
 import github.pancras.remoting.transport.RpcServer;
 import github.pancras.remoting.transport.netty.codec.Decoder;
 import github.pancras.remoting.transport.netty.codec.Encoder;
-import github.pancras.wrapper.RegistryConfig;
 import github.pancras.wrapper.RpcServiceConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -47,25 +45,21 @@ public class NettyRpcServer implements RpcServer {
 
     private final InetSocketAddress address;
     private final ServerBootstrap serverBootstrap = new ServerBootstrap();
-    private final AtomicBoolean initialized = new AtomicBoolean(false);
     private Channel serverChannel;
 
-    private NettyRpcServer(InetSocketAddress address, RegistryConfig registryConfig) {
-        this.address = address;
+    public NettyRpcServer(String serverAddress, String registryAddress) {
+        this.address = NetUtil.toInetSocketAddress(serverAddress);
         // 提供者服务，用于发布和查询服务
         // 注册中心
-        RegistryService registryService = RegistryFactory.getRegistry(registryConfig);
+        RegistryService registryService = RegistryFactory.getRegistry(registryAddress);
         providerService = ProviderServiceImpl.newInstance(registryService);
         // 监听线程组，监听客户端请求
         bossGroup = new NioEventLoopGroup(1);
-        // 工作线程组，处理与客户端的数据通讯
-        workerGroup = new NioEventLoopGroup(SystemUtil.getAvailableProcessorNum() * 2);
-        // 业务线程，处理业务逻辑
-        serviceHandlerGroup = new DefaultEventLoopGroup(SystemUtil.getAvailableProcessorNum());
-    }
-
-    public static NettyRpcServer getInstance(InetSocketAddress socketAddress, RegistryConfig registryConfig) {
-        return new NettyRpcServer(socketAddress, registryConfig);
+        // 工作线程组，处理与客户端的数据通讯，n=2*cpu核心数
+        workerGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors() * 2);
+        // 业务线程，处理业务逻辑，n=cpu核心数
+        serviceHandlerGroup = new DefaultEventLoopGroup(Runtime.getRuntime().availableProcessors());
+        start();
     }
 
     @Override
@@ -73,12 +67,7 @@ public class NettyRpcServer implements RpcServer {
         providerService.publishService(rpcServiceConfig, address);
     }
 
-    @Override
-    public void start() throws Exception {
-        if (initialized.get()) {
-            throw new Exception("The server is already started, please do not start the service repeatedly.");
-        }
-
+    private void start() {
         this.serverBootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 // 开启TCP心跳机制
@@ -91,6 +80,7 @@ public class NettyRpcServer implements RpcServer {
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline p = ch.pipeline();
                         // 使用LengthFieldBasedFrameDecoder解决TCP粘包、粘包问题
+                        // 定义每个报文的头4个字节表示消息体长度
                         p.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
                         p.addLast(new Encoder());
                         p.addLast(new Decoder());
@@ -99,9 +89,12 @@ public class NettyRpcServer implements RpcServer {
                 });
 
         // 绑定端口，同步等待
-        serverChannel = serverBootstrap.bind(address).sync().channel();
+        try {
+            serverChannel = serverBootstrap.bind(address).sync().channel();
+        } catch (InterruptedException e) {
+            throw new IllegalStateException(e);
+        }
         LOGGER.info("Server is started, listen at [{}]", address);
-        initialized.set(true);
 
         // 添加关闭钩子，在程序退出时调用 destroy() 释放资源
         ShutdownHook.getInstance().addDisposable(this);
@@ -110,13 +103,11 @@ public class NettyRpcServer implements RpcServer {
     @Override
     public void destroy() {
         try {
-            if (initialized.get()) {
-                providerService.close();
-                serverChannel.close();
-            }
-            this.bossGroup.shutdownGracefully();
-            this.workerGroup.shutdownGracefully();
-            this.serviceHandlerGroup.shutdownGracefully();
+            providerService.close();
+            serverChannel.close();
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+            serviceHandlerGroup.shutdownGracefully();
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }

@@ -13,7 +13,7 @@ public class SerializerFactory {
     }
 
     public static Serializer getInstance() {
-        String name = DefaultConfig.DEFAULT_SERIALIZER_TYPE;
+        String name = DefaultConfig.SERIALIZER_TYPE;
         SerializerType type = SerializerType.getType(name);
         switch (type) {
             case Java:

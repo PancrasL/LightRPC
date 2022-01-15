@@ -18,7 +18,6 @@ import github.pancras.registry.RegistryFactory;
 import github.pancras.registry.RegistryService;
 import github.pancras.remoting.dto.RpcRequest;
 import github.pancras.remoting.transport.RpcClient;
-import github.pancras.wrapper.RegistryConfig;
 
 /**
  * @author PancrasL
@@ -27,14 +26,10 @@ public class SocketRpcClient implements RpcClient {
     private final static Logger LOGGER = LoggerFactory.getLogger(SocketRpcClient.class);
     private final DiscoverService discoverService;
 
-    private SocketRpcClient(RegistryConfig registryConfig) {
-        RegistryService registry = RegistryFactory.getRegistry(registryConfig);
+    public SocketRpcClient(String registryAddress) {
+        RegistryService registry = RegistryFactory.getRegistry(registryAddress);
         discoverService = DiscoverServiceImpl.getInstance(registry);
         ShutdownHook.getInstance().addDisposable(this);
-    }
-
-    public static SocketRpcClient getInstance(RegistryConfig registryConfig) {
-        return new SocketRpcClient(registryConfig);
     }
 
     @Override
@@ -42,7 +37,7 @@ public class SocketRpcClient implements RpcClient {
         Socket socket = new Socket();
         // 重试3次连接，每次等待1s
         for (int i = 0; i < 3; i++) {
-            InetSocketAddress address = discoverService.lookup(rpcRequest.getRpcServiceName());
+            InetSocketAddress address = discoverService.lookup(rpcRequest.getServiceName());
             if (doConnect(socket, address)) {
                 break;
             }

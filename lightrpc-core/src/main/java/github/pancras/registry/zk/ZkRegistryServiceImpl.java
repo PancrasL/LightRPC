@@ -49,8 +49,6 @@ public class ZkRegistryServiceImpl implements RegistryService {
 
     @Override
     public void register(@Nonnull String rpcServiceName, @Nonnull InetSocketAddress address, @Nonnull Integer weight) throws Exception {
-        NetUtil.validAddress(address);
-
         String path = getRegisterPath(rpcServiceName, address, weight);
         doRegister(path);
     }
@@ -122,13 +120,13 @@ public class ZkRegistryServiceImpl implements RegistryService {
 
     private CuratorFramework buildZkClient(InetSocketAddress address) {
         CuratorFramework zkClient;
-        // 重试3次，每次阻塞3s来连接Zookeeper
+        // 重试3次，每次阻塞1s来连接Zookeeper
         RetryPolicy retryPolicy = new RetryNTimes(3, 1);
         String connectString = address.getHostString() + ":" + address.getPort();
         zkClient = CuratorFrameworkFactory.newClient(connectString, ZkRegistryServiceImpl.DEFAULT_SESSION_TIMEOUT, ZkRegistryServiceImpl.DEFAULT_CONNECT_TIMEOUT, retryPolicy);
         zkClient.start();
         try {
-            zkClient.blockUntilConnected(3, TimeUnit.SECONDS);
+            zkClient.blockUntilConnected(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             LOGGER.error("Zookeeper connect fail.");
         }

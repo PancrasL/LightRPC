@@ -20,6 +20,10 @@ public class RpcServiceConfig<T> {
      */
     private final Integer weight;
     /**
+     * 服务名称
+     */
+    private final String serviceName;
+    /**
      * 服务实例
      */
     private final T service;
@@ -29,18 +33,15 @@ public class RpcServiceConfig<T> {
         this.version = builder.version;
         this.service = builder.service;
         this.weight = builder.weight;
+        this.serviceName = group + '@' + version + '@' + builder.serviceName;
     }
 
     public static <T> RpcServiceConfig<T> newDefaultConfig(T service) {
         return new RpcServiceConfig.Builder<T>(service).build();
     }
 
-    public String getRpcServiceName() {
-        return group + '@' + version + '@' + getServiceName();
-    }
-
-    private String getServiceName() {
-        return this.service.getClass().getInterfaces()[0].getCanonicalName();
+    public String getServiceName() {
+        return serviceName;
     }
 
     public String getGroup() {
@@ -59,6 +60,17 @@ public class RpcServiceConfig<T> {
         return weight;
     }
 
+    @Override
+    public String toString() {
+        return "RpcServiceConfig{" +
+                "group='" + group + '\'' +
+                ", version='" + version + '\'' +
+                ", weight=" + weight +
+                ", serviceName='" + serviceName + '\'' +
+                ", service=" + service +
+                '}';
+    }
+
     public static class Builder<T> {
         // Required paramaters
         private final T service;
@@ -67,9 +79,12 @@ public class RpcServiceConfig<T> {
         private String group = "";
         private String version = "";
         private Integer weight = 1;
+        // 默认是服务实例的全限定名
+        private String serviceName;
 
         public Builder(T service) {
             this.service = service;
+            this.serviceName = service.getClass().getInterfaces()[0].getCanonicalName();
         }
 
         public Builder<T> group(String group) {
@@ -84,6 +99,11 @@ public class RpcServiceConfig<T> {
 
         public Builder<T> weight(Integer weight) {
             this.weight = weight;
+            return this;
+        }
+
+        public Builder<T> serviceName(String serviceName) {
+            this.serviceName = serviceName;
             return this;
         }
 

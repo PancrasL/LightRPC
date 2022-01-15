@@ -4,7 +4,6 @@ import github.pancras.HelloService;
 import github.pancras.config.DefaultConfig;
 import github.pancras.remoting.transport.RpcClient;
 import github.pancras.remoting.transport.socket.SocketRpcClient;
-import github.pancras.wrapper.RegistryConfig;
 import github.pancras.wrapper.RpcReferenceConfig;
 
 /**
@@ -14,8 +13,7 @@ import github.pancras.wrapper.RpcReferenceConfig;
  */
 public class SocketClientMain {
     public static void main(String[] args) {
-        RegistryConfig registryConfig = DefaultConfig.DEFAULT_REGISTRY_CONFIG;
-        RpcClient rpcClient = SocketRpcClient.getInstance(registryConfig);
+        RpcClient rpcClient = new SocketRpcClient(DefaultConfig.REGISTRY);
         RpcReferenceConfig<HelloService> referenceConfig = RpcReferenceConfig.newDefaultConfig(rpcClient, HelloService.class);
         int sendTimes = 5;
         for (int i = 0; i < sendTimes; i++) {

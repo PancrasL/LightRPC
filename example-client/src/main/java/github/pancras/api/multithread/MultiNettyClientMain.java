@@ -15,7 +15,7 @@ public class MultiNettyClientMain implements Runnable {
     public static RpcClient rpcClient;
 
     public static void main(String[] args) throws InterruptedException {
-        rpcClient = NettyRpcClient.getInstance(DefaultConfig.DEFAULT_REGISTRY_CONFIG);
+        rpcClient = new NettyRpcClient(DefaultConfig.REGISTRY);
         Thread t1 = new Thread(new MultiNettyClientMain());
         Thread t2 = new Thread(new MultiNettyClientMain());
         Thread t3 = new Thread(new MultiNettyClientMain());

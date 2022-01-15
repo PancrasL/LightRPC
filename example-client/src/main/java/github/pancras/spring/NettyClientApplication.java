@@ -1,14 +1,11 @@
 package github.pancras.spring;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import github.pancras.spring.annotation.RpcScan;
-
-@RpcScan(basePackage = "github.pancras.spring")
 public class NettyClientApplication {
     public static void main(String[] args) {
-        ApplicationContext context = new AnnotationConfigApplicationContext(NettyClientApplication.class);
+        ApplicationContext context = new ClassPathXmlApplicationContext("application.xml");
         HelloController controller = context.getBean(HelloController.class);
         controller.test();
     }

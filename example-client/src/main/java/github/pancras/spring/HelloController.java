@@ -10,7 +10,7 @@ public class HelloController {
     /**
      * 需要和example-server模块下的indi.pancras.spring.service.HelloServiceImpl2一致
      */
-    @RpcReference(group = "group2", version = "v1")
+    @RpcReference
     private HelloService helloService;
 
     public void test() {
