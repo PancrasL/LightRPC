@@ -38,7 +38,15 @@ LightRPC是一款使用Java语言编写，基于Netty和Zookeeper构建的以学
 
 # 3. 运行
 
-## 3.1 Zookeeper的本地启动
+## 3.1 Zookeeper的启动
+
+### 3.1.1 Zookeeper的测试启动
+
+```bash
+运行 example-zookeeper/src/main/java/indi/pancras/zk/MockZookeeper.java
+```
+
+### 3.1.2 Zookeeper的本地启动
 
 - 下载zookeeper安装包并解压：https://downloads.apache.org/zookeeper/zookeeper-3.6.3/
 
@@ -57,13 +65,13 @@ some info
 
 - zookeeper会占用8080端口，通过在 `zoo.cfg` 中添加 `admin.serverPort=8888` 解除8080端口的占用
 
-## 3.2 Zookeeper的容器启动
+### 3.1.3 Zookeeper的容器启动
 
 ```bash
 $ docker run -d --name=zookeeper -p 2181:2181 zookeeper:3.6.3
 ```
 
-## 3.3 基于socket通信的示例的运行
+## 3.2 基于socket通信的示例的运行
 
 - 启动 `Zookeeper`
 
@@ -71,7 +79,7 @@ $ docker run -d --name=zookeeper -p 2181:2181 zookeeper:3.6.3
 
 - 启动 `example-client/src/main/java/github/pancras/api/SocketClientMain.java`
 
-## 3.4 基于netty通信的示例的运行
+## 3.3 基于netty通信的示例的运行
 
 - 启动 `Zookeeper`
 
@@ -79,7 +87,7 @@ $ docker run -d --name=zookeeper -p 2181:2181 zookeeper:3.6.3
 
 - 启动 `example-client/src/main/java/github/pancras/api/NettyClientMain.java`
 
-## 3.5 注解方式启动
+## 3.4 注解方式启动
 
 - 启动 `Zookeeper`
 

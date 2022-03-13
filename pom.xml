@@ -13,6 +13,7 @@
         <module>hello-service-api</module>
         <module>example-client</module>
         <module>example-server</module>
+        <module>example-zookeeper</module>
         <module>lightrpc-core</module>
     </modules>
 
